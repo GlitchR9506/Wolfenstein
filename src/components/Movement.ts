@@ -1,9 +1,10 @@
 import { degToRad, Vec3 } from './utils'
 
 export default class Movement {
-    pressedKeys: string[] = []
+    private pressedKeys: string[] = []
     direction = Vec3.zero
     rotation = 0
+    shooting = false
     constructor() {
         this.addKeyUpListener()
         this.addKeyDownListener()
@@ -31,6 +32,12 @@ export default class Movement {
         }
         if (this.isPressed('ArrowRight') && !this.isPressed('ArrowLeft')) {
             this.rotation = 1
+        }
+
+        if (this.isPressed('Space')) {
+            this.shooting = true
+        } else {
+            this.shooting = false
         }
     }
 

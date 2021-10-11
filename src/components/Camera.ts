@@ -4,12 +4,7 @@ import { degToRad, Vec3, Transform, radToDeg } from './utils'
 export default class Camera {
     rotationSpeed = 1
     movementSpeed = 100
-    private readonly gl: WebGLRenderingContext
-    private transform = new Transform
-
-    constructor(gl: WebGLRenderingContext) {
-        this.gl = gl
-    }
+    transform = new Transform
 
     get matrix() {
         let cameraMatrix = m4.identity
@@ -18,13 +13,13 @@ export default class Camera {
         return cameraMatrix
     }
 
-    rotate(rotation: number, deltaTime: number) {
-        this.transform.rotation.y += rotation * deltaTime * this.rotationSpeed
-
+    rotate(rotation: number) {
+        this.transform.rotation.y += rotation * this.rotationSpeed
     }
 
-    move(direction: Vec3, deltaTime: number) {
-        const deltaPosition = direction.multiply(deltaTime * this.movementSpeed).transformMat4(m4.yRotation(-this.transform.rotation.y))
+    move(direction: Vec3) {
+        const transformMatrix = m4.yRotation(-this.transform.rotation.y)
+        const deltaPosition = direction.multiply(this.movementSpeed).transformMat4(transformMatrix)
         this.transform.position = this.transform.position.add(deltaPosition)
     }
 }

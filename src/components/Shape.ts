@@ -101,8 +101,6 @@ export default class Shape {
         matrix = m4.yRotate(matrix, this.transform.rotation.y);
         matrix = m4.zRotate(matrix, this.transform.rotation.z);
 
-        matrix = m4.translate(matrix, this.originTranslation);
-
         matrix = m4.scale(matrix, this.transform.scale.x, this.transform.scale.y, this.transform.scale.z);
 
         // Set the matrix.

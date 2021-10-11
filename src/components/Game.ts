@@ -16,7 +16,7 @@ export default class Game {
     private readonly enemy: Enemy
     private readonly shapes: ShapeLetter[] = []
     private readonly gl: WebGLRenderingContext
-    projectionMatrix: number[]
+    private projectionMatrix: number[]
 
     constructor() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -25,14 +25,14 @@ export default class Game {
         this.gl.clearColor(0, 0, 0, 0);
 
         this.program = new Program(this.gl)
-        this.camera = new Camera(this.gl)
+        this.camera = new Camera()
         this.movement = new Movement()
         this.cube = new Cube(this.gl)
         this.cube.setBuffers()
-        this.cube.transform.position.z -= 200
+        this.cube.transform.position.z = -150
         this.enemy = new Enemy(this.gl)
         this.enemy.setBuffers()
-        this.enemy.transform.position.z -= 200
+        this.enemy.transform.position.z = -100
 
         {
             const shapesCount = 5
@@ -73,23 +73,23 @@ export default class Game {
     private draw(deltaTime: number) {
         this.setDrawSettings()
 
-        this.camera.rotate(this.movement.rotation, deltaTime)
-        this.camera.move(this.movement.direction, deltaTime)
+        this.camera.rotate(this.movement.rotation * deltaTime)
+        this.camera.move(this.movement.direction.multiply(deltaTime))
 
         // this.shapes.forEach(shape => {
         //     shape.transform.rotation.y += degToRad(-50) * deltaTime
         //     shape.draw(this.program.info, this.viewProjectionMatrix)
         // })
 
-        // this.cube.draw(this.program.info, this.viewProjectionMatrix)
+        this.cube.draw(this.program.info, this.viewProjectionMatrix)
 
         this.enemy.draw(this.program.info, this.viewProjectionMatrix)
+        this.enemy.lookAtCamera(this.camera.transform.rotation.y)
     }
 
     private get viewProjectionMatrix() {
         return m4.multiply(this.projectionMatrix, this.camera.matrix);
     }
-
 
     private updateProjectionMatrix() {
         const fieldOfViewRadians = degToRad(60)

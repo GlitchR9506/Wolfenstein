@@ -278,8 +278,8 @@ const m4 = {
         return dst;
     },
 
-    lookAt: function (cameraPosition: Vec3, target: Vec3) {
-        var zAxis = cameraPosition.substract(target).normalize;
+    lookAt: function (source: Vec3, target: Vec3) {
+        var zAxis = source.substract(target).normalize;
         var xAxis = Vec3.up.cross(zAxis).normalize;
         var yAxis = zAxis.cross(xAxis).normalize;
 
@@ -287,9 +287,32 @@ const m4 = {
             xAxis.x, xAxis.y, xAxis.z, 0,
             yAxis.x, yAxis.y, yAxis.z, 0,
             zAxis.x, zAxis.y, zAxis.z, 0,
-            cameraPosition.x, cameraPosition.y, cameraPosition.z, 1,
+            source.x, source.y, source.z, 1,
         ];
     },
+
+    getPositionVector: function (m: number[]) {
+        return new Vec3(m[12], m[13], m[14])
+    },
+
+    getScaleVector: function (m: number[]) {
+        return new Vec3(
+            new Vec3(m[0], m[4], m[8]).magnitude,
+            new Vec3(m[1], m[5], m[9]).magnitude,
+            new Vec3(m[2], m[6], m[10]).magnitude,
+        )
+    },
+
+    getRotationMatrix: function (m: number[]) {
+        const s = m4.getScaleVector(m)
+        return [
+            m[0] / s.x, m[1] / s.y, m[2] / s.z, 0,
+            m[4] / s.x, m[5] / s.y, m[6] / s.z, 0,
+            m[8] / s.x, m[9] / s.y, m[10] / s.z, 0,
+            0, 0, 0, 1
+        ]
+    },
+
 }
 
 export default m4

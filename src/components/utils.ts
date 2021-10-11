@@ -6,12 +6,6 @@ export function degToRad(d: number) {
     return d * Math.PI / 180;
 }
 
-// export interface Transform {
-//     position: Vec3,
-//     rotation: Vec3,
-//     scale: Vec3,
-// }
-
 export class Transform {
     position = Vec3.zero
     rotation = Vec3.zero
@@ -133,5 +127,9 @@ export class Vec3 {
         out.y = (m[1] * this.x + m[5] * this.y + m[9] * this.z + m[13]) / w
         out.z = (m[2] * this.x + m[6] * this.y + m[10] * this.z + m[14]) / w
         return out
+    }
+
+    clone() {
+        return new Vec3(this.x, this.y, this.z)
     }
 }
