@@ -9,7 +9,7 @@ export default class Camera {
     get matrix() {
         let cameraMatrix = m4.identity
         cameraMatrix = m4.yRotate(cameraMatrix, this.transform.rotation.y)
-        cameraMatrix = m4.translate(cameraMatrix, this.transform.position)
+        cameraMatrix = m4.translate(cameraMatrix, this.transform.position.inverted)
         return cameraMatrix
     }
 
@@ -19,7 +19,7 @@ export default class Camera {
 
     move(direction: Vec3) {
         const transformMatrix = m4.yRotation(-this.transform.rotation.y)
-        const deltaPosition = direction.multiply(this.movementSpeed).transformMat4(transformMatrix)
+        const deltaPosition = direction.inverted.multiply(this.movementSpeed).transformMat4(transformMatrix)
         this.transform.position = this.transform.position.add(deltaPosition)
     }
 }

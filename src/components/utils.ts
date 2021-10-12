@@ -85,6 +85,10 @@ export class Vec3 {
         )
     }
 
+    dot(v: Vec3) {
+        return this.x * v.x + this.y * v.y + this.z * v.z
+    }
+
     add(v: Vec3) {
         return new Vec3(
             this.x + v.x,
@@ -131,5 +135,26 @@ export class Vec3 {
 
     clone() {
         return new Vec3(this.x, this.y, this.z)
+    }
+
+    static fromAngle(angle: number) {
+        // return new Vec3(Math.cos(angle), 0, Math.sin(angle))
+        return new Vec3(Math.sin(angle), 0, -Math.cos(angle))
+    }
+
+    map(f: (value: number) => number) {
+        return new Vec3(
+            f(this.x),
+            f(this.y),
+            f(this.z),
+        )
+    }
+
+    get yZeroed() {
+        return new Vec3(
+            this.x,
+            0,
+            this.z,
+        )
     }
 }
