@@ -3,22 +3,22 @@ import m4 from './m4'
 import Shape from './Shape'
 
 export default class Cube extends Shape {
-    readonly VERTICES = new Float32Array([
+    VERTICES = new Float32Array([
         // front    
-        -0.5, -0.5, -0.5,
-        -0.5, 0.5, -0.5,
-        0.5, 0.5, -0.5,
-        -0.5, -0.5, -0.5,
-        0.5, 0.5, -0.5,
-        0.5, -0.5, -0.5,
-
-        // back    
         -0.5, -0.5, 0.5,
         0.5, 0.5, 0.5,
         -0.5, 0.5, 0.5,
         -0.5, -0.5, 0.5,
         0.5, -0.5, 0.5,
         0.5, 0.5, 0.5,
+
+        // back    
+        -0.5, -0.5, -0.5,
+        -0.5, 0.5, -0.5,
+        0.5, 0.5, -0.5,
+        -0.5, -0.5, -0.5,
+        0.5, 0.5, -0.5,
+        0.5, -0.5, -0.5,
 
         // left    
         -0.5, -0.5, -0.5,
@@ -53,20 +53,20 @@ export default class Cube extends Shape {
         -0.5, -0.5, 0.5,
     ])
 
-    readonly COLORS = new Uint8Array([
-        200, 70, 0.520,
-        200, 70, 0.520,
-        200, 70, 0.520,
-        200, 70, 0.520,
-        200, 70, 0.520,
-        200, 70, 0.520,
+    COLORS = new Uint8Array([
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
 
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
-        80, 70, 200,
+        200, 70, 0.520,
+        200, 70, 0.520,
+        200, 70, 0.520,
+        200, 70, 0.520,
+        200, 70, 0.520,
+        200, 70, 0.520,
 
         70, 200, 20.50,
         70, 200, 20.50,
@@ -97,8 +97,26 @@ export default class Cube extends Shape {
         20.50, 0.560, 70,
     ])
 
+    readonly defaultColors = this.COLORS
+
     constructor(gl: WebGLRenderingContext) {
         super(gl)
         this.transform.scale = Vec3.identity.multiply(50)
+    }
+
+    setColor(wall: number, color: number[]) {
+        this.COLORS = new Uint8Array([
+            ...this.COLORS.slice(0, 3 * 6 * wall),
+            color[0], color[1], color[2],
+            color[0], color[1], color[2],
+            color[0], color[1], color[2],
+            color[0], color[1], color[2],
+            color[0], color[1], color[2],
+            color[0], color[1], color[2],
+            ...this.COLORS.slice(3 * 6 * (wall + 1))])
+    }
+
+    resetColor() {
+        this.COLORS = this.defaultColors
     }
 }

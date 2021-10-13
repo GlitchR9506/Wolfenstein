@@ -1,5 +1,5 @@
 import m4 from './m4'
-import { degToRad, Vec3, Transform, radToDeg } from './utils'
+import { degToRad, Vec3, Transform, radToDeg, log } from './utils'
 
 export default class Camera {
     rotationSpeed = 1
@@ -24,10 +24,13 @@ export default class Camera {
     }
 
     angleTo(targetPosition: Vec3) {
-        let toTargetVec = targetPosition.substract(this.transform.position).yZeroed.normalize
-        let lookingAtVec = Vec3.fromAngle(this.transform.rotation.y).inverted
-        let angle = Math.acos(lookingAtVec.dot(toTargetVec) / (lookingAtVec.magnitude * toTargetVec.magnitude))
-        let angleDiff = 180 - radToDeg(angle)
+        let toTargetDir = targetPosition.substract(this.transform.position).yZeroed.normalize
+        let lookingAtDir = Vec3.fromAngle(this.transform.rotation.y)
+        let toTargetAngle = Math.atan2(toTargetDir.z, toTargetDir.x)
+        let lookingAtAngle = Math.atan2(lookingAtDir.z, lookingAtDir.x)
+        let angleDiff = radToDeg(lookingAtAngle - toTargetAngle)
+        if (angleDiff > 180) angleDiff -= 360
+        if (angleDiff < -180) angleDiff += 360
         return angleDiff
     }
 }

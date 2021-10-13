@@ -40,9 +40,9 @@ export default class Crosshair extends Shape {
 
         matrix = m4.scale(matrix, this.transform.scale.x, this.transform.scale.y, this.transform.scale.z);
 
-        log('position', m4.getPositionVector(matrix))
+        // log('position', m4.getPositionVector(matrix))
         // log('rotation', m4.getRotationVector(matrix))
-        log('scale', m4.getScaleVector(matrix))
+        // log('scale', m4.getScaleVector(matrix))
 
         // Set the matrix.
         this.gl.uniformMatrix4fv(matrixLocation, false, matrix);

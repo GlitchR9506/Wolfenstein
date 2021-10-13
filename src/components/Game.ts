@@ -30,13 +30,14 @@ export default class Game {
         this.camera = new Camera()
         this.movement = new Movement()
         this.crosshair = new Crosshair(this.gl)
-        this.crosshair.setBuffers()
+        this.crosshair.updateBuffers()
         this.cube = new Cube(this.gl)
-        this.cube.setBuffers()
+        this.cube.updateBuffers()
+
         this.cube.transform.position.z = -150
         // this.camera.transform.position.z = -150
         this.enemy = new Enemy(this.gl)
-        this.enemy.setBuffers()
+        this.enemy.updateBuffers()
         this.enemy.transform.position.z = -100
 
         {
@@ -44,7 +45,7 @@ export default class Game {
             const radius = 100
             for (let i = 0; i < shapesCount; i++) {
                 const shape = new ShapeLetter(this.gl)
-                shape.setBuffers()
+                shape.updateBuffers()
 
                 const angle = i * Math.PI * 2 / shapesCount;
                 const x = Math.cos(angle) * radius;
@@ -86,25 +87,36 @@ export default class Game {
         //     shape.draw(this.program.info, this.viewProjectionMatrix)
         // })
 
+        let targetPosition = this.enemy.transform.position
+        let toTargetDir = targetPosition.substract(this.camera.transform.position).yZeroed.normalize
+        let lookingAtDir = Vec3.fromAngle(this.camera.transform.rotation.y)
+
+        let targetXDir = Vec3.up.cross(lookingAtDir).normalize
+        let enemyLeft = this.enemy.transform.position.add(targetXDir.multiply(this.enemy.size.x / 2))
+        let enemyRight = this.enemy.transform.position.substract(targetXDir.multiply(this.enemy.size.x / 2))
+
+        let angleLeft = this.camera.angleTo(enemyLeft)
+        let angleRight = this.camera.angleTo(enemyRight)
+
+        let lookingAtEnemy = angleLeft > 0 && angleRight < 0
+        log('lookingAtEnemy', lookingAtEnemy)
+        if (lookingAtEnemy) {
+            if (this.movement.shooting) {
+                this.enemy.setColor(0, [255, 0, 0])
+                this.enemy.updateBuffers()
+            }
+        } else {
+            this.enemy.resetColor()
+            this.enemy.updateBuffers()
+        }
+
         this.cube.draw(this.program.info, this.viewProjectionMatrix)
 
         this.crosshair.draw(this.program.info, this.projectionMatrix)
 
         this.enemy.draw(this.program.info, this.viewProjectionMatrix)
         this.enemy.lookAtCamera(this.camera.transform.rotation.y)
-
-        let angleDiff = this.camera.angleTo(this.enemy.transform.position)
-
-        log('angle', angleDiff)
-
-        if (angleDiff < 10) {
-            this.enemy.transform.position.y = 50
-        } else {
-            this.enemy.transform.position.y = 0
-        }
     }
-
-
 
     private get viewProjectionMatrix() {
         return m4.multiply(this.projectionMatrix, this.camera.matrix);

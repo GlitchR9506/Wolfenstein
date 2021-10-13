@@ -138,8 +138,10 @@ export class Vec3 {
     }
 
     static fromAngle(angle: number) {
-        // return new Vec3(Math.cos(angle), 0, Math.sin(angle))
-        return new Vec3(Math.sin(angle), 0, -Math.cos(angle))
+        angle = angle + 3 * Math.PI / 2
+        return new Vec3(Math.cos(angle), 0, Math.sin(angle))
+        // return new Vec3(Math.sin(angle), 0, -Math.cos(angle))
+        // return new Vec3(Math.sin(angle), 0, Math.cos(angle))
     }
 
     map(f: (value: number) => number) {
@@ -159,7 +161,7 @@ export class Vec3 {
     }
 }
 
-export function log(name: string, value: Vec3 | string | number) {
+export function log(name: string, value: Vec3 | string | number | boolean) {
     let element = document.getElementById(name)
     if (!element) {
         const ui = document.getElementById('ui')
@@ -179,12 +181,17 @@ export function log(name: string, value: Vec3 | string | number) {
         element = value
     }
 
-    if (value instanceof Vec3) {
-        value = `x: ${value.x.toFixed(2)} y: ${value.y.toFixed(2)} z: ${value.z.toFixed(2)}`
-        element.parentElement.style.minWidth = '200px'
-    }
-    if (typeof value != 'string') {
-        value = String(value.toFixed(2))
+    if (typeof value == 'boolean') {
+        value = value ? 'true' : 'false'
+    } else {
+        if (value instanceof Vec3) {
+            value = `x: ${value.x.toFixed(2)} y: ${value.y.toFixed(2)} z: ${value.z.toFixed(2)}`
+            element.parentElement.style.minWidth = '200px'
+        } else {
+            if (typeof value != 'string') {
+                value = String(value.toFixed(2))
+            }
+        }
     }
     if (element.innerText != value) {
         element.innerText = value

@@ -2,7 +2,7 @@ import { Vec3, degToRad, Transform, log } from './utils'
 import m4 from './m4'
 import { ProgramInfo } from './Program'
 
-export default class Shape {
+export default abstract class Shape {
     protected readonly gl: WebGLRenderingContext
     protected positionBuffer: WebGLBuffer
     protected colorBuffer: WebGLBuffer
@@ -38,9 +38,9 @@ export default class Shape {
 
     get size() {
         return new Vec3(
-            (Math.max(...this.xVertices) - Math.min(...this.xVertices)),
-            (Math.max(...this.yVertices) - Math.min(...this.yVertices)),
-            (Math.max(...this.zVertices) - Math.min(...this.zVertices)),
+            (Math.max(...this.xVertices) - Math.min(...this.xVertices)) * this.transform.scale.x,
+            (Math.max(...this.yVertices) - Math.min(...this.yVertices)) * this.transform.scale.y,
+            (Math.max(...this.zVertices) - Math.min(...this.zVertices)) * this.transform.scale.z,
         )
     }
 
@@ -58,7 +58,7 @@ export default class Shape {
         return translation
     }
 
-    setBuffers() {
+    updateBuffers() {
         this.setPositionBuffer()
         this.setColorBuffer()
     }
