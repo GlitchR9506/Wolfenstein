@@ -1,4 +1,4 @@
-import { Vec3, degToRad, Transform } from './utils'
+import { Vec3, degToRad, Transform, log } from './utils'
 import m4 from './m4'
 import { ProgramInfo } from './Program'
 
