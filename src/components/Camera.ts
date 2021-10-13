@@ -22,4 +22,12 @@ export default class Camera {
         const deltaPosition = direction.inverted.multiply(this.movementSpeed).transformMat4(transformMatrix)
         this.transform.position = this.transform.position.add(deltaPosition)
     }
+
+    angleTo(targetPosition: Vec3) {
+        let toTargetVec = targetPosition.substract(this.transform.position).yZeroed.normalize
+        let lookingAtVec = Vec3.fromAngle(this.transform.rotation.y).inverted
+        let angle = Math.acos(lookingAtVec.dot(toTargetVec) / (lookingAtVec.magnitude * toTargetVec.magnitude))
+        let angleDiff = 180 - radToDeg(angle)
+        return angleDiff
+    }
 }

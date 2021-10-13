@@ -87,22 +87,11 @@ export default class Game {
         this.enemy.draw(this.program.info, this.viewProjectionMatrix)
         this.enemy.lookAtCamera(this.camera.transform.rotation.y)
 
-        let toEnemyVec = this.enemy.transform.position.substract(this.camera.transform.position).yZeroed.normalize
-        let lookingAtVec = Vec3.fromAngle(this.camera.transform.rotation.y).inverted
-        // let dot = lookingAtVec.dot(toEnemyVec)
-        // let angle = Math.acos(dot / (lookingAtVec.magnitude * toEnemyVec.magnitude))
-        let angle = Math.atan2(lookingAtVec.z, lookingAtVec.x) - Math.atan2(toEnemyVec.z, toEnemyVec.x);
+        let angleDiff = this.camera.angleTo(this.enemy.transform.position)
 
-        // this.log('camera position', this.camera.transform.position)
-        this.log('camera rotation', radToDeg(this.camera.transform.rotation.y))
-        this.log('lookingAtVec1', lookingAtVec)
-        this.log('lookingAtVec2', radToDeg(Math.atan2(lookingAtVec.z, lookingAtVec.x) + Math.PI))
-        this.log('toEnemyVec1', toEnemyVec)
-        this.log('toEnemyVec2', radToDeg(Math.atan2(toEnemyVec.z, toEnemyVec.x) + Math.PI))
-        this.log('angle', radToDeg(angle))
-        this.log('angle computed', Math.abs(Math.abs(radToDeg(angle)) - 180))
+        this.log('angle', angleDiff)
 
-        if (Math.abs(Math.abs(radToDeg(angle)) - 180) < 10) {
+        if (angleDiff < 10) {
             this.enemy.transform.position.y = 50
         } else {
             this.enemy.transform.position.y = 0
