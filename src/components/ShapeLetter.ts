@@ -1,5 +1,4 @@
-import { Vec3, degToRad } from './utils'
-import m4 from './m4'
+import { m4, Vec3, degToRad } from './utils/index'
 import Shape from './Shape'
 
 export default class ShapeLetter extends Shape {

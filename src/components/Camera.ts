@@ -1,5 +1,4 @@
-import m4 from './m4'
-import { degToRad, Vec3, Transform, radToDeg, log } from './utils'
+import { degToRad, Vec3, Transform, radToDeg, log, m4 } from './utils/index'
 
 export default class Camera {
     rotationSpeed = 1

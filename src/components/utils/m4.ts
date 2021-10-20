@@ -1,4 +1,4 @@
-import { Vec3 } from './utils'
+import { Vec3 } from './Vec3'
 
 const m4 = {
     translation: (v: Vec3) => {
@@ -315,4 +315,5 @@ const m4 = {
 
 }
 
-export default m4
+// export default m4
+export { m4 }

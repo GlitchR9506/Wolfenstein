@@ -1,4 +1,4 @@
-import { degToRad, Vec3 } from './utils'
+import { degToRad, Vec3 } from './utils/index'
 
 export default class Movement {
     private pressedKeys: string[] = []

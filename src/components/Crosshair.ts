@@ -1,5 +1,4 @@
-import { Vec3, degToRad, Transform, log } from './utils'
-import m4 from './m4'
+import { m4, Vec3, degToRad, Transform, log } from './utils/index'
 import Shape from './Shape'
 
 export default class Crosshair extends Shape {

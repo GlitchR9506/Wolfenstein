@@ -5,8 +5,7 @@ import Movement from './Movement'
 import Cube from './Cube'
 import Enemy from './Enemy'
 import Crosshair from './Crosshair'
-import m4 from './m4'
-import { degToRad, radToDeg, Vec3, log } from './utils'
+import { m4, degToRad, radToDeg, Vec3, log } from './utils/index'
 
 
 export default class Game {
