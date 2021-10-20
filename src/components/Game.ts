@@ -87,18 +87,7 @@ export default class Game {
         //     shape.draw(this.program.info, this.viewProjectionMatrix)
         // })
 
-        let targetPosition = this.enemy.transform.position
-        let toTargetDir = targetPosition.substract(this.camera.transform.position).yZeroed.normalize
-        let lookingAtDir = Vec3.fromAngle(this.camera.transform.rotation.y)
-
-        let targetXDir = Vec3.up.cross(lookingAtDir).normalize
-        let enemyLeft = this.enemy.transform.position.add(targetXDir.multiply(this.enemy.size.x / 2))
-        let enemyRight = this.enemy.transform.position.substract(targetXDir.multiply(this.enemy.size.x / 2))
-
-        let angleLeft = this.camera.angleTo(enemyLeft)
-        let angleRight = this.camera.angleTo(enemyRight)
-
-        let lookingAtEnemy = angleLeft > 0 && angleRight < 0
+        let lookingAtEnemy = this.isCameraLookingAtEnemy(this.enemy)
         log('lookingAtEnemy', lookingAtEnemy)
         if (lookingAtEnemy) {
             if (this.movement.shooting) {
@@ -116,6 +105,21 @@ export default class Game {
 
         this.enemy.draw(this.program.info, this.viewProjectionMatrix)
         this.enemy.lookAtCamera(this.camera.transform.rotation.y)
+    }
+
+    isCameraLookingAtEnemy(enemy: Enemy) {
+        let lookingAtDir = Vec3.fromAngle(this.camera.transform.rotation.y)
+        let targetXDir = Vec3.up.cross(lookingAtDir).normalize
+
+        let enemyLeft = enemy.transform.position.add(targetXDir.multiply(enemy.size.x / 2))
+        let enemyRight = enemy.transform.position.substract(targetXDir.multiply(enemy.size.x / 2))
+
+        let angleLeft = this.camera.angleTo(enemyLeft)
+        let angleRight = this.camera.angleTo(enemyRight)
+
+        let lookingAtEnemy = angleLeft > 0 && angleRight < 0
+
+        return lookingAtEnemy
     }
 
     private get viewProjectionMatrix() {
