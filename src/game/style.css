@@ -28,3 +28,23 @@ html, body {
     align-items: center;
     min-width: 100px;
 }
+
+#levelEditor {
+    background-color: red;
+    opacity: 0.9;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#levelEditor > * {
+    text-decoration: none;
+    color: white;
+}

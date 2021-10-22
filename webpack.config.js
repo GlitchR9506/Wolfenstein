@@ -2,12 +2,18 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: {
+        game: './src/game/index.ts',
+        levelEditor: './src/levelEditor/index.ts',
+    },
     devtool: 'source-map',
     mode: 'development',
     output: {
-        filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
+        publicPath: '/',
+        filename: '[name].bundle.js',
+        chunkFilename: '[id].bundle_[chunkhash].js',
+        sourceMapFilename: '[file].map',
         clean: true,
     },
     resolve: {
@@ -32,14 +38,19 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'Output Management',
-            template: 'src/index.html'
+            filename: 'index.html',
+            title: 'game',
+            template: './src/game/index.html',
+            chunks: ['game'],
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'levelEditor.html',
+            title: 'levelEditor',
+            template: './src/levelEditor/index.html',
+            chunks: ['levelEditor'],
         }),
     ],
     devServer: {
-        static: {
-            directory: path.join(__dirname, 'dist'),
-        },
         compress: true,
         port: 9000,
     },
