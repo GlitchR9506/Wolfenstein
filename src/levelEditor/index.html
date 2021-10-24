@@ -9,7 +9,43 @@
 </head>
 
 <body>
-    <a href="/" id="gameReturn">Game</a>
+    <div id="content">
+        <div id="ui">
+            <div id="instruction">
+                <a href="/" id="gameReturn">← Game</a>
+                <div>LMB - draw</div>
+                <div>RMB - erase</div>
+            </div>
+            <div id="objects"></div>
+            <div>
+                <button id="save" disabled>Save</button>
+            </div>
+        </div>
+        <div id="gridContainer">
+            <form id="createLevelForm">
+                <div class="row">
+                    <div class="col1">
+                        <label for="width">Width</label>
+                    </div>
+                    <div class="col2">
+                        <input type="number" name="width" id="width" min="3" step="1" value="20">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col1">
+                        <label for="height">Height</label>
+                    </div>
+                    <div class="col2">
+                        <input type="number" name="height" id="height" min="3" step="1" value="20">
+                    </div>
+                </div>
+                <div class="row">
+                    <button id="create">Create new level</button>
+                </div>
+            </form>
+            <div id="grid"></div>
+        </div>
+    </div>
 </body>
 
 </html>
