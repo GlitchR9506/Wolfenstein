@@ -46,7 +46,11 @@ export default class Level {
     }
 
     get data() {
-        return this.fields.map(f => f.data)
+        return {
+            width: this.width,
+            height: this.height,
+            fields: this.fields.filter(f => f.value).map(f => f.data),
+        }
     }
 
     private hasChangesUpdate() {
