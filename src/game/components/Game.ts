@@ -29,14 +29,11 @@ export default class Game {
         this.camera = new Camera()
         this.movement = new Movement()
         this.crosshair = new Crosshair(this.gl)
-        this.crosshair.updateBuffers()
         this.cube = new Cube(this.gl)
-        this.cube.updateBuffers()
 
         this.cube.transform.position.z = -150
         // this.camera.transform.position.z = -150
         this.enemy = new Enemy(this.gl)
-        this.enemy.updateBuffers()
         this.enemy.transform.position.z = -100
 
         {
@@ -44,7 +41,6 @@ export default class Game {
             const radius = 100
             for (let i = 0; i < shapesCount; i++) {
                 const shape = new ShapeLetter(this.gl)
-                shape.updateBuffers()
 
                 const angle = i * Math.PI * 2 / shapesCount;
                 const x = Math.cos(angle) * radius;

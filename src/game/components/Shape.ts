@@ -8,6 +8,7 @@ export default abstract class Shape {
     protected VERTICES: Float32Array
     protected COLORS: Uint8Array
     protected originTranslationCorrection = Vec3.zero
+    private firstBufferReady = false
     transform: Transform = {
         position: Vec3.zero,
         rotation: Vec3.zero,
@@ -16,12 +17,14 @@ export default abstract class Shape {
 
     constructor(gl: WebGLRenderingContext) {
         this.gl = gl
+        setTimeout(() => {
+            this.updateBuffers()
+        })
     }
 
     get verticesCount() {
         return this.VERTICES.length / 3
     }
-
 
     get xVertices() {
         return this.VERTICES.filter((_, index) => index % 3 == 0)
@@ -60,12 +63,12 @@ export default abstract class Shape {
     updateBuffers() {
         this.setPositionBuffer()
         this.setColorBuffer()
+        this.firstBufferReady = true
     }
 
     bindGeometry(positionLocation: number) {
         this.gl.enableVertexAttribArray(positionLocation);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-
         const size = 3;
         const type = this.gl.FLOAT;
         const normalize = false;
@@ -107,6 +110,7 @@ export default abstract class Shape {
     }
 
     draw(programInfo: ProgramInfo, viewProjectionMatrix: number[]) {
+        if (!this.firstBufferReady) return
         this.bindGeometry(programInfo.attributes.position)
         this.bindColors(programInfo.attributes.color)
         this.bindTransform(programInfo.uniforms.matrix, viewProjectionMatrix)
