@@ -49,6 +49,7 @@ export default class Editor {
             a.href = URL.createObjectURL(file);
             a.download = 'level.json';
             a.click();
+            this.editedLevel.hasChanges = false
         }
     }
 
@@ -56,17 +57,6 @@ export default class Editor {
         const getField = (e: MouseEvent) => {
             const hoveredField = e.target as LevelField
             return hoveredField.tagName == 'LEVEL-FIELD' ? hoveredField : null
-        }
-
-        const setValue = (field: LevelField) => {
-            if (this.select.selectedValue == 'player') {
-                this.editedLevel.fields.find(f => f.value == 'player')?.setValue(null)
-            }
-            field.setValue(this.select.selectedValue)
-        }
-
-        const clearValue = (field: LevelField) => {
-            field.setValue(null)
         }
 
         const updateDisabled = (isLevelValid: boolean) => {
@@ -82,11 +72,11 @@ export default class Editor {
             const rmbPressed = e.button == 2
             if (lmbPressed) {
                 updateDisabled(this.editedLevel.isValid)
-                setValue(getField(e))
+                this.editedLevel.setValue(getField(e), this.select.selectedValue)
             }
             if (rmbPressed) {
                 updateDisabled(this.editedLevel.isValid)
-                clearValue(getField(e))
+                this.editedLevel.clearValue(getField(e))
             }
         }
 
@@ -95,11 +85,11 @@ export default class Editor {
             const rmbPressed = e.buttons == 2
             if (lmbPressed) {
                 updateDisabled(this.editedLevel.isValid)
-                setValue(getField(e))
+                this.editedLevel.setValue(getField(e), this.select.selectedValue)
             }
             if (rmbPressed) {
                 updateDisabled(this.editedLevel.isValid)
-                clearValue(getField(e))
+                this.editedLevel.clearValue(getField(e))
             }
         }
     }

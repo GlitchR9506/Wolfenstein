@@ -7,6 +7,7 @@ export default class Level {
     readonly orientation: string
     readonly gridElement = document.getElementById('grid')
     readonly gridContainerElement = document.getElementById('gridContainer')
+    hasChanges = false
     fields: LevelField[] = []
 
     constructor(width: number, height: number, colors: Map<string, string>) {
@@ -31,12 +32,29 @@ export default class Level {
         return this.fields.some(f => f.value == 'player')
     }
 
-    get hasChanges() {
-        return this.fields.some(f => f.value)
+    setValue(field: LevelField, value: string) {
+        if (value == 'player') {
+            this.fields.find(f => f.value == 'player')?.setValue(null)
+        }
+        field.setValue(value)
+        this.hasChangesUpdate()
+    }
+
+    clearValue(field: LevelField) {
+        field.setValue(null)
+        this.hasChangesUpdate()
     }
 
     get data() {
         return this.fields.map(f => f.data)
+    }
+
+    private hasChangesUpdate() {
+        if (this.fields.some(f => f.value)) {
+            this.hasChanges = true
+        } else {
+            this.hasChanges = false
+        }
     }
 
     private createGrid() {
