@@ -1,4 +1,5 @@
 import LevelField from "./LevelField"
+import FieldData from "./FieldData"
 
 export default class Level {
     readonly width: number
@@ -10,7 +11,7 @@ export default class Level {
     hasChanges = false
     fields: LevelField[] = []
 
-    constructor(width: number, height: number, colors: Map<string, string>) {
+    constructor(width: number, height: number, colors: Map<string, string>, fieldsData?: FieldData[]) {
         this.width = width
         this.height = height
         this.colors = colors
@@ -26,6 +27,17 @@ export default class Level {
         this.gridElement.oncontextmenu = e => e.preventDefault()
 
         this.createGrid()
+
+        if (fieldsData) {
+            fieldsData.forEach(fieldData => {
+                const field = this.fields.find(f => f.x == fieldData.x && f.y == fieldData.y)
+                this.setValue(field, fieldData.value)
+            })
+        }
+    }
+
+    clearHtml() {
+        this.gridElement.innerHTML = ''
     }
 
     get isValid() {

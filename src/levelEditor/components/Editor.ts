@@ -1,5 +1,6 @@
 import Level from "./Level";
 import LevelField from "./LevelField";
+import FieldData from "./FieldData";
 import Select from "./Select";
 
 export default class Editor {
@@ -18,6 +19,7 @@ export default class Editor {
         this.addLevelCreationListener()
         this.addSelectingListener()
         this.addSaveListener()
+        this.addUploadListener()
         document.getElementById('gamerReturn')
         window.onbeforeunload = () => {
             if (this.editedLevel.hasChanges) {
@@ -49,7 +51,31 @@ export default class Editor {
             a.href = URL.createObjectURL(file);
             a.download = 'level.json';
             a.click();
-            this.editedLevel.hasChanges = false
+        }
+    }
+
+    private stopEditingLevel() {
+        this.editedLevel.clearHtml()
+        this.editedLevel = null
+    }
+
+    private addUploadListener() {
+        document.getElementById('upload').onclick = () => {
+            const input = document.createElement("input");
+            input.type = 'file'
+            input.click();
+            input.onchange = e => {
+                const file = (e.target as HTMLInputElement).files[0]
+                const reader = new FileReader()
+                reader.readAsText(file, "UTF-8");
+                reader.onload = evt => {
+                    const content = evt.target.result as string
+                    const level = JSON.parse(content)
+                    const fieldsData = level.fields as FieldData[]
+                    this.stopEditingLevel()
+                    this.editedLevel = new Level(level.width, level.height, this.colors, fieldsData)
+                }
+            }
         }
     }
 
