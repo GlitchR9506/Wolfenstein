@@ -15,8 +15,9 @@ export default class Editor {
 
     constructor() {
         this.select = new Select(this.colors)
-        this.listenForLevelCreation()
-        this.addEditingListener()
+        this.addLevelCreationListener()
+        this.addSelectingListener()
+        this.addSaveListener()
         document.getElementById('gamerReturn')
         window.onbeforeunload = () => {
             if (this.editedLevel.hasChanges) {
@@ -25,7 +26,7 @@ export default class Editor {
         }
     }
 
-    private listenForLevelCreation() {
+    private addLevelCreationListener() {
         const formElement = document.getElementById('createLevelForm') as HTMLFormElement
         // formElement.onsubmit = e => {
         //     e.preventDefault()
@@ -41,42 +42,51 @@ export default class Editor {
         // }
     }
 
-    private addEditingListener() {
+    private addSaveListener() {
+        document.getElementById('save').onclick = () => {
+            const a = document.createElement("a");
+            const file = new Blob([JSON.stringify(this.editedLevel.data) as BlobPart], { type: 'text/plain' });
+            a.href = URL.createObjectURL(file);
+            a.download = 'level.json';
+            a.click();
+        }
+    }
+
+    private addSelectingListener() {
         const getField = (e: MouseEvent) => {
             const hoveredField = e.target as LevelField
-            if (hoveredField.tagName != 'LEVEL-FIELD') {
-                return null
-            } else {
-                return hoveredField
-            }
+            return hoveredField.tagName == 'LEVEL-FIELD' ? hoveredField : null
         }
 
-        const place = (e: MouseEvent) => {
+        const setValue = (field: LevelField) => {
             if (this.select.selectedValue == 'player') {
                 this.editedLevel.fields.find(f => f.value == 'player')?.setValue(null)
             }
-            getField(e).setValue(this.select.selectedValue)
+            field.setValue(this.select.selectedValue)
         }
 
-        const clear = (e: MouseEvent) => {
-            getField(e).setValue(null)
+        const clearValue = (field: LevelField) => {
+            field.setValue(null)
+        }
+
+        const updateDisabled = (isLevelValid: boolean) => {
+            if (isLevelValid) {
+                document.getElementById('save').removeAttribute('disabled')
+            } else {
+                document.getElementById('save').setAttribute('disabled', 'disabled')
+            }
         }
 
         document.getElementById('grid').onmousedown = e => {
             const lmbPressed = e.button == 0
             const rmbPressed = e.button == 2
             if (lmbPressed) {
-                place(e)
+                updateDisabled(this.editedLevel.isValid)
+                setValue(getField(e))
             }
             if (rmbPressed) {
-                clear(e)
-            }
-            if (lmbPressed || rmbPressed) {
-                if (this.editedLevel.isValid) {
-                    document.getElementById('save').removeAttribute('disabled')
-                } else {
-                    document.getElementById('save').setAttribute('disabled', 'disabled')
-                }
+                updateDisabled(this.editedLevel.isValid)
+                clearValue(getField(e))
             }
         }
 
@@ -84,17 +94,12 @@ export default class Editor {
             const lmbPressed = e.buttons == 1
             const rmbPressed = e.buttons == 2
             if (lmbPressed) {
-                place(e)
+                updateDisabled(this.editedLevel.isValid)
+                setValue(getField(e))
             }
             if (rmbPressed) {
-                clear(e)
-            }
-            if (lmbPressed || rmbPressed) {
-                if (this.editedLevel.isValid) {
-                    document.getElementById('save').removeAttribute('disabled')
-                } else {
-                    document.getElementById('save').setAttribute('disabled', 'disabled')
-                }
+                updateDisabled(this.editedLevel.isValid)
+                clearValue(getField(e))
             }
         }
     }

@@ -9,9 +9,11 @@ export default class LevelField extends Field {
         this.y = y
     }
 
-    toData() {
+    get data() {
         return {
-
+            x: this.x,
+            y: this.y,
+            value: this.value
         }
     }
 }

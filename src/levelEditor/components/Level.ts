@@ -35,6 +35,10 @@ export default class Level {
         return this.fields.some(f => f.value)
     }
 
+    get data() {
+        return this.fields.map(f => f.data)
+    }
+
     private createGrid() {
         this.gridElement.style.setProperty('--grid-rows', this.height.toString());
         this.gridElement.style.setProperty('--grid-cols', this.width.toString());

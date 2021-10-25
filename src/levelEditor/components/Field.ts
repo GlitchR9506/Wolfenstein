@@ -1,6 +1,6 @@
 export default abstract class Field extends HTMLElement {
     readonly colors: Map<string, string>
-    value: string
+    value: string = null
 
     constructor(colors: Map<string, string>) {
         super()
