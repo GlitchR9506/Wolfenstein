@@ -4,6 +4,7 @@ import Camera from './Camera'
 import Movement from './Movement'
 import Cube from './Cube'
 import Enemy from './Enemy'
+import Level from './Level'
 import Crosshair from './Crosshair'
 import { m4, degToRad, radToDeg, Vec3, log } from './utils/index'
 
@@ -11,9 +12,8 @@ import { m4, degToRad, radToDeg, Vec3, log } from './utils/index'
 export default class Game {
     private readonly program: Program
     private readonly camera: Camera
-    private readonly cube: Cube
     private readonly movement: Movement
-    private readonly enemy: Enemy
+    private readonly level: Level
     private readonly crosshair: Crosshair
     private readonly shapes: ShapeLetter[] = []
     private readonly gl: WebGLRenderingContext
@@ -29,28 +29,9 @@ export default class Game {
         this.camera = new Camera()
         this.movement = new Movement()
         this.crosshair = new Crosshair(this.gl)
-        this.cube = new Cube(this.gl)
-
-        this.cube.transform.position.z = -150
-        // this.camera.transform.position.z = -150
-        this.enemy = new Enemy(this.gl)
-        this.enemy.transform.position.z = -100
-
-        {
-            const shapesCount = 5
-            const radius = 100
-            for (let i = 0; i < shapesCount; i++) {
-                const shape = new ShapeLetter(this.gl)
-
-                const angle = i * Math.PI * 2 / shapesCount;
-                const x = Math.cos(angle) * radius;
-                const z = Math.sin(angle) * radius;
-
-                shape.transform.position.x = x
-                shape.transform.position.z = z
-                this.shapes.push(shape)
-            }
-        }
+        this.level = new Level(this.gl, () => {
+            this.camera.transform.position = this.level.playerPosition
+        })
 
         this.updateProjectionMatrix()
 
@@ -77,29 +58,25 @@ export default class Game {
         this.camera.rotate(this.movement.rotation * deltaTime)
         this.camera.move(this.movement.direction.multiply(deltaTime))
 
-        // this.shapes.forEach(shape => {
-        //     shape.transform.rotation.y += degToRad(-50) * deltaTime
-        //     shape.draw(this.program.info, this.viewProjectionMatrix)
-        // })
-
-        let lookingAtEnemy = this.isCameraLookingAtEnemy(this.enemy)
-        log('lookingAtEnemy', lookingAtEnemy)
-        if (lookingAtEnemy) {
-            if (this.movement.shooting) {
-                this.enemy.setColor(0, [255, 0, 0])
-                this.enemy.updateBuffers()
+        for (let enemy of this.level.enemies) {
+            let lookingAtEnemy = this.isCameraLookingAtEnemy(enemy)
+            if (lookingAtEnemy) {
+                if (this.movement.shooting) {
+                    enemy.setColor(0, [255, 0, 0])
+                    enemy.updateBuffers()
+                }
+            } else {
+                enemy.resetColor()
+                enemy.updateBuffers()
             }
-        } else {
-            this.enemy.resetColor()
-            this.enemy.updateBuffers()
+            enemy.lookAtCamera(this.camera.transform.rotation.y)
+            enemy.draw(this.program.info, this.viewProjectionMatrix)
+        }
+        for (let wall of this.level.walls) {
+            wall.draw(this.program.info, this.viewProjectionMatrix)
         }
 
-        this.cube.draw(this.program.info, this.viewProjectionMatrix)
-
         this.crosshair.draw(this.program.info, this.projectionMatrix)
-
-        this.enemy.draw(this.program.info, this.viewProjectionMatrix)
-        this.enemy.lookAtCamera(this.camera.transform.rotation.y)
     }
 
     isCameraLookingAtEnemy(enemy: Enemy) {
