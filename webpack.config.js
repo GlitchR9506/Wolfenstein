@@ -53,5 +53,8 @@ module.exports = {
     devServer: {
         compress: true,
         port: 9000,
+        allowedHosts: [
+            'rubikon.ddns.net'
+        ]
     },
 };
