@@ -1,6 +1,6 @@
 import Level from "./Level";
 import LevelField from "./LevelField";
-import FieldData from "./FieldData";
+import FieldData from "../../common/FieldData";
 import Select from "./Select";
 
 export default class Editor {

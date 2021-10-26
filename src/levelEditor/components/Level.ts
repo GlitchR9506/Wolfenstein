@@ -1,5 +1,5 @@
 import LevelField from "./LevelField"
-import FieldData from "./FieldData"
+import FieldData from "../../common/FieldData"
 
 export default class Level {
     readonly width: number
