@@ -24,6 +24,13 @@ export default class Level {
         })
     }
 
+    get verticesCount() {
+        let count = 0
+        count += this.walls.map(el => el.verticesCount).reduce((a, b) => a + b)
+        count += this.enemies.map(el => el.verticesCount).reduce((a, b) => a + b)
+        return count
+    }
+
     private loadLevel(number: number, callback?: () => void) {
         import(`../levels/${number}.json`)
             .then(({ default: level }) => {
