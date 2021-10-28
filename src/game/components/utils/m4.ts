@@ -69,11 +69,11 @@ const m4 = {
         ]
     },
 
-    scaling: (sx: number, sy: number, sz: number) => {
+    scaling: (v: Vec3) => {
         return [
-            sx, 0, 0, 0,
-            0, sy, 0, 0,
-            0, 0, sz, 0,
+            v.x, 0, 0, 0,
+            0, v.y, 0, 0,
+            0, 0, v.z, 0,
             0, 0, 0, 1,
         ]
     },
@@ -94,8 +94,8 @@ const m4 = {
         return m4.multiply(m, m4.zRotation(angleInRadians))
     },
 
-    scale: (m: number[], sx: number, sy: number, sz: number) => {
-        return m4.multiply(m, m4.scaling(sx, sy, sz))
+    scale: (m: number[], v: Vec3) => {
+        return m4.multiply(m, m4.scaling(v))
     },
 
     perspective: (fieldOfViewInRadians: number, aspect: number, near: number, far: number) => {
@@ -120,22 +120,6 @@ const m4 = {
     },
 
     multiply: (a: number[], b: number[]) => {
-        const b11 = b[0 * 4 + 0]
-        const b12 = b[0 * 4 + 1]
-        const b13 = b[0 * 4 + 2]
-        const b14 = b[0 * 4 + 3]
-        const b21 = b[1 * 4 + 0]
-        const b22 = b[1 * 4 + 1]
-        const b23 = b[1 * 4 + 2]
-        const b24 = b[1 * 4 + 3]
-        const b31 = b[2 * 4 + 0]
-        const b32 = b[2 * 4 + 1]
-        const b33 = b[2 * 4 + 2]
-        const b34 = b[2 * 4 + 3]
-        const b41 = b[3 * 4 + 0]
-        const b42 = b[3 * 4 + 1]
-        const b43 = b[3 * 4 + 2]
-        const b44 = b[3 * 4 + 3]
         const a11 = a[0 * 4 + 0]
         const a12 = a[0 * 4 + 1]
         const a13 = a[0 * 4 + 2]
@@ -152,24 +136,40 @@ const m4 = {
         const a42 = a[3 * 4 + 1]
         const a43 = a[3 * 4 + 2]
         const a44 = a[3 * 4 + 3]
+        const b11 = b[0 * 4 + 0]
+        const b12 = b[0 * 4 + 1]
+        const b13 = b[0 * 4 + 2]
+        const b14 = b[0 * 4 + 3]
+        const b21 = b[1 * 4 + 0]
+        const b22 = b[1 * 4 + 1]
+        const b23 = b[1 * 4 + 2]
+        const b24 = b[1 * 4 + 3]
+        const b31 = b[2 * 4 + 0]
+        const b32 = b[2 * 4 + 1]
+        const b33 = b[2 * 4 + 2]
+        const b34 = b[2 * 4 + 3]
+        const b41 = b[3 * 4 + 0]
+        const b42 = b[3 * 4 + 1]
+        const b43 = b[3 * 4 + 2]
+        const b44 = b[3 * 4 + 3]
 
         return [
-            b11 * a11 + b12 * a21 + b13 * a31 + b14 * a41,
-            b11 * a12 + b12 * a22 + b13 * a32 + b14 * a42,
-            b11 * a13 + b12 * a23 + b13 * a33 + b14 * a43,
-            b11 * a14 + b12 * a24 + b13 * a34 + b14 * a44,
-            b21 * a11 + b22 * a21 + b23 * a31 + b24 * a41,
-            b21 * a12 + b22 * a22 + b23 * a32 + b24 * a42,
-            b21 * a13 + b22 * a23 + b23 * a33 + b24 * a43,
-            b21 * a14 + b22 * a24 + b23 * a34 + b24 * a44,
-            b31 * a11 + b32 * a21 + b33 * a31 + b34 * a41,
-            b31 * a12 + b32 * a22 + b33 * a32 + b34 * a42,
-            b31 * a13 + b32 * a23 + b33 * a33 + b34 * a43,
-            b31 * a14 + b32 * a24 + b33 * a34 + b34 * a44,
-            b41 * a11 + b42 * a21 + b43 * a31 + b44 * a41,
-            b41 * a12 + b42 * a22 + b43 * a32 + b44 * a42,
-            b41 * a13 + b42 * a23 + b43 * a33 + b44 * a43,
-            b41 * a14 + b42 * a24 + b43 * a34 + b44 * a44,
+            a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41,
+            a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42,
+            a11 * b13 + a12 * b23 + a13 * b33 + a14 * b43,
+            a11 * b14 + a12 * b24 + a13 * b34 + a14 * b44,
+            a21 * b11 + a22 * b21 + a23 * b31 + a24 * b41,
+            a21 * b12 + a22 * b22 + a23 * b32 + a24 * b42,
+            a21 * b13 + a22 * b23 + a23 * b33 + a24 * b43,
+            a21 * b14 + a22 * b24 + a23 * b34 + a24 * b44,
+            a31 * b11 + a32 * b21 + a33 * b31 + a34 * b41,
+            a31 * b12 + a32 * b22 + a33 * b32 + a34 * b42,
+            a31 * b13 + a32 * b23 + a33 * b33 + a34 * b43,
+            a31 * b14 + a32 * b24 + a33 * b34 + a34 * b44,
+            a41 * b11 + a42 * b21 + a43 * b31 + a44 * b41,
+            a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42,
+            a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43,
+            a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44,
         ]
     },
 

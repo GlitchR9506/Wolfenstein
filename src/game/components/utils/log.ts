@@ -1,6 +1,7 @@
 import { Vec3 } from './Vec3'
 
 export function log(name: string, value: Vec3 | string | number | boolean) {
+    if (typeof value === 'undefined') return
     let element = document.getElementById(name)
     if (!element) {
         const ui = document.getElementById('ui')

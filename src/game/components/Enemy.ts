@@ -1,11 +1,12 @@
-import { m4, Vec3, degToRad } from './utils/index'
+import { m4, Vec3, degToRad } from './utils/'
 import Shape from './Shape'
-import Cube from './Cube'
+import Wall from './Wall'
 
-export default class Enemy extends Cube {
+export default class Enemy extends Wall {
     constructor(gl: WebGLRenderingContext) {
         super(gl)
         this.transform.scale.set(50, 50, 1)
+        // this.transform.scale.set(50, 50, 50)
     }
 
     lookAtCamera(cameraY: number) {

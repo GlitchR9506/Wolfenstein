@@ -30,18 +30,18 @@ export default class Editor {
 
     private addLevelCreationListener() {
         const formElement = document.getElementById('createLevelForm') as HTMLFormElement
-        // formElement.onsubmit = e => {
-        //     e.preventDefault()
-        const widthElement = document.getElementById('width') as HTMLInputElement
-        const heightElement = document.getElementById('height') as HTMLInputElement
-        const width = parseInt(widthElement.value)
-        const height = parseInt(heightElement.value)
-        formElement.remove()
-        // this.editedLevel = new Level(width, height)
-        // this.editedLevel = new Level(40, 50)
-        this.editedLevel = new Level(70, 50, this.colors)
-        // this.editedLevel = new Level(50, 70)
-        // }
+        formElement.onsubmit = e => {
+            e.preventDefault()
+            const widthElement = document.getElementById('width') as HTMLInputElement
+            const heightElement = document.getElementById('height') as HTMLInputElement
+            const width = parseInt(widthElement.value)
+            const height = parseInt(heightElement.value)
+            formElement.remove()
+            this.editedLevel = new Level(width, height, this.colors)
+            // this.editedLevel = new Level(40, 50)
+            // this.editedLevel = new Level(70, 50, this.colors)
+            // this.editedLevel = new Level(50, 70)
+        }
     }
 
     private addSaveListener() {

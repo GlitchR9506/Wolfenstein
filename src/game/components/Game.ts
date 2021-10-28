@@ -2,11 +2,10 @@ import Program from './Program'
 import ShapeLetter from './ShapeLetter'
 import Camera from './Camera'
 import Movement from './Movement'
-import Cube from './Cube'
 import Enemy from './Enemy'
 import Level from './Level'
 import Crosshair from './Crosshair'
-import { m4, degToRad, radToDeg, Vec3, log } from './utils/index'
+import { m4, degToRad, Vec3 } from './utils'
 
 
 export default class Game {
@@ -95,7 +94,7 @@ export default class Game {
     }
 
     private get viewProjectionMatrix() {
-        return m4.multiply(this.projectionMatrix, this.camera.matrix);
+        return m4.multiply(this.camera.matrix, this.projectionMatrix);
     }
 
     private updateProjectionMatrix() {

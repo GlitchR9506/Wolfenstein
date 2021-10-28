@@ -1,4 +1,4 @@
-import { m4, Vec3, degToRad, Transform, log } from './utils/index'
+import { m4, Vec3, degToRad, Transform, log } from './utils'
 import Shape from './Shape'
 
 export default class Crosshair extends Shape {
@@ -27,17 +27,19 @@ export default class Crosshair extends Shape {
     }
 
     bindTransform(matrixLocation: WebGLUniformLocation, viewProjectionMatrix: number[]) {
-        let matrix
+        let matrix = m4.identity
 
         // viewProjectionMatrix = m4.identity
 
-        matrix = m4.translate(viewProjectionMatrix, this.transform.position);
 
+        matrix = m4.scale(matrix, this.transform.scale);
         matrix = m4.xRotate(matrix, this.transform.rotation.x);
         matrix = m4.yRotate(matrix, this.transform.rotation.y);
         matrix = m4.zRotate(matrix, this.transform.rotation.z);
+        matrix = m4.translate(matrix, this.transform.position);
+        matrix = m4.multiply(matrix, viewProjectionMatrix);
 
-        matrix = m4.scale(matrix, this.transform.scale.x, this.transform.scale.y, this.transform.scale.z);
+
 
         // log('position', m4.getPositionVector(matrix))
         // log('rotation', m4.getRotationVector(matrix))

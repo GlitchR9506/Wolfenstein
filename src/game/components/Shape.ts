@@ -1,19 +1,15 @@
-import { m4, Vec3, degToRad, Transform, log } from './utils/index'
+import { m4, Vec3, degToRad, Transform, log } from './utils'
 import { ProgramInfo } from './Program'
 
 export default abstract class Shape {
     protected readonly gl: WebGLRenderingContext
     protected positionBuffer: WebGLBuffer
     protected colorBuffer: WebGLBuffer
-    protected VERTICES: Float32Array
+    VERTICES: Float32Array
     protected COLORS: Uint8Array
-    protected originTranslationCorrection = Vec3.zero
     private firstBufferReady = false
-    transform: Transform = {
-        position: Vec3.zero,
-        rotation: Vec3.zero,
-        scale: Vec3.identity,
-    }
+    originTranslation = Vec3.zero
+    transform = new Transform()
 
     constructor(gl: WebGLRenderingContext) {
         this.gl = gl
@@ -44,20 +40,6 @@ export default abstract class Shape {
             (Math.max(...this.yVertices) - Math.min(...this.yVertices)) * this.transform.scale.y,
             (Math.max(...this.zVertices) - Math.min(...this.zVertices)) * this.transform.scale.z,
         )
-    }
-
-    get originTranslation() {
-        let translation = this.size.multiply(-0.5)
-        if (this.originTranslationCorrection.x) {
-            translation.x = this.originTranslationCorrection.x
-        }
-        if (this.originTranslationCorrection.y) {
-            translation.z = this.originTranslationCorrection.y
-        }
-        if (this.originTranslationCorrection.z) {
-            translation.z = this.originTranslationCorrection.z
-        }
-        return translation
     }
 
     updateBuffers() {
@@ -95,15 +77,19 @@ export default abstract class Shape {
     }
 
     bindTransform(matrixLocation: WebGLUniformLocation, viewProjectionMatrix: number[]) {
-        let matrix
+        let matrix = m4.identity
 
-        matrix = m4.translate(viewProjectionMatrix, this.transform.position);
+        const position = this.transform.position.add(this.originTranslation)
+
+        matrix = m4.scale(matrix, this.transform.scale);
 
         matrix = m4.xRotate(matrix, this.transform.rotation.x);
         matrix = m4.yRotate(matrix, this.transform.rotation.y);
         matrix = m4.zRotate(matrix, this.transform.rotation.z);
 
-        matrix = m4.scale(matrix, this.transform.scale.x, this.transform.scale.y, this.transform.scale.z);
+        matrix = m4.translate(matrix, position);
+
+        matrix = m4.multiply(matrix, viewProjectionMatrix);
 
         // Set the matrix.
         this.gl.uniformMatrix4fv(matrixLocation, false, matrix);

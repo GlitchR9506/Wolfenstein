@@ -1,4 +1,4 @@
-import { degToRad, Vec3, Transform, radToDeg, log, m4 } from './utils/index'
+import { degToRad, Vec3, Transform, radToDeg, log, m4 } from './utils'
 
 export default class Camera {
     rotationSpeed = 1
@@ -7,8 +7,8 @@ export default class Camera {
 
     get matrix() {
         let cameraMatrix = m4.identity
-        cameraMatrix = m4.yRotate(cameraMatrix, this.transform.rotation.y)
         cameraMatrix = m4.translate(cameraMatrix, this.transform.position.inverted)
+        cameraMatrix = m4.yRotate(cameraMatrix, this.transform.rotation.y)
         return cameraMatrix
     }
 

@@ -1,6 +1,6 @@
 // import level1 from '../levels/1.json'
 import FieldData from '../../common/FieldData';
-import Cube from './Cube'
+import Wall from './Wall'
 import Enemy from './Enemy'
 import { Vec3 } from './utils';
 
@@ -10,7 +10,7 @@ export default class Level {
     width: number
     height: number
     fields: FieldData[]
-    walls: Cube[] = []
+    walls: Wall[] = []
     enemies: Enemy[] = []
     playerPosition: Vec3
 
@@ -52,12 +52,12 @@ export default class Level {
         const playerPositionData = this.fields.find(f => f.value == 'player')
         this.playerPosition = new Vec3(playerPositionData.x, 0, playerPositionData.y)
 
-        this.walls = this.getLevelObjectsList('wall', Cube) as Cube[]
+        this.walls = this.getLevelObjectsList('wall', Wall) as Wall[]
         this.enemies = this.getLevelObjectsList('enemy', Enemy) as Enemy[]
     }
 
-    private getLevelObjectsList(value: string, ObjectClass: new (gl: WebGLRenderingContext) => (Cube | Enemy)) {
-        const objects: (Cube | Enemy)[] = []
+    private getLevelObjectsList(value: string, ObjectClass: new (gl: WebGLRenderingContext) => (Wall | Enemy)) {
+        const objects: (Wall | Enemy)[] = []
         for (let field of this.fields.filter(f => f.value == value)) {
             const object = new ObjectClass(this.gl)
             object.transform.position.x = field.x

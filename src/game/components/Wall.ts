@@ -1,7 +1,7 @@
-import { m4, Vec3, degToRad } from './utils/index'
+import { m4, Vec3, degToRad } from './utils'
 import Shape from './Shape'
 
-export default class Cube extends Shape {
+export default class Wall extends Shape {
     VERTICES = new Float32Array([
         // front    
         -0.5, -0.5, 0.5,

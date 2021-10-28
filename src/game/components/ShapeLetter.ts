@@ -1,4 +1,4 @@
-import { m4, Vec3, degToRad } from './utils/index'
+import { m4, Vec3, degToRad } from './utils'
 import Shape from './Shape'
 
 export default class ShapeLetter extends Shape {
@@ -264,7 +264,7 @@ export default class ShapeLetter extends Shape {
     constructor(gl: WebGLRenderingContext) {
         super(gl)
         this.transform.rotation.x = degToRad(180)
-        this.originTranslationCorrection.x = -15
+        this.originTranslation.x = 15
     }
 
 
