@@ -5,7 +5,7 @@ export default abstract class Shape {
     protected readonly gl: WebGLRenderingContext
     protected positionBuffer: WebGLBuffer
     protected colorBuffer: WebGLBuffer
-    VERTICES: Float32Array
+    protected VERTICES: Float32Array
     protected COLORS: Uint8Array
     private firstBufferReady = false
     transform = new Transform()
@@ -22,7 +22,7 @@ export default abstract class Shape {
             let a = m4.identity
             a = m4.translate(a, vec.multiplyByVector(this.transform.scale))
             a = m4.rotate(a, this.transform.rotation)
-            a = m4.translate(this.matrix, m4.getPositionVector(a))
+            a = m4.translate(this.transform.matrix, m4.getPositionVector(a))
             return m4.getPositionVector(a)
         })
     }
@@ -90,26 +90,11 @@ export default abstract class Shape {
     }
 
     bindTransform(matrixLocation: WebGLUniformLocation, viewProjectionMatrix: number[]) {
-        let matrix = this.matrix
+        let matrix = this.transform.matrix
         matrix = m4.multiply(matrix, viewProjectionMatrix);
 
         // Set the matrix.
         this.gl.uniformMatrix4fv(matrixLocation, false, matrix);
-    }
-
-    get matrix() {
-        let matrix = m4.identity
-
-        matrix = m4.scale(matrix, this.transform.scale);
-
-        matrix = m4.xRotate(matrix, this.transform.rotation.x);
-        matrix = m4.yRotate(matrix, this.transform.rotation.y);
-        matrix = m4.zRotate(matrix, this.transform.rotation.z);
-
-        const position = this.transform.position.add(this.transform.originTranslation)
-        matrix = m4.translate(matrix, position);
-
-        return matrix
     }
 
     draw(programInfo: ProgramInfo, viewProjectionMatrix: number[]) {
