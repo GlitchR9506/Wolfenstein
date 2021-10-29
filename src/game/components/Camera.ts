@@ -3,6 +3,7 @@ import { degToRad, Vec3, Transform, radToDeg, log, m4 } from './utils'
 export default class Camera {
     rotationSpeed = 1
     movementSpeed = 100
+    collisionRadius = 20
     transform = new Transform
 
     get matrix() {

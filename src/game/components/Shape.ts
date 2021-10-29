@@ -55,6 +55,10 @@ export default abstract class Shape {
         )
     }
 
+    get halfSize() {
+        return this.size.multiply(0.5)
+    }
+
     updateBuffers() {
         this.setPositionBuffer()
         this.setColorBuffer()

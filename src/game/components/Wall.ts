@@ -1,5 +1,6 @@
 import { m4, Vec3, degToRad } from './utils'
 import Shape from './Shape'
+import { CubeBoundingBox } from './CubeBoundingBox'
 
 export default class Wall extends Shape {
     VERTICES = new Float32Array([
@@ -96,6 +97,7 @@ export default class Wall extends Shape {
         20.50, 0.560, 70,
     ])
 
+    readonly bb = new CubeBoundingBox(this)
     readonly defaultColors = this.COLORS
 
     constructor(gl: WebGLRenderingContext) {

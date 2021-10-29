@@ -109,6 +109,26 @@ export class Vec3 {
         )
     }
 
+    distanceTo(v: Vec3) {
+        return Math.sqrt(
+            (v.x - this.x) ** 2 +
+            (v.y - this.y) ** 2 +
+            (v.z - this.z) ** 2
+        )
+    }
+
+    horizontalDistanceTo(v: Vec3) {
+        return this.yZeroed.distanceTo(v.yZeroed)
+    }
+
+    to(v: Vec3) {
+        return new Vec3(
+            v.x - this.x,
+            v.y - this.y,
+            v.z - this.z,
+        )
+    }
+
     get inverted() {
         return this.multiply(-1)
     }

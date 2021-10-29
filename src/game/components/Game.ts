@@ -6,6 +6,8 @@ import Enemy from './Enemy'
 import Level from './Level'
 import Crosshair from './Crosshair'
 import { m4, degToRad, Vec3, log } from './utils'
+import { CubeBoundingBox } from './CubeBoundingBox'
+import Wall from './Wall'
 
 
 export default class Game {
@@ -16,6 +18,8 @@ export default class Game {
     private readonly crosshair: Crosshair
     private readonly shapes: ShapeLetter[] = []
     private readonly gl: WebGLRenderingContext
+    private readonly bb: CubeBoundingBox
+    private readonly wall: Wall
     private projectionMatrix: number[]
 
     constructor() {
@@ -33,6 +37,12 @@ export default class Game {
         })
 
         this.updateProjectionMatrix()
+
+        this.wall = new Wall(this.gl)
+        this.wall.transform.position = new Vec3(1500, 0, 1000)
+        this.wall.setColor(0, [255, 0, 255])
+        this.wall.updateBuffers()
+        this.bb = new CubeBoundingBox(this.wall)
 
         this.startGameLoop()
     }
@@ -75,21 +85,18 @@ export default class Game {
             wall.draw(this.program.info, this.viewProjectionMatrix)
         }
 
-        const enemy = new Enemy(this.gl)
-        enemy.transform.position = new Vec3(1500, 0, 1000)
-        enemy.setColor(0, [255, 0, 255])
-        enemy.updateBuffers()
-        enemy.lookAtCamera(this.camera.transform.rotation.y)
-        enemy.draw(this.program.info, this.viewProjectionMatrix)
-
-        const n = 2
-        log('wallx', enemy.VERTICES[n + 0])
-        log('wally', enemy.VERTICES[n + 1])
-        log('wallz', enemy.VERTICES[n + 2])
-        log('wall', enemy.verticesTransformed[n])
-
+        this.wall.draw(this.program.info, this.viewProjectionMatrix)
+        log('wall colliding', this.isWallColliding(this.wall))
 
         this.crosshair.draw(this.program.info, this.projectionMatrix)
+    }
+
+    isWallColliding(wall: Wall) {
+        const cameraToWall = this.camera.transform.position.yZeroed.to(wall.transform.position.yZeroed)
+        const cameraToWallDirection = cameraToWall.normalize
+        const collidingPointTranslation = cameraToWallDirection.multiply(this.camera.collisionRadius)
+        const collidingPoint = this.camera.transform.position.add(collidingPointTranslation)
+        return wall.bb.isColliding(collidingPoint) || wall.bb.isColliding(this.camera.transform.position)
     }
 
     isCameraLookingAtEnemy(enemy: Enemy) {
