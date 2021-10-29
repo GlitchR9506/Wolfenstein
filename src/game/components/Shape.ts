@@ -18,8 +18,22 @@ export default abstract class Shape {
         })
     }
 
+    get verticesTransformed() {
+        return this.verticesVec3Array.map(vec => {
+            let a = m4.identity
+            a = m4.translate(a, vec.multiplyByVector(this.transform.scale))
+            a = m4.yRotate(a, this.transform.rotation.y)
+            a = m4.translate(this.matrix, m4.getPositionVector(a))
+            return m4.getPositionVector(a)
+        })
+    }
+
     get verticesCount() {
         return this.VERTICES.length / 3
+    }
+
+    get verticesVec3Array() {
+        return Vec3.arrayToVec3Array(this.VERTICES)
     }
 
     get xVertices() {
@@ -77,9 +91,15 @@ export default abstract class Shape {
     }
 
     bindTransform(matrixLocation: WebGLUniformLocation, viewProjectionMatrix: number[]) {
-        let matrix = m4.identity
+        let matrix = this.matrix
+        matrix = m4.multiply(matrix, viewProjectionMatrix);
 
-        const position = this.transform.position.add(this.originTranslation)
+        // Set the matrix.
+        this.gl.uniformMatrix4fv(matrixLocation, false, matrix);
+    }
+
+    get matrix() {
+        let matrix = m4.identity
 
         matrix = m4.scale(matrix, this.transform.scale);
 
@@ -87,12 +107,10 @@ export default abstract class Shape {
         matrix = m4.yRotate(matrix, this.transform.rotation.y);
         matrix = m4.zRotate(matrix, this.transform.rotation.z);
 
+        const position = this.transform.position.add(this.originTranslation)
         matrix = m4.translate(matrix, position);
 
-        matrix = m4.multiply(matrix, viewProjectionMatrix);
-
-        // Set the matrix.
-        this.gl.uniformMatrix4fv(matrixLocation, false, matrix);
+        return matrix
     }
 
     draw(programInfo: ProgramInfo, viewProjectionMatrix: number[]) {
@@ -113,26 +131,20 @@ export default abstract class Shape {
     private setPositionBuffer() {
         this.positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.setGeometry()
+        this.gl.bufferData(
+            this.gl.ARRAY_BUFFER,
+            this.VERTICES,
+            this.gl.STATIC_DRAW
+        );
     }
 
     private setColorBuffer() {
         this.colorBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colorBuffer);
-        this.setColors()
-    }
-
-    private setGeometry() {
-        this.gl.bufferData(
-            this.gl.ARRAY_BUFFER,
-            this.VERTICES,
-            this.gl.STATIC_DRAW);
-    }
-
-    private setColors() {
         this.gl.bufferData(
             this.gl.ARRAY_BUFFER,
             this.COLORS,
-            this.gl.STATIC_DRAW);
+            this.gl.STATIC_DRAW
+        );
     }
 }

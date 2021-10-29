@@ -35,7 +35,25 @@ export class Vec3 {
         return new Vec3(0, -1, 0)
     }
 
+    static arrayToVec3Array(a: number[] | Float32Array) {
+        let array: Vec3[] = []
+        for (let i = 0; i < a.length / 3; i++) {
+            array.push(new Vec3(
+                a[i],
+                a[i + 1],
+                a[i + 2]
+            ))
+        }
+        return array
+    }
 
+    static vec3ArrayToArray(a: Vec3[]) {
+        let array: number[] = []
+        for (let vec of a) {
+            array.push(vec.x, vec.y, vec.z)
+        }
+        return array
+    }
 
     constructor(x: number, y: number, z: number) {
         this.set(x, y, z)

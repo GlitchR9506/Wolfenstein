@@ -5,7 +5,7 @@ import Movement from './Movement'
 import Enemy from './Enemy'
 import Level from './Level'
 import Crosshair from './Crosshair'
-import { m4, degToRad, Vec3 } from './utils'
+import { m4, degToRad, Vec3, log } from './utils'
 
 
 export default class Game {
@@ -74,6 +74,20 @@ export default class Game {
         for (let wall of this.level.walls) {
             wall.draw(this.program.info, this.viewProjectionMatrix)
         }
+
+        const enemy = new Enemy(this.gl)
+        enemy.transform.position = new Vec3(1500, 0, 1000)
+        enemy.setColor(0, [255, 0, 255])
+        enemy.updateBuffers()
+        enemy.lookAtCamera(this.camera.transform.rotation.y)
+        enemy.draw(this.program.info, this.viewProjectionMatrix)
+
+        const n = 2
+        log('wallx', enemy.VERTICES[n + 0])
+        log('wally', enemy.VERTICES[n + 1])
+        log('wallz', enemy.VERTICES[n + 2])
+        log('wall', enemy.verticesTransformed[n])
+
 
         this.crosshair.draw(this.program.info, this.projectionMatrix)
     }
