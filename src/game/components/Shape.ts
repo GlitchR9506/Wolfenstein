@@ -8,7 +8,6 @@ export default abstract class Shape {
     VERTICES: Float32Array
     protected COLORS: Uint8Array
     private firstBufferReady = false
-    originTranslation = Vec3.zero
     transform = new Transform()
 
     constructor(gl: WebGLRenderingContext) {
@@ -22,7 +21,7 @@ export default abstract class Shape {
         return this.verticesVec3Array.map(vec => {
             let a = m4.identity
             a = m4.translate(a, vec.multiplyByVector(this.transform.scale))
-            a = m4.yRotate(a, this.transform.rotation.y)
+            a = m4.rotate(a, this.transform.rotation)
             a = m4.translate(this.matrix, m4.getPositionVector(a))
             return m4.getPositionVector(a)
         })
@@ -107,7 +106,7 @@ export default abstract class Shape {
         matrix = m4.yRotate(matrix, this.transform.rotation.y);
         matrix = m4.zRotate(matrix, this.transform.rotation.z);
 
-        const position = this.transform.position.add(this.originTranslation)
+        const position = this.transform.position.add(this.transform.originTranslation)
         matrix = m4.translate(matrix, position);
 
         return matrix

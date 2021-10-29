@@ -19,19 +19,12 @@ const m4 = {
         ]
     },
 
-    rotation: (mTarget: number[], v: Vec3) => {
+    rotate: (mTarget: number[], v: Vec3) => {
         let m = m4.multiply(mTarget, m4.xRotation(v.x))
         m = m4.multiply(m, m4.yRotation(v.y))
         m = m4.multiply(m, m4.zRotation(v.z))
         return m
     },
-
-    // rotated: (mTarget: number[], mSource: number[]) => {
-    //     let m = m4.multiply(mTarget, m4.xRotation(mSource[0]))
-    //     m = m4.multiply(m, m4.yRotation(mSource[1]))
-    //     m = m4.multiply(m, m4.zRotation(mSource[2]))
-    //     return m
-    // },
 
     xRotation: (angleInRadians: number) => {
         const c = Math.cos(angleInRadians)

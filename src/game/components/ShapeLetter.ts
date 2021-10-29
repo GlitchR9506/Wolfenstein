@@ -264,7 +264,7 @@ export default class ShapeLetter extends Shape {
     constructor(gl: WebGLRenderingContext) {
         super(gl)
         this.transform.rotation.x = degToRad(180)
-        this.originTranslation.x = 15
+        this.transform.originTranslation.x = 15
     }
 
 
