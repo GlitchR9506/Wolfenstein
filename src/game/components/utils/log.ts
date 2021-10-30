@@ -21,7 +21,9 @@ export function log(name: string, value: Vec3 | string | number | boolean) {
         element = value
     }
 
-    if (typeof value == 'boolean') {
+    if (value === null) {
+        value = 'null'
+    } else if (typeof value == 'boolean') {
         value = value ? 'true' : 'false'
     } else {
         if (value instanceof Vec3) {
