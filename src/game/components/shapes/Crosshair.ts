@@ -1,4 +1,4 @@
-import { m4, Vec3, degToRad, Transform, log } from './utils'
+import { m4, Vec3 } from '../utils'
 import Shape from './Shape'
 
 export default class Crosshair extends Shape {
@@ -22,7 +22,7 @@ export default class Crosshair extends Shape {
 
     constructor(gl: WebGLRenderingContext) {
         super(gl)
-        this.transform.scale = Vec3.identity.multiply(0.01)
+        this.transform.scale = Vec3.one.multiply(0.01)
         this.transform.position.z = -2
     }
 

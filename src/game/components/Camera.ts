@@ -1,12 +1,25 @@
-import { degToRad, Vec3, Transform, radToDeg, log, m4 } from './utils'
-import Wall from './Wall'
+import { Vec3, Transform, radToDeg, m4, degToRad } from './utils'
+import Wall from './shapes/Wall'
+import Cuboid from './shapes/Cuboid'
 
 export default class Camera {
-    rotationSpeed = 1
-    movementSpeed = 100
-    collisionRadius = 15
     transform = new Transform
-    blockedDirections: Vec3[] = []
+    projectionMatrix: number[]
+
+    private readonly fov = 60
+    private readonly zNear = 1
+    private readonly zFar = 2000
+    private readonly rotationSpeed = 1
+    private readonly movementSpeed = 100
+    private readonly collisionRadius = 15
+    private readonly gl: WebGLRenderingContext
+
+    private blockedDirections: Vec3[] = []
+
+    constructor(gl: WebGLRenderingContext) {
+        this.gl = gl
+        this.updateProjectionMatrix()
+    }
 
     get matrix() {
         let cameraMatrix = m4.identity
@@ -67,4 +80,32 @@ export default class Camera {
         )
         this.blockedDirections = uniqueBlockedDirections
     }
+
+    isLookingAt(cuboid: Cuboid) {
+        let lookingAtDir = Vec3.fromAngle(this.transform.rotation.y)
+        let targetXDir = Vec3.up.cross(lookingAtDir).normalize
+
+        let enemyLeft = cuboid.bb.transform.position.add(targetXDir.multiply(cuboid.bb.size.x / 2))
+        let enemyRight = cuboid.bb.transform.position.substract(targetXDir.multiply(cuboid.bb.size.x / 2))
+
+        let angleLeft = this.angleTo(enemyLeft)
+        let angleRight = this.angleTo(enemyRight)
+
+        let lookingAtEnemy = angleLeft > 0 && angleRight < 0
+
+        return lookingAtEnemy
+    }
+
+    get viewProjectionMatrix() {
+        return m4.multiply(this.matrix, this.projectionMatrix);
+    }
+
+    updateProjectionMatrix() {
+        const fieldOfViewRadians = degToRad(this.fov)
+        const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight
+        const zNear = this.zNear
+        const zFar = this.zFar
+        this.projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
+    }
+
 }

@@ -3,7 +3,7 @@ export class Vec3 {
     y: number
     z: number
 
-    static get identity() {
+    static get one() {
         return new Vec3(1, 1, 1)
     }
 
@@ -143,7 +143,6 @@ export class Vec3 {
     }
 
     get magnitude() {
-        // return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
     }
 
@@ -164,8 +163,6 @@ export class Vec3 {
     static fromAngle(angle: number) {
         angle = angle + 3 * Math.PI / 2
         return new Vec3(Math.cos(angle), 0, Math.sin(angle))
-        // return new Vec3(Math.sin(angle), 0, -Math.cos(angle))
-        // return new Vec3(Math.sin(angle), 0, Math.cos(angle))
     }
 
     map(f: (value: number) => number) {

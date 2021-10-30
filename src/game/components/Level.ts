@@ -1,18 +1,18 @@
-// import level1 from '../levels/1.json'
 import FieldData from '../../common/FieldData';
-import Wall from './Wall'
-import Enemy from './Enemy'
+import Wall from './shapes/Wall'
+import Enemy from './shapes/Enemy'
 import { Vec3 } from './utils';
 
 export default class Level {
-    readonly gl: WebGLRenderingContext
-    readonly gridSize = 50
     width: number
     height: number
-    fields: FieldData[]
     walls: Wall[] = []
     enemies: Enemy[] = []
     playerPosition: Vec3
+
+    private readonly gl: WebGLRenderingContext
+    private readonly gridSize = 50
+    private fields: FieldData[]
 
     constructor(gl: WebGLRenderingContext, afterLoad?: () => void) {
         this.gl = gl

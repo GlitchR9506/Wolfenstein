@@ -1,13 +1,9 @@
 import Program from './Program'
-import ShapeLetter from './ShapeLetter'
 import Camera from './Camera'
 import Input from './Input'
-import Enemy from './Enemy'
 import Level from './Level'
-import Crosshair from './Crosshair'
-import { m4, degToRad, Vec3, log } from './utils'
-import { CubeBoundingBox } from './CubeBoundingBox'
-import Wall from './Wall'
+import Crosshair from './shapes/Crosshair'
+import { log } from './utils'
 
 
 export default class Game {
@@ -17,7 +13,6 @@ export default class Game {
     private readonly level: Level
     private readonly crosshair: Crosshair
     private readonly gl: WebGLRenderingContext
-    private projectionMatrix: number[]
 
     constructor() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -26,14 +21,12 @@ export default class Game {
         this.gl.clearColor(0, 0, 0, 0);
 
         this.program = new Program(this.gl)
-        this.camera = new Camera()
+        this.camera = new Camera(this.gl)
         this.input = new Input()
         this.crosshair = new Crosshair(this.gl)
         this.level = new Level(this.gl, () => {
             this.camera.transform.position = this.level.playerPosition
         })
-
-        this.updateProjectionMatrix()
 
         this.startGameLoop()
     }
@@ -56,7 +49,7 @@ export default class Game {
         this.setDrawSettings()
 
         for (let enemy of this.level.enemies) {
-            let lookingAtEnemy = this.isCameraLookingAtEnemy(enemy)
+            let lookingAtEnemy = this.camera.isLookingAt(enemy)
             if (lookingAtEnemy) {
                 if (this.input.shooting) {
                     enemy.setColor(0, [255, 0, 0])
@@ -67,48 +60,21 @@ export default class Game {
                 enemy.updateBuffers()
             }
             enemy.lookAtCamera(this.camera.transform.rotation.y)
-            enemy.draw(this.program.info, this.viewProjectionMatrix)
+            enemy.draw(this.program.info, this.camera.viewProjectionMatrix)
         }
 
         for (let wall of this.level.walls) {
-            wall.draw(this.program.info, this.viewProjectionMatrix)
+            wall.draw(this.program.info, this.camera.viewProjectionMatrix)
         }
 
         this.camera.checkCollisions(this.level.walls)
 
-        this.crosshair.draw(this.program.info, this.projectionMatrix)
+        this.crosshair.draw(this.program.info, this.camera.projectionMatrix)
 
         this.camera.rotate(this.input.rotation * deltaTime)
         this.camera.move(this.input.direction.multiply(deltaTime))
     }
 
-
-    isCameraLookingAtEnemy(enemy: Enemy) {
-        let lookingAtDir = Vec3.fromAngle(this.camera.transform.rotation.y)
-        let targetXDir = Vec3.up.cross(lookingAtDir).normalize
-
-        let enemyLeft = enemy.transform.position.add(targetXDir.multiply(enemy.size.x / 2))
-        let enemyRight = enemy.transform.position.substract(targetXDir.multiply(enemy.size.x / 2))
-
-        let angleLeft = this.camera.angleTo(enemyLeft)
-        let angleRight = this.camera.angleTo(enemyRight)
-
-        let lookingAtEnemy = angleLeft > 0 && angleRight < 0
-
-        return lookingAtEnemy
-    }
-
-    private get viewProjectionMatrix() {
-        return m4.multiply(this.camera.matrix, this.projectionMatrix);
-    }
-
-    private updateProjectionMatrix() {
-        const fieldOfViewRadians = degToRad(60)
-        const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight
-        const zNear = 1
-        const zFar = 2000
-        this.projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-    }
 
     private setDrawSettings() {
         this.resizeCanvasToDisplaySize(this.gl.canvas)
@@ -132,7 +98,7 @@ export default class Game {
         if (needResize) {
             canvas.width = displayWidth;
             canvas.height = displayHeight;
-            this.updateProjectionMatrix()
+            this.camera.updateProjectionMatrix()
         }
 
         return needResize;

@@ -1,5 +1,5 @@
-import { m4, Vec3, degToRad, Transform, log } from './utils'
-import { ProgramInfo } from './Program'
+import { m4, Vec3, Transform } from '../utils'
+import { ProgramInfo } from '../Program'
 
 export default abstract class Shape {
     protected readonly gl: WebGLRenderingContext

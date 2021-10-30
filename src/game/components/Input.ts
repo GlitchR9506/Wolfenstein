@@ -1,7 +1,6 @@
-import { degToRad, log, Vec3 } from './utils'
+import { Vec3 } from './utils'
 
 export default class Input {
-
     direction = Vec3.zero
     rotation = 0
     shooting = false

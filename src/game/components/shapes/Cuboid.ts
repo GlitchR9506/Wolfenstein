@@ -1,8 +1,7 @@
-import { m4, Vec3, degToRad } from './utils'
 import Shape from './Shape'
-import { CubeBoundingBox } from './CubeBoundingBox'
+import { CuboidBoundingBox } from './CuboidBoundingBox'
 
-export default class Wall extends Shape {
+export default class Cuboid extends Shape {
     VERTICES = new Float32Array([
         // front    
         -0.5, -0.5, 0.5,
@@ -97,13 +96,8 @@ export default class Wall extends Shape {
         20.50, 0.560, 70,
     ])
 
-    readonly bb = new CubeBoundingBox(this)
+    readonly bb = new CuboidBoundingBox(this)
     readonly defaultColors = this.COLORS
-
-    constructor(gl: WebGLRenderingContext) {
-        super(gl)
-        this.transform.scale = Vec3.identity.multiply(50)
-    }
 
     setColor(wall: number, color: number[]) {
         this.COLORS = new Uint8Array([

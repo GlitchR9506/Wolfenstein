@@ -32,6 +32,8 @@ export function log(name: string, value: Vec3 | string | number | boolean) {
         } else {
             if (typeof value != 'string') {
                 value = String(value.toFixed(2))
+            } else {
+                value = JSON.stringify(value)
             }
         }
     }

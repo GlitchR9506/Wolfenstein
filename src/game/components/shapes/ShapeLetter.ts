@@ -1,4 +1,4 @@
-import { m4, Vec3, degToRad } from './utils'
+import { degToRad } from '../utils'
 import Shape from './Shape'
 
 export default class ShapeLetter extends Shape {
@@ -266,6 +266,4 @@ export default class ShapeLetter extends Shape {
         this.transform.rotation.x = degToRad(180)
         this.transform.originTranslation.x = 15
     }
-
-
 }
