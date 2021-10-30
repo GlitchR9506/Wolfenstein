@@ -55,6 +55,6 @@ module.exports = {
         port: 9000,
         allowedHosts: [
             'rubikon.ddns.net'
-        ]
+        ],
     },
 };

@@ -32,4 +32,14 @@ export class CubeBoundingBox {
         const negative = this.transform.position.substract(this.halfSize)
         return negative.x <= v.x && v.x <= positive.x && negative.z <= v.z && v.z <= positive.z
     }
+
+    collisionSide(v: Vec3) {
+        const xDiff = this.transform.position.x - v.x
+        const zDiff = this.transform.position.z - v.z
+        if (Math.abs(xDiff) > Math.abs(zDiff)) {
+            return xDiff > 0 ? Vec3.right : Vec3.left
+        } else {
+            return zDiff > 0 ? Vec3.forward : Vec3.backward
+        }
+    }
 }
