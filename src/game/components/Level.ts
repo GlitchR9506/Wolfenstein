@@ -2,13 +2,20 @@ import FieldData from '../../common/FieldData';
 import Wall from './shapes/Wall'
 import Enemy from './shapes/Enemy'
 import { Vec3 } from './utils';
+import Cuboid from './shapes/Cuboid';
+import Door from './shapes/Door';
+import Shape from './shapes/Shape';
+import Interactable from './shapes/Interactable';
 
 export default class Level {
     width: number
     height: number
+    playerPosition: Vec3
     walls: Wall[] = []
     enemies: Enemy[] = []
-    playerPosition: Vec3
+    doors: Door[] = []
+    collidingCuboids: Cuboid[] = []
+    interactables: Interactable[] = []
 
     private readonly gl: WebGLRenderingContext
     private readonly gridSize = 50
@@ -54,14 +61,21 @@ export default class Level {
 
         this.walls = this.getLevelObjectsList('wall', Wall) as Wall[]
         this.enemies = this.getLevelObjectsList('enemy', Enemy) as Enemy[]
+        this.doors = this.getLevelObjectsList('door', Door) as Door[]
+
+        this.collidingCuboids.push(...this.walls)
+        this.collidingCuboids.push(...this.doors)
+        this.interactables.push(...this.doors)
+        // this.doors[0].transform.position.x += 45
     }
 
-    private getLevelObjectsList(value: string, ObjectClass: new (gl: WebGLRenderingContext) => (Wall | Enemy)) {
+    private getLevelObjectsList(value: string, ObjectClass: new (gl: WebGLRenderingContext) => Cuboid) {
         const objects: (Wall | Enemy)[] = []
         for (let field of this.fields.filter(f => f.value == value)) {
             const object = new ObjectClass(this.gl)
             object.transform.position.x = field.x
             object.transform.position.z = field.y
+            object.setInitialTransform()
             objects.push(object)
         }
         return objects

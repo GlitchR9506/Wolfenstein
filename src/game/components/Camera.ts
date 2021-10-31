@@ -1,6 +1,8 @@
-import { Vec3, Transform, radToDeg, m4, degToRad } from './utils'
+import { Vec3, Transform, radToDeg, m4, degToRad, log } from './utils'
 import Wall from './shapes/Wall'
 import Cuboid from './shapes/Cuboid'
+import Shape from './shapes/Shape'
+import Interactable from './shapes/Interactable'
 
 export default class Camera {
     transform = new Transform
@@ -12,6 +14,7 @@ export default class Camera {
     private readonly rotationSpeed = 1
     private readonly movementSpeed = 100
     private readonly collisionRadius = 15
+    private readonly interactionDistance = 60
     private readonly gl: WebGLRenderingContext
 
     private blockedDirections: Vec3[] = []
@@ -26,6 +29,20 @@ export default class Camera {
         cameraMatrix = m4.translate(cameraMatrix, this.transform.position.inverted)
         cameraMatrix = m4.yRotate(cameraMatrix, this.transform.rotation.y)
         return cameraMatrix
+    }
+
+    nearest(shapes: Shape[]) {
+        const sorted = shapes.sort((a, b) => {
+            return (
+                a.transform.position.distanceTo(this.transform.position) -
+                b.transform.position.distanceTo(this.transform.position)
+            )
+        })
+        return sorted[0]
+    }
+
+    inInteractionDistance(shape: Interactable) {
+        return shape.transform.position.distanceTo(this.transform.position) <= this.interactionDistance
     }
 
     rotate(rotation: number) {

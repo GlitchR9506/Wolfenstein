@@ -9,6 +9,7 @@ export default abstract class Shape {
     protected COLORS: Uint8Array
     private firstBufferReady = false
     transform = new Transform()
+    initialTransform: Transform
 
     constructor(gl: WebGLRenderingContext) {
         this.gl = gl
@@ -57,6 +58,10 @@ export default abstract class Shape {
 
     get halfSize() {
         return this.size.multiply(0.5)
+    }
+
+    setInitialTransform() {
+        this.initialTransform = this.transform.clone()
     }
 
     updateBuffers() {
@@ -109,7 +114,7 @@ export default abstract class Shape {
         this._draw()
     }
 
-    _draw() {
+    private _draw() {
         const primitiveType = this.gl.TRIANGLES;
         const offset = 0;
         const count = this.verticesCount;

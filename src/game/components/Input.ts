@@ -4,10 +4,12 @@ export default class Input {
     direction = Vec3.zero
     rotation = 0
     shooting = false
+    interacting = false
 
     movementDisabled = false
     rotationDisabled = false
     shootingDisabled = false
+    interactingDisabled = false
 
     private pressedKeys: string[] = []
 
@@ -35,6 +37,11 @@ export default class Input {
         this.shooting = false
         if (!this.shootingDisabled) {
             if (this.isPressed('Space')) this.shooting = true
+        }
+
+        this.interacting = false
+        if (!this.interactingDisabled) {
+            if (this.isPressed('KeyE')) this.interacting = true
         }
     }
 

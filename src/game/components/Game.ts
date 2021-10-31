@@ -4,6 +4,7 @@ import Input from './Input'
 import Level from './Level'
 import Crosshair from './shapes/Crosshair'
 import { log } from './utils'
+import Interactable from './shapes/Interactable'
 
 
 export default class Game {
@@ -67,7 +68,20 @@ export default class Game {
             wall.draw(this.program.info, this.camera.viewProjectionMatrix)
         }
 
-        this.camera.checkCollisions(this.level.walls)
+        for (let door of this.level.doors) {
+            door.update(deltaTime)
+            door.draw(this.program.info, this.camera.viewProjectionMatrix)
+        }
+
+        if (this.input.interacting) {
+            const nearest = this.camera.nearest(this.level.interactables) as Interactable
+            if (this.camera.inInteractionDistance(nearest)) {
+                nearest.interact()
+            }
+        }
+
+
+        this.camera.checkCollisions(this.level.collidingCuboids)
 
         this.crosshair.draw(this.program.info, this.camera.projectionMatrix)
 

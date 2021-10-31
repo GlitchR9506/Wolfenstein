@@ -27,4 +27,12 @@ export class Transform {
 
         return matrix
     }
+
+    clone() {
+        const transform = new Transform()
+        transform.position = this.position.clone()
+        transform.rotation = this.rotation.clone()
+        transform.scale = this.scale.clone()
+        return transform
+    }
 }
