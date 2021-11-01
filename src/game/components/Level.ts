@@ -70,7 +70,7 @@ export default class Level {
     }
 
     private getLevelObjectsList(value: string, ObjectClass: new (gl: WebGLRenderingContext) => Cuboid) {
-        const objects: (Wall | Enemy)[] = []
+        const objects: Cuboid[] = []
         for (let field of this.fields.filter(f => f.value == value)) {
             const object = new ObjectClass(this.gl)
             object.transform.position.x = field.x

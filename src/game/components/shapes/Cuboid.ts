@@ -96,6 +96,57 @@ export default class Cuboid extends Shape {
         20.50, 0.560, 70,
     ])
 
+    TEXCOORDS = new Float32Array([
+        // front
+        0, 1,
+        1, 0,
+        0, 0,
+        0, 1,
+        1, 1,
+        1, 0,
+
+        // back
+        1, 1,
+        1, 0,
+        0, 0,
+        1, 1,
+        0, 0,
+        0, 1,
+
+        // left
+        0, 1,
+        1, 1,
+        1, 0,
+        0, 1,
+        1, 0,
+        0, 0,
+
+        // right
+        1, 1,
+        0, 0,
+        0, 1,
+        1, 1,
+        1, 0,
+        0, 0,
+
+
+        // top
+        0, 0,
+        1, 1,
+        1, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+
+        // bottom
+        1, 1,
+        1, 0,
+        0, 1,
+        0, 1,
+        1, 0,
+        0, 0,
+    ])
+
     readonly bb = new CuboidBoundingBox(this)
     readonly defaultColors = this.COLORS
 

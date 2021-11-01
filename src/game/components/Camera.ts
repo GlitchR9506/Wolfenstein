@@ -73,23 +73,23 @@ export default class Camera {
         return angleDiff
     }
 
-    wallCollisionSide(wall: Wall) {
-        const cameraToWall = this.transform.position.yZeroed.to(wall.transform.position.yZeroed)
+    cuboidCollisionSide(cuboid: Cuboid) {
+        const cameraToWall = this.transform.position.yZeroed.to(cuboid.transform.position.yZeroed)
         const cameraToWallDirection = cameraToWall.normalize
         const collidingPointTranslation = cameraToWallDirection.multiply(this.collisionRadius)
         const collidingPoint = this.transform.position.add(collidingPointTranslation)
         const collisionCandidates = [collidingPoint, this.transform.position]
         for (let candidate of collisionCandidates) {
-            if (wall.bb.isColliding(candidate)) {
-                return wall.bb.collisionSide(candidate)
+            if (cuboid.bb.isColliding(candidate)) {
+                return cuboid.bb.collisionSide(candidate)
             }
         }
         return null
     }
 
-    checkCollisions(walls: Wall[]) {
-        const collidingSides = walls
-            .map(w => this.wallCollisionSide(w))
+    checkCollisions(cuboids: Cuboid[]) {
+        const collidingSides = cuboids
+            .map(c => this.cuboidCollisionSide(c))
             .filter(side => side !== null)
         const blockedDirections = collidingSides.map(side => side.inverted)
         const uniqueBlockedDirections = blockedDirections.filter((direction, index, self) =>

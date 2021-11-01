@@ -1,11 +1,14 @@
 import { log, Vec3 } from '../utils'
 import Cuboid from './Cuboid'
 import Interactable from './Interactable'
+import texture from '../../textures/door.png'
+
 
 export default class Door extends Cuboid implements Interactable {
     opening = false
     readonly openingSpeed = 20
     readonly openingLength = 50
+    static texture = texture
 
     constructor(gl: WebGLRenderingContext) {
         super(gl)
@@ -26,7 +29,6 @@ export default class Door extends Cuboid implements Interactable {
     }
 
     interact() {
-        console.log('interacted')
         this.opening = true
     }
 }

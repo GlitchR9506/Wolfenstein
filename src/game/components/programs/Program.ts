@@ -1,37 +1,30 @@
-const vertexShaderSource = require('./shaders/VertexShader2D.glsl');
-const fragmentShaderSource = require('./shaders/FragmentShader2D.glsl');
-
 export interface ProgramInfo {
     attributes: {
         position: number,
-        color: number,
+        color?: number,
+        texcoord?: number,
     },
     uniforms: {
         matrix: WebGLUniformLocation
     },
 }
 
-export default class Program {
-    private readonly program: WebGLProgram
-    private readonly gl: WebGLRenderingContext
+export abstract class Program {
     info: ProgramInfo
-    constructor(gl: WebGLRenderingContext) {
+    private readonly program: WebGLProgram
+    protected readonly gl: WebGLRenderingContext
+
+    constructor(
+        gl: WebGLRenderingContext,
+        vertexShaderSource: string,
+        fragmentShaderSource: string
+    ) {
         this.gl = gl
 
         const vertexShader = this.createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
         const fragmentShader = this.createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
         this.program = this.createProgram(gl, vertexShader, fragmentShader);
-
-        this.info = {
-            attributes: {
-                position: this.attribute("a_position"),
-                color: this.attribute("a_color"),
-            },
-            uniforms: {
-                matrix: this.uniform("u_matrix")
-            },
-        }
     }
 
     use() {

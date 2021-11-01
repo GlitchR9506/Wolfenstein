@@ -31,9 +31,13 @@ module.exports = {
                 use: ["style-loader", "css-loader"],
             },
             {
-                test: /\.glsl$/,
-                loader: 'webpack-glsl-loader'
-            }
+                test: /\.(glsl|vs|fs)$/,
+                loader: 'ts-shader-loader'
+            },
+            {
+                test: /\.(png|jp(e*)g|svg)$/,
+                type: 'asset/resource'
+            },
         ],
     },
     plugins: [

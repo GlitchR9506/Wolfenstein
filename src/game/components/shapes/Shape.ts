@@ -1,12 +1,16 @@
 import { m4, Vec3, Transform } from '../utils'
-import { ProgramInfo } from '../Program'
+import { ColorProgramInfo } from '../programs/ColorProgram'
+import { ProgramInfo } from '../programs/Program'
+import { TextureProgramInfo } from '../programs/TextureProgram'
 
 export default abstract class Shape {
     protected readonly gl: WebGLRenderingContext
     protected positionBuffer: WebGLBuffer
     protected colorBuffer: WebGLBuffer
+    protected texcoordsBuffer: WebGLBuffer
     protected VERTICES: Float32Array
     protected COLORS: Uint8Array
+    protected TEXCOORDS: Float32Array
     private firstBufferReady = false
     transform = new Transform()
     initialTransform: Transform
@@ -66,7 +70,12 @@ export default abstract class Shape {
 
     updateBuffers() {
         this.setPositionBuffer()
-        this.setColorBuffer()
+        if (this.COLORS) {
+            this.setColorBuffer()
+        }
+        if (this.TEXCOORDS) {
+            this.setTexcoordsBuffer()
+        }
         this.firstBufferReady = true
     }
 
@@ -95,7 +104,23 @@ export default abstract class Shape {
         const stride = 0;               // 0 = move forward size * sizeof(type) each iteration to get the next position
         const offset = 0;               // start at the beginning of the buffer
         this.gl.vertexAttribPointer(colorLocation, size, type, normalize, stride, offset);
+    }
 
+    bindTexture(texcoordsLocation: number) {
+        // Turn on the color attribute
+        // console.log(texcoordsLocation)
+        this.gl.enableVertexAttribArray(texcoordsLocation);
+
+        // Bind the color buffer.
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordsBuffer);
+
+        // Tell the attribute how to get data out of colorBuffer (ARRAY_BUFFER)
+        const size = 2;                 // 2 components per iteration
+        const type = this.gl.FLOAT;  // the data is 8bit unsigned values
+        const normalize = false;         // normalize the data (convert from 0-255 to 0-1)
+        const stride = 0;               // 0 = move forward size * sizeof(type) each iteration to get the next position
+        const offset = 0;               // start at the beginning of the buffer
+        this.gl.vertexAttribPointer(texcoordsLocation, size, type, normalize, stride, offset);
     }
 
     bindTransform(matrixLocation: WebGLUniformLocation, viewProjectionMatrix: number[]) {
@@ -108,8 +133,14 @@ export default abstract class Shape {
 
     draw(programInfo: ProgramInfo, viewProjectionMatrix: number[]) {
         if (!this.firstBufferReady) return
+        // console.log(programInfo.attributes)
         this.bindGeometry(programInfo.attributes.position)
-        this.bindColors(programInfo.attributes.color)
+        if (programInfo.attributes.color) {
+            this.bindColors(programInfo.attributes.color)
+        }
+        if (programInfo.attributes.texcoord) {
+            this.bindTexture(programInfo.attributes.texcoord)
+        }
         this.bindTransform(programInfo.uniforms.matrix, viewProjectionMatrix)
         this._draw()
     }
@@ -137,6 +168,16 @@ export default abstract class Shape {
         this.gl.bufferData(
             this.gl.ARRAY_BUFFER,
             this.COLORS,
+            this.gl.STATIC_DRAW
+        );
+    }
+
+    private setTexcoordsBuffer() {
+        this.texcoordsBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texcoordsBuffer);
+        this.gl.bufferData(
+            this.gl.ARRAY_BUFFER,
+            this.TEXCOORDS,
             this.gl.STATIC_DRAW
         );
     }
