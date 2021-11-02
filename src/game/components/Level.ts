@@ -21,13 +21,15 @@ export default class Level {
     private readonly gridSize = 50
     private fields: FieldData[]
 
-    constructor(gl: WebGLRenderingContext, afterLoad?: () => void) {
+    constructor(gl: WebGLRenderingContext) {
         this.gl = gl
+    }
 
+    load(level: number, callback?: () => void) {
         this.loadLevel(1, () => {
             this.applyGridSize()
             this.createObjects()
-            afterLoad?.()
+            callback?.()
         })
     }
 
