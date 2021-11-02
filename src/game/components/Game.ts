@@ -83,35 +83,45 @@ export default class Game {
             wall.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
 
-        this.textures.useTexture(Enemy.texture)
-        for (let enemy of this.level.enemies) {
-            if (this.camera.isLookingAt(enemy)) {
-                if (this.input.shooting) {
-                    enemy.setColor(0, [255, 0, 0])
-                    enemy.updateBuffers()
-                }
-            } else {
-                enemy.resetColor()
-                enemy.updateBuffers()
-            }
-            enemy.lookAtCamera(this.camera.transform.rotation.y)
-            enemy.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
-        }
 
         this.textures.useTexture(Door.texture)
         for (let door of this.level.doors) {
             door.update(deltaTime)
             door.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
+        this.textures.useTexture(Enemy.texture)
+        for (let enemy of this.level.enemies) {
+            if (this.camera.isLookingAt(enemy)) {
+                if (this.input.shooting) {
+                    // enemy.setColor(0, [255, 0, 0])
+                    enemy.updateBuffers()
+                }
+            } else {
+                // enemy.resetColor()
+                enemy.updateBuffers()
+            }
+            enemy.lookAtCamera(this.camera.transform.rotation.y)
+            enemy.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
+        }
+
     }
 
     private initWebgl() {
         const canvas = document.getElementById("canvas") as HTMLCanvasElement
+
         (this.gl as WebGLRenderingContext) = canvas.getContext("webgl")
+
         if (!this.gl) {
             alert("No webgl for you")
         }
+
         this.gl.clearColor(0, 0, 0, 0)
+
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+        this.gl.enable(this.gl.BLEND);
+
+        this.gl.enable(this.gl.CULL_FACE)
+        this.gl.enable(this.gl.DEPTH_TEST)
     }
 
     private setDrawSettings() {
@@ -119,8 +129,6 @@ export default class Game {
 
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height)
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT)
-        this.gl.enable(this.gl.CULL_FACE)
-        this.gl.enable(this.gl.DEPTH_TEST)
 
         this.input.update()
     }

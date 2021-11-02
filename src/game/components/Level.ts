@@ -26,7 +26,7 @@ export default class Level {
     }
 
     load(level: number, callback?: () => void) {
-        this.loadLevel(1, () => {
+        this.loadLevel(level, () => {
             this.applyGridSize()
             this.createObjects()
             callback?.()
@@ -71,8 +71,8 @@ export default class Level {
         // this.doors[0].transform.position.x += 45
     }
 
-    private getLevelObjectsList(value: string, ObjectClass: new (gl: WebGLRenderingContext) => Cuboid) {
-        const objects: Cuboid[] = []
+    private getLevelObjectsList(value: string, ObjectClass: new (gl: WebGLRenderingContext) => Shape) {
+        const objects: Shape[] = []
         for (let field of this.fields.filter(f => f.value == value)) {
             const object = new ObjectClass(this.gl)
             object.transform.position.x = field.x

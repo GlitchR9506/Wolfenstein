@@ -5,10 +5,15 @@ import texture from '../../textures/door.png'
 
 
 export default class Door extends Cuboid implements Interactable {
-    opening = false
-    readonly openingSpeed = 20
-    readonly openingLength = 50
     static texture = texture
+
+    private opening = false
+    private closing = false
+
+    private readonly openingSpeed = 20
+    private readonly openingLength = 50
+
+    private readonly hiddenInWallScaleCorrection = Vec3.one
 
     constructor(gl: WebGLRenderingContext) {
         super(gl)
@@ -16,19 +21,39 @@ export default class Door extends Cuboid implements Interactable {
     }
 
     update(deltaTime: number) {
-        if (!this.opening) return
-        if (this.transform.position.x >= this.initialTransform.position.x + this.openingLength) return
-        let deltaX = this.openingSpeed * deltaTime
-        log('x', this.transform.position.x)
-        log('a', this.initialTransform.position.x + this.openingLength)
-        if (this.transform.position.x >= this.initialTransform.position.x + this.openingLength) {
-            this.transform.position.x = this.initialTransform.position.x + this.openingLength
-            this.opening = false
+        if (this.opening) {
+            if (this.transform.position.x >= this.initialTransform.position.x + this.openingLength) {
+                this.transform.position.x = this.initialTransform.position.x + this.openingLength
+                this.opening = false
+                this.transform.scale = this.transform.scale.substract(this.hiddenInWallScaleCorrection)
+            } else {
+                this.transform.position.x += this.openingSpeed * deltaTime
+            }
+        } else if (this.closing) {
+            if (this.transform.position.x <= this.initialTransform.position.x) {
+                this.transform.position.x = this.initialTransform.position.x
+                this.closing = false
+            } else {
+                this.transform.position.x -= this.openingSpeed * deltaTime
+            }
         }
-        this.transform.position.x += deltaX
+    }
+
+    get closed() {
+        return this.transform.position.x == this.initialTransform.position.x
+    }
+
+    get opened() {
+        return this.transform.position.x == this.initialTransform.position.x + this.openingLength
     }
 
     interact() {
-        this.opening = true
+        if (this.closed && !this.opening) {
+            this.opening = true
+        }
+        if (this.opened && !this.closing) {
+            this.transform.scale = this.transform.scale.add(this.hiddenInWallScaleCorrection)
+            this.closing = true
+        }
     }
 }

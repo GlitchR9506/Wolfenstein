@@ -34,15 +34,15 @@ export default class Camera {
     nearest(shapes: Shape[]) {
         const sorted = shapes.sort((a, b) => {
             return (
-                a.transform.position.distanceTo(this.transform.position) -
-                b.transform.position.distanceTo(this.transform.position)
+                a.initialTransform.position.distanceTo(this.transform.position) -
+                b.initialTransform.position.distanceTo(this.transform.position)
             )
         })
         return sorted[0]
     }
 
     inInteractionDistance(shape: Interactable) {
-        return shape.transform.position.distanceTo(this.transform.position) <= this.interactionDistance
+        return shape.initialTransform.position.distanceTo(this.transform.position) <= this.interactionDistance
     }
 
     rotate(rotation: number) {
@@ -98,12 +98,12 @@ export default class Camera {
         this.blockedDirections = uniqueBlockedDirections
     }
 
-    isLookingAt(cuboid: Cuboid) {
+    isLookingAt(shape: Shape) {
         let lookingAtDir = Vec3.fromAngle(this.transform.rotation.y)
         let targetXDir = Vec3.up.cross(lookingAtDir).normalize
 
-        let enemyLeft = cuboid.bb.transform.position.add(targetXDir.multiply(cuboid.bb.size.x / 2))
-        let enemyRight = cuboid.bb.transform.position.substract(targetXDir.multiply(cuboid.bb.size.x / 2))
+        let enemyLeft = shape.transform.position.add(targetXDir.multiply(shape.size.x / 2))
+        let enemyRight = shape.transform.position.substract(targetXDir.multiply(shape.size.x / 2))
 
         let angleLeft = this.angleTo(enemyLeft)
         let angleRight = this.angleTo(enemyRight)
