@@ -18,7 +18,7 @@ export default class Level {
     interactables: Interactable[] = []
 
     private readonly gl: WebGLRenderingContext
-    private readonly gridSize = 50
+    private readonly gridSize = 64
     private fields: FieldData[]
 
     constructor(gl: WebGLRenderingContext) {

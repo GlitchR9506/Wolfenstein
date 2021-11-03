@@ -11,10 +11,10 @@ export default class Camera {
     private readonly fov = 60
     private readonly zNear = 1
     private readonly zFar = 2000
-    private readonly rotationSpeed = 1
-    private readonly movementSpeed = 100
+    private readonly rotationSpeed = 1.5
+    private readonly movementSpeed = 192
     private readonly collisionRadius = 15
-    private readonly interactionDistance = 60
+    private readonly interactionDistance = 96
     private readonly gl: WebGLRenderingContext
 
     private blockedDirections: Vec3[] = []

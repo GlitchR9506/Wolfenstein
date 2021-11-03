@@ -27,7 +27,7 @@ export default class Enemy extends Shape {
     static texture = texture
     constructor(gl: WebGLRenderingContext) {
         super(gl)
-        this.transform.scale.set(50, 50, 1)
+        this.transform.scale.set(64, 64, 1)
     }
 
     lookAtCamera(cameraY: number) {

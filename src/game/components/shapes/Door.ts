@@ -10,8 +10,8 @@ export default class Door extends Cuboid implements Interactable {
     private opening = false
     private closing = false
 
-    private readonly openingSpeed = 20
-    private readonly openingLength = 50
+    private readonly openingSpeed = 32
+    private readonly openingLength = 64
 
     private readonly hiddenInWallScaleCorrection = new Vec3(0.1, 0.1, 0)
 
@@ -19,8 +19,7 @@ export default class Door extends Cuboid implements Interactable {
 
     constructor(gl: WebGLRenderingContext) {
         super(gl)
-        this.transform.scale = new Vec3(50, 50, 8)
-
+        this.transform.scale = new Vec3(64, 64, 8)
     }
 
     setInitialTransform() {

@@ -6,6 +6,6 @@ export default class Wall extends Cuboid {
     static texture = texture
     constructor(gl: WebGLRenderingContext) {
         super(gl)
-        this.transform.scale = Vec3.one.multiply(50)
+        this.transform.scale = Vec3.one.multiply(64)
     }
 }
