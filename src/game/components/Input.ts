@@ -5,6 +5,7 @@ export default class Input {
     rotation = 0
     shooting = false
     interacting = false
+    justInteracted = false
 
     movementDisabled = false
     rotationDisabled = false
@@ -41,7 +42,13 @@ export default class Input {
 
         this.interacting = false
         if (!this.interactingDisabled) {
-            if (this.isPressed('KeyE')) this.interacting = true
+            if (this.isPressed('KeyE')) {
+                if (!this.justInteracted) {
+                    this.interacting = true
+                }
+            } else {
+                this.justInteracted = false
+            }
         }
     }
 

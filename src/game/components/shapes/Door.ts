@@ -92,7 +92,9 @@ export default class Door extends Cuboid implements Interactable {
         if (this.opening) {
             if (this.transform.position.equals(this.positionFinal)) {
                 this.opening = false
-                this.transform.scale = this.transform.scale.substract(this.hiddenInWallScaleCorrection)
+                if (this.initialTransform.scale.equals(this.transform.scale)) {
+                    this.transform.scale = this.transform.scale.substract(this.hiddenInWallScaleCorrection)
+                }
             } else {
                 if (this.positionFinal.substract(this.transform.position).isLess(positionDelta)) {
                     this.transform.position = this.positionFinal.clone()
@@ -122,11 +124,14 @@ export default class Door extends Cuboid implements Interactable {
     }
 
     interact() {
-        if (this.closed && !this.opening) {
+        if (this.closed || this.closing) {
+            this.closing = false
             this.opening = true
-        }
-        if (this.opened && !this.closing) {
-            this.transform.scale = this.transform.scale.add(this.hiddenInWallScaleCorrection)
+        } else if (this.opened || this.opening) {
+            if (this.transform.scale.add(this.hiddenInWallScaleCorrection).equals(this.initialTransform.scale)) {
+                this.transform.scale = this.transform.scale.add(this.hiddenInWallScaleCorrection)
+            }
+            this.opening = false
             this.closing = true
         }
     }

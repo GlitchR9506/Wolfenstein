@@ -63,6 +63,7 @@ export default class Game {
             const nearestInteractable = this.camera.nearest(this.level.interactables) as Interactable
             if (this.camera.inInteractionDistance(nearestInteractable)) {
                 nearestInteractable.interact()
+                this.input.justInteracted = true
             }
         }
 
