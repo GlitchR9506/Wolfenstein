@@ -81,6 +81,14 @@ export class Vec3 {
         return this.x == v.x && this.y == v.y && this.z == v.z
     }
 
+    isGreater(v: Vec3) {
+        return this.x >= v.x && this.y >= v.y && this.z >= v.z && (this.x > v.x || this.y > v.y || this.z > v.z)
+    }
+
+    isLess(v: Vec3) {
+        return this.x <= v.x && this.y <= v.y && this.z <= v.z && (this.x < v.x || this.y < v.y || this.z < v.z)
+    }
+
     cross(v: Vec3) {
         return new Vec3(
             this.y * v.z - this.z * v.y,

@@ -285,7 +285,7 @@ const m4 = {
     },
 
     getPositionVector: function (m: number[]) {
-        return new Vec3(m[12], m[13], m[14])
+        return new Vec3(m[12], m[13], m[14]).map(v => v < 0.0000001 ? 0 : v)
     },
 
     getScaleVector: function (m: number[]) {

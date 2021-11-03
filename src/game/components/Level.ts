@@ -1,7 +1,7 @@
 import FieldData from '../../common/FieldData';
 import Wall from './shapes/Wall'
 import Enemy from './shapes/Enemy'
-import { Vec3 } from './utils';
+import { degToRad, Vec3 } from './utils';
 import Cuboid from './shapes/Cuboid';
 import Door from './shapes/Door';
 import Shape from './shapes/Shape';
@@ -46,8 +46,21 @@ export default class Level {
                 this.width = level.width
                 this.height = level.height
                 this.fields = level.fields
+                this.checkWallsDirections()
                 callback?.()
             });
+    }
+
+    private checkWallsDirections() {
+        for (let door of this.fields.filter(f => f.value == 'door')) {
+            const horizontalNeighbours = this.fields.filter(f => f.y == door.y && (f.x == door.x + 1 || f.x == door.x - 1))
+            const verticalNeighbours = this.fields.filter(f => f.x == door.x && (f.y == door.y + 1 || f.y == door.y - 1))
+            if (horizontalNeighbours.length == 2 && verticalNeighbours.length == 0) {
+                door.rotation = 0
+            } else if (horizontalNeighbours.length == 0 && verticalNeighbours.length == 2) {
+                door.rotation = 270
+            }
+        }
     }
 
     private applyGridSize() {
@@ -77,6 +90,9 @@ export default class Level {
             const object = new ObjectClass(this.gl)
             object.transform.position.x = field.x
             object.transform.position.z = field.y
+            if (field.rotation) {
+                object.transform.rotation.y = degToRad(field.rotation)
+            }
             object.setInitialTransform()
             objects.push(object)
         }
