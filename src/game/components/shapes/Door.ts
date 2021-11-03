@@ -17,6 +17,56 @@ export default class Door extends Cuboid implements Interactable {
 
     private positionFinal: Vec3
 
+    TEXCOORDS = new Float32Array([
+        // front
+        0, 1,
+        0.5, 0,
+        0, 0,
+        0, 1,
+        0.5, 1,
+        0.5, 0,
+
+        // back
+        0, 1,
+        0, 0,
+        0.5, 0,
+        0, 1,
+        0.5, 0,
+        0.5, 1,
+
+        // left
+        0.5, 1,
+        0.5625, 1,
+        0.5625, 0,
+        0.5, 1,
+        0.5625, 0,
+        0.5, 0,
+
+        // right
+        0.5, 1,
+        0.5625, 0,
+        0.5625, 1,
+        0.5, 1,
+        0.5, 0,
+        0.5625, 0,
+
+        // top
+        0.5, 1,
+        0.5625, 0,
+        0.5, 0,
+        0.5625, 1,
+        0.5625, 0,
+        0.5, 1,
+
+        // bottom
+        0.5, 1,
+        0.5625, 1,
+        0.5, 0,
+        0.5, 0,
+        0.5625, 1,
+        0.5625, 0,
+    ])
+
     constructor(gl: WebGLRenderingContext) {
         super(gl)
         this.transform.scale = new Vec3(64, 64, 8)
