@@ -33,4 +33,10 @@ export default class Enemy extends Shape {
     lookAtCamera(cameraY: number) {
         this.transform.rotation.y = -cameraY
     }
+
+    get texturedSize() {
+        let size = this.size
+        size.x *= 299 / 512
+        return size
+    }
 }

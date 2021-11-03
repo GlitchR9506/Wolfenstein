@@ -34,7 +34,7 @@ export default class Game {
         this.level = new Level(this.gl)
         this.crosshair = new Crosshair(this.gl)
 
-        this.textures.load([Wall.texture, Enemy.texture, Door.texture], () => {
+        this.textures.load([Wall, Enemy, Door], () => {
             this.level.load(1, () => {
                 this.camera.transform.position = this.level.playerPosition
                 this.startGameLoop()
@@ -79,26 +79,28 @@ export default class Game {
 
         this.textureProgram.use()
 
-        this.textures.useTexture(Wall.texture)
+        this.textures.useTexture(Wall)
         for (let wall of this.level.walls) {
             wall.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
 
 
-        this.textures.useTexture(Door.texture)
+        this.textures.useTexture(Door)
         for (let door of this.level.doors) {
             door.update(deltaTime)
             door.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
-        this.textures.useTexture(Enemy.texture)
+        this.textures.useTexture(Enemy)
         for (let enemy of this.level.enemies) {
             if (this.camera.isLookingAt(enemy)) {
                 if (this.input.shooting) {
                     // enemy.setColor(0, [255, 0, 0])
+                    enemy.transform.position.y = 50
                     enemy.updateBuffers()
                 }
             } else {
                 // enemy.resetColor()
+                enemy.transform.position.y = 0
                 enemy.updateBuffers()
             }
             enemy.lookAtCamera(this.camera.transform.rotation.y)

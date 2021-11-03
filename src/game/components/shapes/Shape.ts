@@ -4,6 +4,9 @@ import { ProgramInfo } from '../programs/Program'
 import { TextureProgramInfo } from '../programs/TextureProgram'
 
 export default abstract class Shape {
+    static texture: string
+    static image: HTMLImageElement
+    static webglTexture: WebGLTexture
     protected readonly gl: WebGLRenderingContext
     protected positionBuffer: WebGLBuffer
     protected colorBuffer: WebGLBuffer

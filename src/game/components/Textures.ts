@@ -1,13 +1,14 @@
+import Shape from "./shapes/Shape"
+
 export default class Textures {
     private readonly gl: WebGLRenderingContext
-    private textureToImageMap: Map<string, HTMLImageElement> = new Map()
-    private textureToWebglTextureMap: Map<string, WebGLTexture> = new Map()
 
     constructor(gl: WebGLRenderingContext) {
         this.gl = gl
     }
 
-    load(textures: string[], callback?: () => void) {
+    load(textureObjectsClasses: (typeof Shape)[], callback?: () => void) {
+        const textures = textureObjectsClasses.map(el => el.texture)
         this.loadHtmlImages(textures, htmlImages => {
             textures.forEach((texture, index) => {
                 const webglTexture = this.gl.createTexture()
@@ -16,24 +17,16 @@ export default class Textures {
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_LINEAR)
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE)
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE)
-                this.textureToImageMap.set(texture, htmlImages[index])
-                this.textureToWebglTextureMap.set(texture, webglTexture)
+                textureObjectsClasses[index].image = htmlImages[index]
+                textureObjectsClasses[index].webglTexture = webglTexture
             })
             callback?.()
         })
     }
 
-    getImage(texture: string) {
-        return this.textureToImageMap.get(texture)
-    }
-
-    getTexture(texture: string) {
-        return this.textureToWebglTextureMap.get(texture)
-    }
-
-    useTexture(texture: string) {
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.getTexture(texture))
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.getImage(texture))
+    useTexture(textureObjectsClass: (typeof Shape)) {
+        this.gl.bindTexture(this.gl.TEXTURE_2D, textureObjectsClass.webglTexture)
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, textureObjectsClass.image)
         this.gl.generateMipmap(this.gl.TEXTURE_2D)
     }
 

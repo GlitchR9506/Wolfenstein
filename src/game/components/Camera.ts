@@ -3,6 +3,7 @@ import Wall from './shapes/Wall'
 import Cuboid from './shapes/Cuboid'
 import Shape from './shapes/Shape'
 import Interactable from './shapes/Interactable'
+import Enemy from './shapes/Enemy'
 
 export default class Camera {
     transform = new Transform
@@ -98,12 +99,12 @@ export default class Camera {
         this.blockedDirections = uniqueBlockedDirections
     }
 
-    isLookingAt(shape: Shape) {
+    isLookingAt(enemy: Enemy) {
         let lookingAtDir = Vec3.fromAngle(this.transform.rotation.y)
         let targetXDir = Vec3.up.cross(lookingAtDir).normalize
 
-        let enemyLeft = shape.transform.position.add(targetXDir.multiply(shape.size.x / 2))
-        let enemyRight = shape.transform.position.substract(targetXDir.multiply(shape.size.x / 2))
+        let enemyLeft = enemy.transform.position.add(targetXDir.multiply(enemy.texturedSize.x / 2))
+        let enemyRight = enemy.transform.position.substract(targetXDir.multiply(enemy.texturedSize.x / 2))
 
         let angleLeft = this.angleTo(enemyLeft)
         let angleRight = this.angleTo(enemyRight)
