@@ -37,7 +37,7 @@ export class Vec3 {
 
     static arrayToVec3Array(a: number[] | Float32Array) {
         let array: Vec3[] = []
-        for (let i = 0; i < a.length / 3; i += 3) {
+        for (let i = 0; i < a.length; i += 3) {
             array.push(new Vec3(
                 a[i],
                 a[i + 1],
