@@ -162,6 +162,14 @@ export default class Cuboid extends Shape {
             ...this.COLORS.slice(3 * 6 * (wall + 1))])
     }
 
+    wallTexcoords(wall: number) {
+        return this.TEXCOORDS.slice(2 * 6 * wall, 2 * 6 * (wall + 1))
+    }
+
+    initialWallTexcoords(wall: number) {
+        return this.initialTexcoords.slice(2 * 6 * wall, 2 * 6 * (wall + 1))
+    }
+
     resetColor() {
         this.COLORS = this.defaultColors
     }

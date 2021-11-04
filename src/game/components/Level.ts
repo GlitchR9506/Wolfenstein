@@ -47,6 +47,7 @@ export default class Level {
                 this.height = level.height
                 this.fields = level.fields
                 this.checkWallsDirections()
+                this.changeWallsNeighboursTextures()
                 callback?.()
             });
     }
@@ -59,6 +60,19 @@ export default class Level {
                 door.rotation = 0
             } else if (horizontalNeighbours.length == 0 && verticalNeighbours.length == 2) {
                 door.rotation = 270
+            }
+        }
+    }
+
+    private changeWallsNeighboursTextures() {
+        for (let door of this.fields.filter(f => f.value == 'door')) {
+            for (let direction of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
+                const neighbour = this.fields.find(f => {
+                    return f.x == door.x + direction[0] && f.y == door.y + direction[1]
+                })
+                if (neighbour) {
+                    neighbour.wallDirection = direction
+                }
             }
         }
     }
@@ -94,6 +108,22 @@ export default class Level {
                 object.transform.rotation.y = degToRad(field.rotation)
             }
             object.setInitialTransform()
+            if (field.wallDirection) {
+                const wall = object as Wall
+                const textureToSet = 4
+                if (field.wallDirection[0] == 0 && field.wallDirection[1] == -1) {
+                    wall.setTexture(textureToSet, 0)
+                }
+                if (field.wallDirection[0] == 0 && field.wallDirection[1] == 1) {
+                    wall.setTexture(textureToSet, 1)
+                }
+                if (field.wallDirection[0] == -1 && field.wallDirection[1] == 0) {
+                    wall.setTexture(textureToSet, 3)
+                }
+                if (field.wallDirection[0] == 1 && field.wallDirection[1] == 0) {
+                    wall.setTexture(textureToSet, 2)
+                }
+            }
             objects.push(object)
         }
         return objects

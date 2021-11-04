@@ -14,6 +14,7 @@ export default abstract class Shape {
     protected VERTICES: Float32Array
     protected COLORS: Uint8Array
     protected TEXCOORDS: Float32Array
+    protected initialTexcoords: Float32Array
     private firstBufferReady = false
     transform = new Transform()
     initialTransform: Transform
@@ -69,6 +70,11 @@ export default abstract class Shape {
 
     setInitialTransform() {
         this.initialTransform = this.transform.clone()
+        this.onInitEnd()
+    }
+
+    onInitEnd() {
+        this.initialTexcoords = this.TEXCOORDS.slice(0)
     }
 
     updateBuffers() {

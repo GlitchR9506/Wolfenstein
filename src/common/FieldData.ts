@@ -3,4 +3,5 @@ export default interface FieldData {
     y: number
     value: string
     rotation?: number
+    wallDirection?: number[]
 }
