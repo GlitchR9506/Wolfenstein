@@ -1,5 +1,6 @@
 import Shape from './Shape'
 import { CuboidBoundingBox } from './CuboidBoundingBox'
+import { Vec2 } from '../utils'
 
 export default class Cuboid extends Shape {
     VERTICES = new Float32Array([
@@ -150,6 +151,11 @@ export default class Cuboid extends Shape {
     readonly bb = new CuboidBoundingBox(this)
     readonly defaultColors = this.COLORS
 
+    setInitialState() {
+        super.setInitialState()
+        this.setTexture(0)
+    }
+
     setColor(wall: number, color: number[]) {
         this.COLORS = new Uint8Array([
             ...this.COLORS.slice(0, 3 * 6 * wall),
@@ -172,5 +178,33 @@ export default class Cuboid extends Shape {
 
     resetColor() {
         this.COLORS = this.defaultColors
+    }
+
+    texturesInLine = 1
+    get textureSize() {
+        return 1 / this.texturesInLine
+    }
+
+    setTexture(textureNumber: number, wallNumber?: number) {
+        let newTexcoords = []
+        if (wallNumber !== undefined) {
+            for (let i = 0; i < 6; i++) {
+                if (i == wallNumber) {
+                    newTexcoords.push(...this.setTexcoordsToTexture(textureNumber, this.initialWallTexcoords(wallNumber)))
+                } else {
+                    newTexcoords.push(...this.wallTexcoords(i))
+                }
+            }
+        } else {
+            newTexcoords = [...this.setTexcoordsToTexture(textureNumber, this.initialTexcoords)]
+        }
+        this.TEXCOORDS = new Float32Array(newTexcoords)
+    }
+
+    private setTexcoordsToTexture(textureNumber: number, texcoords: Float32Array) {
+        let verticesVec2Array = Vec2.arrayToVec2Array(texcoords)
+        const texturePos = new Vec2(textureNumber % this.texturesInLine, Math.floor(textureNumber / this.texturesInLine)).multiply(this.textureSize)
+        verticesVec2Array = verticesVec2Array.map(vertex => vertex.multiply(this.textureSize).add(texturePos))
+        return Vec2.vec2ArrayToArray(verticesVec2Array)
     }
 }

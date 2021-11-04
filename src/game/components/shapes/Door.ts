@@ -72,8 +72,8 @@ export default class Door extends Cuboid implements Interactable {
         this.transform.scale = new Vec3(64, 64, 6)
     }
 
-    setInitialTransform() {
-        super.setInitialTransform()
+    setInitialState() {
+        super.setInitialState()
         const translationFinal = new Vec3(this.openingLength, 0, 0)
         let mFinal = m4.identity
         mFinal = m4.translate(mFinal, translationFinal)

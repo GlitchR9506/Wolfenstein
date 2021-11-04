@@ -107,7 +107,7 @@ export default class Level {
             if (field.rotation) {
                 object.transform.rotation.y = degToRad(field.rotation)
             }
-            object.setInitialTransform()
+            object.setInitialState()
             if (field.wallDirection) {
                 const wall = object as Wall
                 const textureToSet = 4

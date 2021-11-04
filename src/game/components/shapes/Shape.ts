@@ -68,12 +68,8 @@ export default abstract class Shape {
         return this.size.multiply(0.5)
     }
 
-    setInitialTransform() {
+    setInitialState() {
         this.initialTransform = this.transform.clone()
-        this.onInitEnd()
-    }
-
-    onInitEnd() {
         this.initialTexcoords = this.TEXCOORDS.slice(0)
     }
 
