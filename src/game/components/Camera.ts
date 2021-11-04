@@ -4,6 +4,7 @@ import Cuboid from './shapes/Cuboid'
 import Shape from './shapes/Shape'
 import Interactable from './shapes/Interactable'
 import Enemy from './shapes/Enemy'
+import Door from './shapes/Door'
 
 export default class Camera {
     transform = new Transform
@@ -14,7 +15,8 @@ export default class Camera {
     private readonly zFar = 2000
     private readonly rotationSpeed = 1.5
     private readonly movementSpeed = 192
-    private readonly collisionRadius = 15
+    // private readonly collisionRadius = 15
+    private readonly collisionRadius = 20
     private readonly interactionDistance = 96
     private readonly gl: WebGLRenderingContext
 
@@ -77,14 +79,36 @@ export default class Camera {
     cuboidCollisionSide(cuboid: Cuboid) {
         const cameraToWall = this.transform.position.yZeroed.to(cuboid.transform.position.yZeroed)
         const cameraToWallDirection = cameraToWall.normalize
-        const collidingPointTranslation = cameraToWallDirection.multiply(this.collisionRadius)
-        const collidingPoint = this.transform.position.add(collidingPointTranslation)
-        const collisionCandidates = [collidingPoint, this.transform.position]
+
+        let steps = 1
+        if (cuboid instanceof Door) {
+            steps = 10
+        }
+
+        let collisionCandidates = [this.transform.position]
+        for (let i = this.collisionRadius; i > 0; i -= this.collisionRadius / steps) {
+            const currentRadius = i
+            // const currentRadius = this.collisionRadius
+            const collidingPointTranslation = cameraToWallDirection.multiply(currentRadius)
+            const collidingPoint = this.transform.position.add(collidingPointTranslation)
+            collisionCandidates.push(collidingPoint)
+        }
         for (let candidate of collisionCandidates) {
             if (cuboid.bb.isColliding(candidate)) {
-                return cuboid.bb.collisionSide(candidate)
+                // const a = cuboid.bb.collisionSide(candidate)
+                const collisionSide = cuboid.bb.pointSide(this.transform.position)
+                return collisionSide
             }
         }
+
+        // const collidingPointTranslation = cameraToWallDirection.multiply(this.collisionRadius)
+        // const collidingPoint = this.transform.position.add(collidingPointTranslation)
+        // const collisionCandidates = [collidingPoint, this.transform.position]
+        // for (let candidate of collisionCandidates) {
+        //     if (cuboid.bb.isColliding(candidate)) {
+        //         return cuboid.bb.collisionSide(candidate)
+        //     }
+        // }
         return null
     }
 
@@ -92,7 +116,8 @@ export default class Camera {
         const collidingSides = cuboids
             .map(c => this.cuboidCollisionSide(c))
             .filter(side => side !== null)
-        const blockedDirections = collidingSides.map(side => side.inverted)
+        // const blockedDirections = collidingSides.map(side => side.inverted)
+        const blockedDirections = collidingSides.map(side => side)
         const uniqueBlockedDirections = blockedDirections.filter((direction, index, self) =>
             index === self.findIndex(d => d.equals(direction))
         )

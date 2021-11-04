@@ -16,6 +16,5 @@ export default class Wall extends Cuboid {
         // const textureNumber = Math.floor(Math.random() * 4)
         // this.setTexture(textureNumber)
         this.setTexture(0)
-        this.setTexture(1, 0)
     }
 }

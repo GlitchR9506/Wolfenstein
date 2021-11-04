@@ -1,5 +1,5 @@
 import Shape from "./Shape";
-import { Transform, Vec3 } from "../utils";
+import { log, Transform, Vec3 } from "../utils";
 
 export class CuboidBoundingBox {
     readonly shape: Shape
@@ -34,19 +34,39 @@ export class CuboidBoundingBox {
 
     // only non rotated cuboid
     isColliding(v: Vec3) {
-        const positive = this.transform.position.add(this.halfSize)
-        const negative = this.transform.position.substract(this.halfSize)
-        return negative.x <= v.x && v.x <= positive.x && negative.z <= v.z && v.z <= positive.z
+        const pos = this.positiveCorner
+        const neg = this.negativeCorner
+        return neg.x <= v.x && v.x <= pos.x && neg.z <= v.z && v.z <= pos.z
     }
 
     // only non rotated cuboid
-    collisionSide(v: Vec3) {
-        const xDiff = this.transform.position.x - v.x
-        const zDiff = this.transform.position.z - v.z
-        if (Math.abs(xDiff) > Math.abs(zDiff)) {
-            return xDiff > 0 ? Vec3.right : Vec3.left
-        } else {
-            return zDiff > 0 ? Vec3.forward : Vec3.backward
+    pointSide(v: Vec3) {
+        let checkingPoint = this.transform.position
+        const diff = checkingPoint.substract(v)
+
+        let collisionSide = Vec3.zero
+        if (diff.x > this.halfSize.x) {
+            collisionSide.x = -1
         }
+        if (diff.x < -this.halfSize.x) {
+            collisionSide.x = 1
+        }
+        if (diff.z > this.halfSize.z) {
+            collisionSide.z = -1
+        }
+        if (diff.z < -this.halfSize.z) {
+            collisionSide.z = 1
+        }
+        if (collisionSide.x && collisionSide.z) {
+            if (Math.abs(diff.x) > Math.abs(diff.z)) {
+                collisionSide.z = 0
+            } else {
+                collisionSide.x = 0
+            }
+        }
+        log('diff.x', diff.x)
+        log('diff.z', diff.z)
+        log('collisionSide', collisionSide)
+        return collisionSide
     }
 }
