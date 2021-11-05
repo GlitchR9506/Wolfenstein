@@ -64,8 +64,17 @@ export default abstract class Shape {
         )
     }
 
+    get sizeRotated() {
+        const rotationMatrix = m4.yRotation(this.transform.rotation.y)
+        return this.size.transformMat4(rotationMatrix).abs
+    }
+
     get halfSize() {
         return this.size.multiply(0.5)
+    }
+
+    get halfSizeRotated() {
+        return this.sizeRotated.multiply(0.5)
     }
 
     setInitialState() {

@@ -87,6 +87,9 @@ export default class Game {
 
         this.textures.useTexture(Door)
         for (let door of this.level.doors) {
+            // log(`size[${this.level.doors.indexOf(door)}]`, door.size)
+            // log(`sizeRotated[${this.level.doors.indexOf(door)}]`, door.sizeRotated)
+            // log(`negativeCorner[${this.level.doors.indexOf(door)}]`, door.bb.negativeCorner)
             door.update(deltaTime)
             door.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }

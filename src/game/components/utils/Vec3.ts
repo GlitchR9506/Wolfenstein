@@ -188,4 +188,16 @@ export class Vec3 {
             this.z,
         )
     }
+
+    get abs() {
+        return this.map(v => Math.abs(v))
+    }
+
+    get signedUnit() {
+        return this.map(v => {
+            if (v > 0) return 1
+            if (v < 0) return -1
+            return 0
+        })
+    }
 }

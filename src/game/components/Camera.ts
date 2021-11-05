@@ -96,7 +96,8 @@ export default class Camera {
         for (let candidate of collisionCandidates) {
             if (cuboid.bb.isColliding(candidate)) {
                 // const a = cuboid.bb.collisionSide(candidate)
-                const collisionSide = cuboid.bb.pointSide(this.transform.position)
+                const collisionSide = cuboid.bb.pointFarthestSide(this.transform.position)
+                console.log('koliduje', collisionSide)
                 return collisionSide
             }
         }
