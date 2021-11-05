@@ -193,7 +193,7 @@ export class Vec3 {
         return this.map(v => Math.abs(v))
     }
 
-    get signedUnit() {
+    get minusOneOrZeroOrOne() {
         return this.map(v => {
             if (v > 0) return 1
             if (v < 0) return -1

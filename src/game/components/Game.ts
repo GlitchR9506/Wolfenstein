@@ -3,7 +3,7 @@ import Camera from './Camera'
 import Input from './Input'
 import Level from './Level'
 import Crosshair from './shapes/Crosshair'
-import { log } from './utils'
+import { degToRad, log, radToDeg } from './utils'
 import Interactable from './shapes/Interactable'
 import { TextureProgram } from './programs/TextureProgram'
 import Wall from './shapes/Wall'
@@ -71,7 +71,6 @@ export default class Game {
         this.camera.rotate(this.input.rotation * deltaTime)
         this.camera.move(this.input.direction.multiply(deltaTime))
 
-
         this.colorProgram.use()
 
         this.crosshair.draw(this.colorProgram.info, this.camera.projectionMatrix)
@@ -87,9 +86,6 @@ export default class Game {
 
         this.textures.useTexture(Door)
         for (let door of this.level.doors) {
-            // log(`size[${this.level.doors.indexOf(door)}]`, door.size)
-            // log(`sizeRotated[${this.level.doors.indexOf(door)}]`, door.sizeRotated)
-            // log(`negativeCorner[${this.level.doors.indexOf(door)}]`, door.bb.negativeCorner)
             door.update(deltaTime)
             door.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }

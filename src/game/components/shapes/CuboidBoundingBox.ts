@@ -30,7 +30,6 @@ export class CuboidBoundingBox {
         return this.shape.halfSizeRotated
     }
 
-    // only 90*x rotated cuboid
     get negativeCorner() {
         return this.transform.position.substract(this.halfSize)
     }
@@ -39,7 +38,6 @@ export class CuboidBoundingBox {
         return this.transform.position.substract(this.halfSizeRotated)
     }
 
-    // only 90*x rotated cuboid
     get positiveCorner() {
         return this.transform.position.add(this.halfSize)
     }
@@ -48,21 +46,12 @@ export class CuboidBoundingBox {
         return this.transform.position.add(this.halfSizeRotated)
     }
 
-    // only 90*x rotated cuboid
     isColliding(v: Vec3) {
         const pos = this.positiveCornerRotated
         const neg = this.negativeCornerRotated
-        if (neg.x <= v.x && v.x <= pos.x && neg.z <= v.z && v.z <= pos.z) {
-            // log('pos', pos)
-            // log('halfSize', this.halfSize)
-            // log('halfSizeRotated', this.halfSizeRotated)
-            log('center', this.transform.position)
-            log('is Colliding', v)
-        }
         return neg.x <= v.x && v.x <= pos.x && neg.z <= v.z && v.z <= pos.z
     }
 
-    // only non rotated cuboid
     pointSide(v: Vec3) {
         const diff = this.transform.position.substract(v)
         // const rotationMatrix = m4.yRotation(this.transform.rotation.y)
@@ -82,10 +71,16 @@ export class CuboidBoundingBox {
         if (diffRotated.z < -this.halfSizeRotated.z) {
             pointSide.z = 1
         }
-        // log('diff.x', diffRotated.x)
-        // log('diff.z', diffRotated.z)
-        log('collisionSide', pointSide)
         return pointSide
+    }
+
+    nearestDistanceDirection(v: Vec3) {
+        const side = this.pointSide(v)
+        if (side.x && side.z) {
+            return v.substract(this.nearestCorner(v)).yZeroed.normalize
+        } else {
+            return side
+        }
     }
 
     pointSideRotated(v: Vec3) {
@@ -100,7 +95,7 @@ export class CuboidBoundingBox {
         return pointSide.transformMat4(rotationMatrix)
     }
 
-    // only non rotated cuboid
+    // only a non rotated cuboid
     pointFarthestSide(v: Vec3) {
         const diff = this.transform.position.substract(v)
         const rotationMatrix = m4.yRotation(this.transform.rotation.y)
@@ -116,23 +111,19 @@ export class CuboidBoundingBox {
         return pointSide
     }
 
-    // only non rotated cuboid
+    // cuboid rotated by any value
     nearestCorner(v: Vec3) {
         const diff = this.transform.position.substract(v)
         if (diff.x <= 0 && diff.z <= 0) {
-            return this.transform.position.substract(this.halfSize)
+            return this.transform.position.substract(this.halfSizeRotated)
         } else if (diff.x <= 0 && diff.z >= 0) {
-            const cornerRelative = new Vec3(-this.halfSize.x, 0, this.halfSize.z)
+            const cornerRelative = new Vec3(-this.halfSizeRotated.x, 0, this.halfSizeRotated.z)
             return this.transform.position.substract(cornerRelative)
         } else if (diff.x >= 0 && diff.z <= 0) {
-            const cornerRelative = new Vec3(this.halfSize.x, 0, -this.halfSize.z)
+            const cornerRelative = new Vec3(this.halfSizeRotated.x, 0, -this.halfSizeRotated.z)
             return this.transform.position.substract(cornerRelative)
         } else if (diff.x >= 0 && diff.z >= 0) {
-            return this.transform.position.add(this.halfSize)
+            return this.transform.position.add(this.halfSizeRotated)
         }
-    }
-
-    nearestPoint(v: Vec3) {
-
     }
 }
