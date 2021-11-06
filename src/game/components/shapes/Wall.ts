@@ -3,7 +3,7 @@ import Cuboid from './Cuboid'
 import texture from '../../textures/wall.png'
 
 export default class Wall extends Cuboid {
-    static texture = texture
+    static importedTexture = texture
     texturesInLine = 4
 
     constructor(gl: WebGLRenderingContext) {

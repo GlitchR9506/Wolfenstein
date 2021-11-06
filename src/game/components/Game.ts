@@ -3,7 +3,7 @@ import Camera from './Camera'
 import Input from './Input'
 import Level from './Level'
 import Crosshair from './shapes/Crosshair'
-import { degToRad, log, radToDeg } from './utils'
+import { degToRad, log, radToDeg, Vec3 } from './utils'
 import Interactable from './shapes/Interactable'
 import { TextureProgram } from './programs/TextureProgram'
 import Wall from './shapes/Wall'
@@ -91,16 +91,12 @@ export default class Game {
         for (let enemy of this.level.enemies) {
             if (this.camera.isLookingAt(enemy)) {
                 if (this.input.shooting) {
-                    // enemy.setColor(0, [255, 0, 0])
-                    enemy.transform.position.y = 50
-                    enemy.updateBuffers()
+
                 }
-            } else {
-                // enemy.resetColor()
-                enemy.transform.position.y = 0
-                enemy.updateBuffers()
             }
             enemy.lookAtCamera(this.camera.transform.rotation.y)
+            enemy.update(deltaTime)
+            enemy.updateBuffers()
             enemy.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
 

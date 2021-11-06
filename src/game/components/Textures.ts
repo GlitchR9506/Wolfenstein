@@ -8,7 +8,7 @@ export default class Textures {
     }
 
     load(textureObjectsClasses: (typeof Shape)[], callback?: () => void) {
-        const textures = textureObjectsClasses.map(el => el.texture)
+        const textures = textureObjectsClasses.map(el => el.importedTexture)
         this.loadHtmlImages(textures, htmlImages => {
             textures.forEach((texture, index) => {
                 const webglTexture = this.gl.createTexture()

@@ -5,7 +5,7 @@ import texture from '../../textures/door.png'
 
 
 export default class Door extends Cuboid implements Interactable {
-    static texture = texture
+    static importedTexture = texture
 
     private opening = false
     private closing = false
