@@ -67,10 +67,8 @@ export default class Game {
             }
         }
 
-        this.camera.checkCollisions(this.level.collidingCuboids)
         this.camera.rotate(this.input.rotation * deltaTime)
-        this.camera.move(this.input.direction.multiply(deltaTime))
-
+        this.camera.move(this.input.direction.multiply(deltaTime), this.level.collidingCuboids)
         this.colorProgram.use()
 
         this.crosshair.draw(this.colorProgram.info, this.camera.projectionMatrix)

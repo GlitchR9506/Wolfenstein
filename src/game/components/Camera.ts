@@ -53,7 +53,7 @@ export default class Camera {
         this.transform.rotation.y += rotation * this.rotationSpeed
     }
 
-    move(direction: Vec3) {
+    move(direction: Vec3, collidingCuboids?: Cuboid[]) {
         const transformMatrix = m4.yRotation(-this.transform.rotation.y)
         let deltaPosition = direction.inverted.multiply(this.movementSpeed).transformMat4(transformMatrix)
 
@@ -70,6 +70,10 @@ export default class Camera {
             // different sign
             if (blockedDirection.z * deltaPosition.z < 0) deltaPosition.z = 0
             if (blockedDirection.x * deltaPosition.x < 0) deltaPosition.x = 0
+        }
+
+        if (collidingCuboids) {
+            this.checkCollisions(collidingCuboids)
         }
 
         this.transform.position = this.transform.position.add(deltaPosition)
@@ -114,6 +118,9 @@ export default class Camera {
                         collisionSide.x = 0
                     }
                 }
+                log('col side', collisionSide)
+
+                // this.transform.position = this.transform.position.add(collisionSide)
                 return collisionSide
             }
         }
