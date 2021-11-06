@@ -149,7 +149,7 @@ export default class Camera {
         let angleLeft = this.angleTo(enemyLeft)
         let angleRight = this.angleTo(enemyRight)
 
-        let lookingAtEnemy = angleLeft > 0 && angleRight < 0
+        let lookingAtEnemy = 0 < angleLeft && angleLeft < 90 && -90 < angleRight && angleRight < 0
 
         return lookingAtEnemy
     }

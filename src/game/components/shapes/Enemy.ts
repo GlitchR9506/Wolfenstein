@@ -60,6 +60,15 @@ export default class Enemy extends Shape {
         }
     }
 
+    hp = 100
+    damage(value: number) {
+        this.hp -= value
+        if (this.hp <= 0) {
+            this.hp = 0
+            this.state = 'dying'
+        }
+    }
+
     lookAtCamera(cameraY: number) {
         this.transform.rotation.y = -cameraY
     }

@@ -91,7 +91,7 @@ export default class Game {
         for (let enemy of this.level.enemies) {
             if (this.camera.isLookingAt(enemy)) {
                 if (this.input.shooting) {
-
+                    enemy.damage(100)
                 }
             }
             enemy.lookAtCamera(this.camera.transform.rotation.y)
