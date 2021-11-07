@@ -1,15 +1,18 @@
-import { ColorProgram, ColorProgramInfo } from './programs/ColorProgram'
+import { ColorProgram } from './programs/ColorProgram'
+import { TextureProgram } from './programs/TextureProgram'
+
+import { degToRad, log, radToDeg, Vec3 } from './utils'
 import Camera from './Camera'
 import Input from './Input'
+import Textures from './Textures'
+
 import Level from './Level'
-import Crosshair from './shapes/Crosshair'
-import { degToRad, log, radToDeg, Vec3 } from './utils'
-import Interactable from './shapes/Interactable'
-import { TextureProgram } from './programs/TextureProgram'
 import Wall from './shapes/Wall'
 import Door from './shapes/Door'
 import Enemy from './shapes/Enemy'
-import Textures from './Textures'
+
+import Crosshair from './shapes/Crosshair'
+import Interactable from './shapes/Interactable'
 
 
 export default class Game {

@@ -1,6 +1,4 @@
-import Cuboid from './Cuboid'
 import texture from '../../textures/guard.png'
-import Shape from './Shape'
 import { degToRad, Vec2 } from '../utils'
 import Plane from './Plane'
 

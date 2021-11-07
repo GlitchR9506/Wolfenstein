@@ -1,7 +1,7 @@
 import FieldData from '../../common/FieldData';
+import { degToRad, Vec3 } from './utils';
 import Wall from './shapes/Wall'
 import Enemy from './shapes/Enemy'
-import { degToRad, Vec3 } from './utils';
 import Cuboid from './shapes/Cuboid';
 import Door from './shapes/Door';
 import Shape from './shapes/Shape';
@@ -98,18 +98,18 @@ export default class Level {
         // this.doors[0].transform.position.x += 45
     }
 
-    private getLevelObjectsList(value: string, ObjectClass: new (gl: WebGLRenderingContext) => Shape) {
+    private getLevelObjectsList(value: string, SpecificShape: (typeof Shape)) {
         const objects: Shape[] = []
         for (let field of this.fields.filter(f => f.value == value)) {
-            const object = new ObjectClass(this.gl)
-            object.transform.position.x = field.x
-            object.transform.position.z = field.y
+            const shape = new SpecificShape(this.gl)
+            shape.transform.position.x = field.x
+            shape.transform.position.z = field.y
             if (field.rotation) {
-                object.transform.rotation.y = degToRad(field.rotation)
+                shape.transform.rotation.y = degToRad(field.rotation)
             }
-            object.setInitialState()
+            shape.setInitialState()
             if (field.wallDirection) {
-                const wall = object as Wall
+                const wall = shape as Wall
                 const textureToSet = 4
                 if (field.wallDirection[0] == 0 && field.wallDirection[1] == -1) {
                     wall.setTexture(textureToSet, 0)
@@ -124,7 +124,7 @@ export default class Level {
                     wall.setTexture(textureToSet, 2)
                 }
             }
-            objects.push(object)
+            objects.push(shape)
         }
         return objects
     }

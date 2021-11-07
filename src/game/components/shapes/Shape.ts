@@ -1,9 +1,7 @@
 import { m4, Vec3, Transform } from '../utils'
-import { ColorProgramInfo } from '../programs/ColorProgram'
 import { ProgramInfo } from '../programs/Program'
-import { TextureProgramInfo } from '../programs/TextureProgram'
 
-export default abstract class Shape {
+export default class Shape {
     static importedTexture: string
     static image: HTMLImageElement
     static webglTexture: WebGLTexture

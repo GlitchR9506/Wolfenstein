@@ -1,11 +1,9 @@
 import { Vec3, Transform, radToDeg, m4, degToRad, log } from './utils'
-import Wall from './shapes/Wall'
 import Cuboid from './shapes/Cuboid'
 import Shape from './shapes/Shape'
 import Interactable from './shapes/Interactable'
 import Enemy from './shapes/Enemy'
 import Door from './shapes/Door'
-import { CuboidBoundingBox } from './shapes/CuboidBoundingBox'
 
 export default class Camera {
     transform = new Transform
