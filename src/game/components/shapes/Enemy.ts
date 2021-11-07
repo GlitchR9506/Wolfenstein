@@ -1,34 +1,15 @@
 import Cuboid from './Cuboid'
 import texture from '../../textures/guard.png'
 import Shape from './Shape'
-import { Vec2 } from '../utils'
-import { ids } from 'webpack'
+import { degToRad, Vec2 } from '../utils'
+import Plane from './Plane'
 
-export default class Enemy extends Shape {
-    VERTICES = new Float32Array([
-        -0.5, -0.5, 0.5,
-        0.5, 0.5, 0.5,
-        -0.5, 0.5, 0.5,
-        -0.5, -0.5, 0.5,
-        0.5, -0.5, 0.5,
-        0.5, 0.5, 0.5,
-    ])
-
-    TEXCOORDS = new Float32Array([
-        0, 1,
-        1, 0,
-        0, 0,
-        0, 1,
-        1, 1,
-        1, 0,
-    ])
-
-
+export default class Enemy extends Plane {
     static importedTexture = texture
 
     constructor(gl: WebGLRenderingContext) {
         super(gl)
-        this.transform.scale.set(64, 64, 1)
+        this.transform.rotation.x = degToRad(90)
     }
 
     private textureNumber: number
