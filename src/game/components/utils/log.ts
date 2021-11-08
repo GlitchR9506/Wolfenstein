@@ -1,4 +1,4 @@
-import { Vec3 } from './Vec3'
+import { Vec3 } from '.'
 
 export function log(name: string, value: any) {
     let element = document.getElementById(name)

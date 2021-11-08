@@ -72,6 +72,8 @@ export default class Camera {
 
         if (collidingCuboids) {
             this.checkCollisions(collidingCuboids)
+        } else {
+            this.blockedDirections = []
         }
 
         this.transform.position = this.transform.position.add(deltaPosition)

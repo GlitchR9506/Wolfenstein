@@ -1,6 +1,7 @@
 export {
     radToDeg,
     degToRad,
+    hexToRgb,
 } from './utils'
 
 export { m4 } from './m4'

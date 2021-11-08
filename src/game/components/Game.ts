@@ -71,10 +71,17 @@ export default class Game {
         }
 
         this.camera.rotate(this.input.rotation * deltaTime)
-        this.camera.move(this.input.direction.multiply(deltaTime), this.level.collidingCuboids)
+        if (this.input.noclip) {
+            this.camera.move(this.input.direction.multiply(deltaTime))
+        } else {
+            this.camera.move(this.input.direction.multiply(deltaTime), this.level.collidingCuboids)
+        }
+
         this.colorProgram.use()
 
         this.crosshair.draw(this.colorProgram.info, this.camera.projectionMatrix)
+        this.level.floor.draw(this.colorProgram.info, this.camera.viewProjectionMatrix)
+        this.level.ceiling.draw(this.colorProgram.info, this.camera.viewProjectionMatrix)
 
 
         this.textureProgram.use()

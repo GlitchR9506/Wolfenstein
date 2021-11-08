@@ -1,5 +1,5 @@
-import { Vec3 } from './Vec3'
-import { m4 } from './m4'
+import { Vec3 } from '.'
+import { m4 } from '.'
 
 export class Transform {
     position = Vec3.zero

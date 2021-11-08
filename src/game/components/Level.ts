@@ -4,16 +4,20 @@ import Wall from './shapes/Wall'
 import Enemy from './shapes/Enemy'
 import Cuboid from './shapes/Cuboid';
 import Door from './shapes/Door';
+import Plane from './shapes/Plane';
 import Shape from './shapes/Shape';
 import Interactable from './shapes/Interactable';
 
 export default class Level {
     width: number
     height: number
+    center: Vec3
     playerPosition: Vec3
     walls: Wall[] = []
     enemies: Enemy[] = []
     doors: Door[] = []
+    floor: Plane
+    ceiling: Plane
     collidingCuboids: Cuboid[] = []
     interactables: Interactable[] = []
 
@@ -45,6 +49,7 @@ export default class Level {
             .then(({ default: level }) => {
                 this.width = level.width
                 this.height = level.height
+                this.center = new Vec3(this.width * this.gridSize / 2, 0, this.height * this.gridSize / 2)
                 this.fields = level.fields
                 this.checkWallsDirections()
                 this.changeWallsNeighboursTextures()
@@ -96,6 +101,19 @@ export default class Level {
         this.collidingCuboids.push(...this.doors)
         this.interactables.push(...this.doors)
         // this.doors[0].transform.position.x += 45
+
+        this.floor = new Plane(this.gl)
+        this.floor.setColor("#707070")
+        this.floor.transform.position = this.center.clone()
+        this.floor.transform.position.y = -this.gridSize / 2
+        this.floor.transform.scale.set(this.width * this.gridSize, 1, this.height * this.gridSize)
+
+        this.ceiling = new Plane(this.gl)
+        this.ceiling.setColor("#383838")
+        this.ceiling.transform.position = this.center.clone()
+        this.ceiling.transform.position.y = this.gridSize / 2
+        this.ceiling.transform.scale.set(this.width * this.gridSize, 1, this.height * this.gridSize)
+        this.ceiling.transform.rotation.z = degToRad(180)
     }
 
     private getLevelObjectsList(value: string, SpecificShape: (typeof Shape)) {

@@ -1,4 +1,4 @@
-import { Vec3 } from './Vec3'
+import { Vec3 } from '.'
 
 const m4 = {
     translation: (v: Vec3) => {
