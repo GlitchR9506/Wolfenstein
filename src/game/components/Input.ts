@@ -6,11 +6,13 @@ export default class Input {
     shooting = false
     interacting = false
     justInteracted = false
+    noclip = false
 
     movementDisabled = false
     rotationDisabled = false
     shootingDisabled = false
     interactingDisabled = false
+    noclipDisabled = false
 
     private pressedKeys: string[] = []
 
@@ -48,6 +50,13 @@ export default class Input {
                 }
             } else {
                 this.justInteracted = false
+            }
+        }
+
+        this.noclip = false
+        if (!this.noclipDisabled) {
+            if (this.isPressed('KeyC')) {
+                this.noclip = true
             }
         }
     }
