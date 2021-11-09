@@ -140,16 +140,16 @@ export default class Camera {
     }
 
     isLookingAt(enemy: Enemy) {
-        let lookingAtDir = Vec3.fromAngle(this.transform.rotation.y)
-        let targetXDir = Vec3.up.cross(lookingAtDir).normalize
+        const lookingAtDir = Vec3.fromAngle(this.transform.rotation.y)
+        const targetXDir = Vec3.up.cross(lookingAtDir).normalize
 
-        let enemyLeft = enemy.transform.position.add(targetXDir.multiply(enemy.texturedSize.x / 2))
-        let enemyRight = enemy.transform.position.substract(targetXDir.multiply(enemy.texturedSize.x / 2))
+        const enemyLeft = enemy.transform.position.add(targetXDir.multiply(enemy.texturedSize.x / 2))
+        const enemyRight = enemy.transform.position.substract(targetXDir.multiply(enemy.texturedSize.x / 2))
 
-        let angleLeft = this.angleTo(enemyLeft)
-        let angleRight = this.angleTo(enemyRight)
+        const angleLeft = this.angleTo(enemyLeft)
+        const angleRight = this.angleTo(enemyRight)
 
-        let lookingAtEnemy = 0 < angleLeft && angleLeft < 90 && -90 < angleRight && angleRight < 0
+        const lookingAtEnemy = 0 < angleLeft && angleLeft < 90 && -90 < angleRight && angleRight < 0
 
         return lookingAtEnemy
     }

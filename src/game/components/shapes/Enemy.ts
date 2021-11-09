@@ -52,11 +52,7 @@ export default class Enemy extends Plane {
         this.transform.rotation.y = -cameraY
     }
 
-    get texturedSize() {
-        let size = this.size
-        size.x *= 299 / 512
-        return size
-    }
+    texturedWidth = 28 / 64
 
     texturesInLine = 4
     get textureSize() {

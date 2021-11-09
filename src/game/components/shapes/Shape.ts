@@ -63,6 +63,7 @@ export default class Shape {
     }
 
     get sizeRotated() {
+        if (!this.transform.rotation.y) return this.size
         const rotationMatrix = m4.yRotation(this.transform.rotation.y)
         return this.size.transformMat4(rotationMatrix).abs
     }
@@ -73,6 +74,11 @@ export default class Shape {
 
     get halfSizeRotated() {
         return this.sizeRotated.multiply(0.5)
+    }
+
+    texturedWidth = 1
+    get texturedSize() {
+        return this.size.multiplyByVector(Vec3.right.multiply(this.texturedWidth))
     }
 
     setInitialState() {
