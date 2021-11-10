@@ -38,7 +38,7 @@ export default class Game {
         this.crosshair = new Crosshair(this.gl)
 
         this.textures.load([Wall, Enemy, Door], () => {
-            this.level.load(1, () => {
+            this.level.load(2, () => {
                 this.camera.transform.position = this.level.playerPosition
                 this.startGameLoop()
             })
@@ -114,6 +114,7 @@ export default class Game {
             c.transform.position.y = c.initialTransform.position.y
         }
         const a = this.camera.raycast(this.level.collidingCuboids)
+        // this.camera.raycast(this.level.collidingCuboids.filter(c => c.transform.position.distanceTo(this.camera.transform.position) < 500))
 
         for (let c of a) {
             c.transform.position.y = 50

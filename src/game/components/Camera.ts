@@ -71,7 +71,7 @@ export default class Camera {
         }
 
         if (collidingCuboids) {
-            this.checkCollisions(collidingCuboids)
+            this.checkCollisions(collidingCuboids.filter(c => c.transform.position.distanceTo(this.transform.position) < 128))
         } else {
             this.blockedDirections = []
         }
