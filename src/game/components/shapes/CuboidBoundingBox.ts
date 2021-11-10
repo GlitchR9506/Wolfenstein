@@ -126,4 +126,14 @@ export class CuboidBoundingBox {
             return this.transform.position.add(this.halfSizeRotated)
         }
     }
+
+    basePointsYZeroed() {
+        const a = this.halfSizeRotated.yZeroed
+        return [
+            this.transform.position.add(a),
+            this.transform.position.add(a.xInverted),
+            this.transform.position.add(a.yInverted),
+            this.transform.position.substract(a),
+        ]
+    }
 }

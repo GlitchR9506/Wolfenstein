@@ -154,6 +154,62 @@ export default class Camera {
         return lookingAtEnemy
     }
 
+    raycast(cuboids: Cuboid[]) {
+        const rayOrigin = this.transform.position
+        const rayDir = Vec3.fromAngle(this.transform.rotation.y)
+        const intersecting: Cuboid[] = []
+        for (let cuboid of cuboids) {
+            const isIntersecting = this.rayAABBIntersection(
+                rayOrigin,
+                rayDir,
+                cuboid.bb.negativeCornerRotated.yZeroed,
+                cuboid.bb.positiveCornerRotated.yZeroed,
+            )
+            if (isIntersecting) {
+                intersecting.push(cuboid)
+            }
+
+        }
+        return intersecting
+    }
+
+    rayAABBIntersection(rayOrigin: Vec3, rayDir: Vec3, min: Vec3, max: Vec3) {
+        let tmin = (min.x - rayOrigin.x) / rayDir.x;
+        let tmax = (max.x - rayOrigin.x) / rayDir.x;
+
+        if (tmin > tmax) [tmin, tmax] = [tmax, tmin];
+
+        let tymin = (min.y - rayOrigin.y) / rayDir.y;
+        let tymax = (max.y - rayOrigin.y) / rayDir.y;
+
+        if (tymin > tymax) [tymin, tymax] = [tymax, tymin];
+
+        if ((tmin > tymax) || (tymin > tmax))
+            return false;
+
+        if (tymin > tmin)
+            tmin = tymin;
+
+        if (tymax < tmax)
+            tmax = tymax;
+
+        let tzmin = (min.z - rayOrigin.z) / rayDir.z;
+        let tzmax = (max.z - rayOrigin.z) / rayDir.z;
+
+        if (tzmin > tzmax) [tzmin, tzmax] = [tzmax, tzmin];
+
+        if ((tmin > tzmax) || (tzmin > tmax))
+            return false;
+
+        if (tzmin > tmin)
+            tmin = tzmin;
+
+        if (tzmax < tmax)
+            tmax = tzmax;
+
+        return true;
+    }
+
     get viewProjectionMatrix() {
         return m4.multiply(this.matrix, this.projectionMatrix);
     }

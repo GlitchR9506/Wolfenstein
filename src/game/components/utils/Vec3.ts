@@ -69,6 +69,18 @@ export class Vec3 {
         return new Vec3(this.x, this.y, this.z)
     }
 
+    get xInverted() {
+        return new Vec3(-this.x, this.y, this.z)
+    }
+
+    get yInverted() {
+        return new Vec3(this.x, -this.y, this.z)
+    }
+
+    get zInverted() {
+        return new Vec3(this.x, this.y, -this.z)
+    }
+
     multiply(scalar: number) {
         return new Vec3(this.x * scalar, this.y * scalar, this.z * scalar)
     }

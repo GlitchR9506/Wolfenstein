@@ -110,6 +110,15 @@ export default class Game {
             enemy.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
 
+        for (let c of this.level.collidingCuboids) {
+            c.transform.position.y = c.initialTransform.position.y
+        }
+        const a = this.camera.raycast(this.level.collidingCuboids)
+
+        for (let c of a) {
+            c.transform.position.y = 50
+        }
+        log('a', a.map(a => a.transform.position))
     }
 
     private initWebgl() {
