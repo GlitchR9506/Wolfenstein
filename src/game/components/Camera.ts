@@ -175,8 +175,17 @@ export default class Camera {
     * nextSquare(start: Vec3, dir: Vec3) {
         let startClone = start.clone()
         let dirClone = dir.clone()
+        const gridSize = Config.gridSize
+        const firstTileCenter = startClone.map(v => Math.floor(v / gridSize) * gridSize + gridSize / 2).yZeroed
+        // console.log('firstTileCenter', firstTileCenter)
+        yield firstTileCenter
+        let firstYield = true
         while (true) {
             const [nextTileCenter, nextIntersection] = this.nextSquareInner(startClone, dirClone)
+            if (firstYield) {
+                // console.log('nextTileCenter', nextTileCenter)
+                firstYield = false
+            }
             yield nextTileCenter
             startClone = nextIntersection
         }
@@ -185,14 +194,14 @@ export default class Camera {
     nextSquareInner(start: Vec3, dir: Vec3) {
         const gridSize = Config.gridSize
         if (dir.x >= 0) {
-            start.x += gridSize * 0.01
+            start.x += gridSize * 0.0001
         } else {
-            start.x -= gridSize * 0.01
+            start.x -= gridSize * 0.0001
         }
         if (dir.z >= 0) {
-            start.z += gridSize * 0.01
+            start.z += gridSize * 0.0001
         } else {
-            start.z -= gridSize * 0.01
+            start.z -= gridSize * 0.0001
         }
         const firstTileCenter = start.map(v => Math.floor(v / gridSize) * gridSize + gridSize / 2).yZeroed
         let nextIntersectingAxes = Vec3.zero
