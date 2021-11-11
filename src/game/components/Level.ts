@@ -7,6 +7,7 @@ import Door from './shapes/Door';
 import Plane from './shapes/Plane';
 import Shape from './shapes/Shape';
 import Interactable from './shapes/Interactable';
+import Config from './Config'
 
 export default class Level {
     width: number
@@ -16,13 +17,13 @@ export default class Level {
     walls: Wall[] = []
     enemies: Enemy[] = []
     doors: Door[] = []
+    shapes: Shape[] = []
     floor: Plane
     ceiling: Plane
     collidingCuboids: Cuboid[] = []
     interactables: Interactable[] = []
 
     private readonly gl: WebGLRenderingContext
-    private readonly gridSize = 64
     private fields: FieldData[]
 
     constructor(gl: WebGLRenderingContext) {
@@ -49,7 +50,7 @@ export default class Level {
             .then(({ default: level }) => {
                 this.width = level.width
                 this.height = level.height
-                this.center = new Vec3(this.width * this.gridSize / 2, 0, this.height * this.gridSize / 2)
+                this.center = new Vec3(this.width * Config.gridSize / 2, 0, this.height * Config.gridSize / 2)
                 this.fields = level.fields
                 this.checkWallsDirections()
                 this.changeWallsNeighboursTextures()
@@ -84,8 +85,8 @@ export default class Level {
 
     private applyGridSize() {
         for (let field of this.fields) {
-            field.x *= this.gridSize
-            field.y *= this.gridSize
+            field.x = (field.x * Config.gridSize) + Config.gridSize / 2
+            field.y = (field.y * Config.gridSize) + Config.gridSize / 2
         }
     }
 
@@ -100,19 +101,24 @@ export default class Level {
         this.collidingCuboids.push(...this.walls)
         this.collidingCuboids.push(...this.doors)
         this.interactables.push(...this.doors)
+        this.shapes = [
+            ...this.walls,
+            ...this.enemies,
+            ...this.doors,
+        ]
         // this.doors[0].transform.position.x += 45
 
         this.floor = new Plane(this.gl)
         this.floor.setColor("#707070")
         this.floor.transform.position = this.center.clone()
-        this.floor.transform.position.y = -this.gridSize / 2
-        this.floor.transform.scale.set(this.width * this.gridSize, 1, this.height * this.gridSize)
+        this.floor.transform.position.y = -Config.gridSize / 2
+        this.floor.transform.scale.set(this.width * Config.gridSize, 1, this.height * Config.gridSize)
 
         this.ceiling = new Plane(this.gl)
         this.ceiling.setColor("#383838")
         this.ceiling.transform.position = this.center.clone()
-        this.ceiling.transform.position.y = this.gridSize / 2
-        this.ceiling.transform.scale.set(this.width * this.gridSize, 1, this.height * this.gridSize)
+        this.ceiling.transform.position.y = Config.gridSize / 2
+        this.ceiling.transform.scale.set(this.width * Config.gridSize, 1, this.height * Config.gridSize)
         this.ceiling.transform.rotation.z = degToRad(180)
     }
 

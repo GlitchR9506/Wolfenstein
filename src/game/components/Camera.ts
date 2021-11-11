@@ -1,22 +1,22 @@
-import { Vec3, Transform, radToDeg, m4, degToRad, log } from './utils'
+import { Vec3, Transform, radToDeg, m4, degToRad, log, Vec2 } from './utils'
 import Cuboid from './shapes/Cuboid'
 import Shape from './shapes/Shape'
 import Interactable from './shapes/Interactable'
 import Enemy from './shapes/Enemy'
 import Door from './shapes/Door'
+import Config from './Config'
 
 export default class Camera {
     transform = new Transform
     projectionMatrix: number[]
 
     private readonly fov = 60
-    private readonly zNear = 1
-    private readonly zFar = 2000
+    private readonly zNear = Config.gridSize / 64
+    private readonly zFar = Config.gridSize * 48
     private readonly rotationSpeed = 1.5
-    private readonly movementSpeed = 192
-    // private readonly collisionRadius = 15
-    private readonly collisionRadius = 20
-    private readonly interactionDistance = 96
+    private readonly movementSpeed = Config.gridSize * 3
+    private readonly collisionRadius = Config.gridSize / 3
+    private readonly interactionDistance = Config.gridSize * 1.5
     private readonly gl: WebGLRenderingContext
 
     private blockedDirections: Vec3[] = []
@@ -71,7 +71,7 @@ export default class Camera {
         }
 
         if (collidingCuboids) {
-            this.checkCollisions(collidingCuboids.filter(c => c.transform.position.distanceTo(this.transform.position) < 128))
+            this.checkCollisions(collidingCuboids.filter(c => c.transform.position.distanceTo(this.transform.position) < Config.gridSize * 2))
         } else {
             this.blockedDirections = []
         }
@@ -154,60 +154,88 @@ export default class Camera {
         return lookingAtEnemy
     }
 
-    raycast(cuboids: Cuboid[]) {
-        const rayOrigin = this.transform.position
-        const rayDir = Vec3.fromAngle(this.transform.rotation.y)
-        const intersecting: Cuboid[] = []
-        for (let cuboid of cuboids) {
-            const isIntersecting = this.rayAABBIntersection(
-                rayOrigin,
-                rayDir,
-                cuboid.bb.negativeCornerRotated.yZeroed,
-                cuboid.bb.positiveCornerRotated.yZeroed,
-            )
-            if (isIntersecting) {
-                intersecting.push(cuboid)
-            }
+    raycast(shapes: Shape[]) {
+        const nextSquareGenerator = this.nextSquare(this.transform.position, Vec3.fromAngle(this.transform.rotation.y))
 
+        let nextSquare = nextSquareGenerator.next().value
+        const limit = 100
+        for (let i = 0; i < limit * 2; i++) {
+            if (nextSquare) {
+                for (let shape of shapes) {
+                    if (shape.transform.position.yZeroed.equals(nextSquare.yZeroed)) {
+                        return shape
+                    }
+                }
+                nextSquare = nextSquareGenerator.next().value
+            }
         }
-        return intersecting
+        return null
     }
 
-    rayAABBIntersection(rayOrigin: Vec3, rayDir: Vec3, min: Vec3, max: Vec3) {
-        let tmin = (min.x - rayOrigin.x) / rayDir.x;
-        let tmax = (max.x - rayOrigin.x) / rayDir.x;
+    * nextSquare(start: Vec3, dir: Vec3) {
+        let startClone = start.clone()
+        let dirClone = dir.clone()
+        while (true) {
+            const [nextTileCenter, nextIntersection] = this.nextSquareInner(startClone, dirClone)
+            yield nextTileCenter
+            startClone = nextIntersection
+        }
+    }
 
-        if (tmin > tmax) [tmin, tmax] = [tmax, tmin];
-
-        let tymin = (min.y - rayOrigin.y) / rayDir.y;
-        let tymax = (max.y - rayOrigin.y) / rayDir.y;
-
-        if (tymin > tymax) [tymin, tymax] = [tymax, tymin];
-
-        if ((tmin > tymax) || (tymin > tmax))
-            return false;
-
-        if (tymin > tmin)
-            tmin = tymin;
-
-        if (tymax < tmax)
-            tmax = tymax;
-
-        let tzmin = (min.z - rayOrigin.z) / rayDir.z;
-        let tzmax = (max.z - rayOrigin.z) / rayDir.z;
-
-        if (tzmin > tzmax) [tzmin, tzmax] = [tzmax, tzmin];
-
-        if ((tmin > tzmax) || (tzmin > tmax))
-            return false;
-
-        if (tzmin > tmin)
-            tmin = tzmin;
-
-        if (tzmax < tmax)
-            tmax = tzmax;
-
-        return true;
+    nextSquareInner(start: Vec3, dir: Vec3) {
+        const gridSize = Config.gridSize
+        if (dir.x >= 0) {
+            start.x += gridSize * 0.01
+        } else {
+            start.x -= gridSize * 0.01
+        }
+        if (dir.z >= 0) {
+            start.z += gridSize * 0.01
+        } else {
+            start.z -= gridSize * 0.01
+        }
+        const firstTileCenter = start.map(v => Math.floor(v / gridSize) * gridSize + gridSize / 2).yZeroed
+        let nextIntersectingAxes = Vec3.zero
+        if (start.x * dir.x > 0) {
+            nextIntersectingAxes.x = Math.ceil(start.x / gridSize) * gridSize
+        } else {
+            nextIntersectingAxes.x = Math.floor(start.x / gridSize) * gridSize
+        }
+        if (start.z * dir.z > 0) {
+            nextIntersectingAxes.z = Math.ceil(start.z / gridSize) * gridSize
+        } else {
+            nextIntersectingAxes.z = Math.floor(start.z / gridSize) * gridSize
+        }
+        const diff = start.substract(nextIntersectingAxes).abs
+        const diffRatio = Math.abs(diff.z / diff.x)
+        const dirRatio = Math.abs(dir.z / dir.x)
+        let nextSquareInDirection, nextIntersection
+        if (diffRatio > dirRatio) {
+            nextSquareInDirection = new Vec3(1, 0, 0)
+            nextIntersection = new Vec3(
+                nextIntersectingAxes.x,
+                0,
+                start.z + (dir.z / dir.x) * (nextIntersectingAxes.x - start.x),
+            )
+        } else {
+            if (diffRatio < dirRatio) {
+                nextSquareInDirection = new Vec3(0, 0, 1)
+            } else {
+                nextSquareInDirection = new Vec3(1, 0, 1)
+            }
+            nextIntersection = new Vec3(
+                start.x + (dir.x / dir.z) * (nextIntersectingAxes.z - start.z),
+                0,
+                nextIntersectingAxes.z,
+            )
+        }
+        const nextSquare = new Vec3(
+            dir.x > 0 ? nextSquareInDirection.x : -nextSquareInDirection.x,
+            0,
+            dir.z > 0 ? nextSquareInDirection.z : -nextSquareInDirection.z,
+        )
+        const nextTileCenter = firstTileCenter.add(nextSquare.multiply(gridSize))
+        return [nextTileCenter, nextIntersection]
     }
 
     get viewProjectionMatrix() {

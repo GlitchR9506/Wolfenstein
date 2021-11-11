@@ -2,6 +2,7 @@ import { log, m4, Vec3 } from '../utils'
 import Cuboid from './Cuboid'
 import Interactable from './Interactable'
 import texture from '../../textures/door.png'
+import Config from '../Config'
 
 
 export default class Door extends Cuboid implements Interactable {
@@ -10,8 +11,8 @@ export default class Door extends Cuboid implements Interactable {
     private opening = false
     private closing = false
 
-    private readonly openingSpeed = 32
-    private readonly openingLength = 64
+    private readonly openingSpeed = Config.gridSize / 2
+    private readonly openingLength = Config.gridSize
 
     private readonly hiddenInWallScaleCorrection = new Vec3(0.1, 0.1, 0)
 
@@ -69,7 +70,7 @@ export default class Door extends Cuboid implements Interactable {
 
     constructor(gl: WebGLRenderingContext) {
         super(gl)
-        this.transform.scale = new Vec3(64, 64, 6)
+        this.transform.scale = new Vec3(Config.gridSize, Config.gridSize, Config.gridSize * 6 / 64)
     }
 
     setInitialState() {

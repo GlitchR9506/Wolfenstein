@@ -13,6 +13,7 @@ import Enemy from './shapes/Enemy'
 
 import Crosshair from './shapes/Crosshair'
 import Interactable from './shapes/Interactable'
+import Shape from './shapes/Shape'
 
 
 export default class Game {
@@ -24,6 +25,7 @@ export default class Game {
     private readonly level: Level
     private readonly crosshair: Crosshair
     private readonly gl: WebGLRenderingContext
+    private lineShapes: Shape[] = []
 
     constructor() {
         this.initWebgl()
@@ -113,13 +115,10 @@ export default class Game {
         for (let c of this.level.collidingCuboids) {
             c.transform.position.y = c.initialTransform.position.y
         }
-        const a = this.camera.raycast(this.level.collidingCuboids)
-        // this.camera.raycast(this.level.collidingCuboids.filter(c => c.transform.position.distanceTo(this.camera.transform.position) < 500))
-
-        for (let c of a) {
-            c.transform.position.y = 50
+        const shape = this.camera.raycast(this.level.collidingCuboids)
+        if (shape) {
+            shape.transform.position.y = 50
         }
-        log('a', a.map(a => a.transform.position))
     }
 
     private initWebgl() {
