@@ -100,10 +100,14 @@ export default class Game {
             door.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
         this.textures.useTexture(Enemy)
+        const shapeLookedAt = this.camera.raycast(this.level.collidingCuboids)
         for (let enemy of this.level.enemies) {
             if (this.camera.isLookingAt(enemy)) {
-                if (this.input.shooting) {
-                    enemy.damage(100)
+                if (this.camera.transform.position.distanceTo(enemy.transform.position)
+                    < this.camera.transform.position.distanceTo(shapeLookedAt.transform.position)) {
+                    if (this.input.shooting) {
+                        enemy.damage(100)
+                    }
                 }
             }
             enemy.lookAtCamera(this.camera.transform.rotation.y)
@@ -112,13 +116,6 @@ export default class Game {
             enemy.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
 
-        for (let c of this.level.collidingCuboids) {
-            c.transform.position.y = c.initialTransform.position.y
-        }
-        const shape = this.camera.raycast(this.level.collidingCuboids)
-        if (shape) {
-            shape.transform.position.y = 50
-        }
     }
 
     private initWebgl() {
