@@ -4,14 +4,12 @@ export default class Input {
     direction = Vec3.zero
     rotation = 0
     shooting = false
+    shot = false
+    justShot = false
     interacting = false
     justInteracted = false
     noclip = false
 
-    movementDisabled = false
-    rotationDisabled = false
-    shootingDisabled = false
-    interactingDisabled = false
     noclipDisabled = false
 
     private pressedKeys: string[] = []
@@ -23,34 +21,35 @@ export default class Input {
 
     update() {
         this.direction = Vec3.zero
-        if (!this.movementDisabled) {
-            if (this.isPressed('KeyW') && !this.isPressed('KeyS')) this.direction.z = 1
-            if (this.isPressed('KeyS') && !this.isPressed('KeyW')) this.direction.z = -1
-            if (this.isPressed('KeyA') && !this.isPressed('KeyD')) this.direction.x = 1
-            if (this.isPressed('KeyD') && !this.isPressed('KeyA')) this.direction.x = -1
-            this.direction = this.direction.normalize
-        }
+        if (this.isPressed('KeyW') && !this.isPressed('KeyS')) this.direction.z = 1
+        if (this.isPressed('KeyS') && !this.isPressed('KeyW')) this.direction.z = -1
+        if (this.isPressed('KeyA') && !this.isPressed('KeyD')) this.direction.x = 1
+        if (this.isPressed('KeyD') && !this.isPressed('KeyA')) this.direction.x = -1
+        this.direction = this.direction.normalize
 
         this.rotation = 0
-        if (!this.rotationDisabled) {
-            if (this.isPressed('ArrowLeft') && !this.isPressed('ArrowRight')) this.rotation = -1
-            if (this.isPressed('ArrowRight') && !this.isPressed('ArrowLeft')) this.rotation = 1
-        }
+        if (this.isPressed('ArrowLeft') && !this.isPressed('ArrowRight')) this.rotation = -1
+        if (this.isPressed('ArrowRight') && !this.isPressed('ArrowLeft')) this.rotation = 1
 
         this.shooting = false
-        if (!this.shootingDisabled) {
-            if (this.isPressed('Space')) this.shooting = true
+        if (this.isPressed('Space')) this.shooting = true
+
+        this.shot = false
+        if (this.isPressed('Space')) {
+            if (!this.justShot) {
+                this.shot = true
+            }
+        } else {
+            this.justShot = false
         }
 
         this.interacting = false
-        if (!this.interactingDisabled) {
-            if (this.isPressed('KeyE')) {
-                if (!this.justInteracted) {
-                    this.interacting = true
-                }
-            } else {
-                this.justInteracted = false
+        if (this.isPressed('KeyE')) {
+            if (!this.justInteracted) {
+                this.interacting = true
             }
+        } else {
+            this.justInteracted = false
         }
 
         this.noclip = false

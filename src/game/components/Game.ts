@@ -93,7 +93,11 @@ export default class Game {
 
         this.textures.useTexture(Weapon)
         if (this.input.shooting) {
-            this.weapon.shoot = true
+            this.weapon.shooting = true
+        }
+        if (this.input.shot) {
+            this.weapon.shot = true
+            this.input.justShot = true
         }
         this.weapon.update(deltaTime)
         this.weapon.updateBuffers()
