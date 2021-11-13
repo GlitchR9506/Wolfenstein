@@ -65,7 +65,6 @@ export default class Enemy extends Plane {
         let verticesVec2Array = Vec2.arrayToVec2Array(this.initialTexcoords)
         const texturePos = new Vec2(textureNumber % this.texturesInLine, Math.floor(textureNumber / this.texturesInLine)).multiply(this.textureSize)
         verticesVec2Array = verticesVec2Array.map(vertex => vertex.multiply(this.textureSize).add(texturePos))
-        const a = Vec2.vec2ArrayToArray(verticesVec2Array)
-        this.TEXCOORDS = new Float32Array(a)
+        this.TEXCOORDS = new Float32Array(Vec2.vec2ArrayToArray(verticesVec2Array))
     }
 }
