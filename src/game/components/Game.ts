@@ -12,7 +12,7 @@ import Door from './shapes/Door'
 import Enemy from './shapes/Enemy'
 
 import Crosshair from './shapes/Crosshair'
-import Weapon from './shapes/Weapon'
+import Weapons from './shapes/Weapons'
 import Interactable from './shapes/Interactable'
 import Shape from './shapes/Shape'
 
@@ -25,7 +25,7 @@ export default class Game {
     private readonly textures: Textures
     private readonly level: Level
     private readonly crosshair: Crosshair
-    private readonly weapon: Weapon
+    private readonly weapons: Weapons
     private readonly gl: WebGLRenderingContext
     private lineShapes: Shape[] = []
 
@@ -40,9 +40,9 @@ export default class Game {
         this.textures = new Textures(this.gl)
         this.level = new Level(this.gl)
         this.crosshair = new Crosshair(this.gl)
-        this.weapon = new Weapon(this.gl)
+        this.weapons = new Weapons(this.gl)
 
-        this.textures.load([Wall, Enemy, Door, Weapon], () => {
+        this.textures.load([Wall, Enemy, Door, Weapons], () => {
             this.level.load(2, () => {
                 this.camera.transform.position = this.level.playerPosition
                 this.startGameLoop()
@@ -91,17 +91,17 @@ export default class Game {
 
         this.textureProgram.use()
 
-        this.textures.useTexture(Weapon)
+        this.textures.useTexture(Weapons)
         if (this.input.shooting) {
-            this.weapon.shooting = true
+            this.weapons.shooting = true
         }
         if (this.input.shot) {
-            this.weapon.shot = true
+            this.weapons.shot = true
             this.input.justShot = true
         }
-        this.weapon.update(deltaTime)
-        this.weapon.updateBuffers()
-        this.weapon.draw(this.textureProgram.info, this.camera.projectionMatrix)
+        this.weapons.update(deltaTime)
+        this.weapons.updateBuffers()
+        this.weapons.draw(this.textureProgram.info, this.camera.projectionMatrix)
 
         this.textures.useTexture(Wall)
         for (let wall of this.level.walls) {
