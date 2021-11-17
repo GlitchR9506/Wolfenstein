@@ -119,7 +119,7 @@ export default class Game {
             if (this.camera.isLookingAt(enemy)) {
                 if (this.camera.transform.position.distanceTo(enemy.transform.position)
                     < this.camera.transform.position.distanceTo(shapeLookedAt.transform.position)) {
-                    if (this.input.shooting) {
+                    if (this.weapons.currentWeapon.justShot) {
                         enemy.damage(100)
                     }
                 }
@@ -129,7 +129,6 @@ export default class Game {
             enemy.updateBuffers()
             enemy.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
-
     }
 
     private initWebgl() {

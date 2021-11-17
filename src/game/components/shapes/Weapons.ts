@@ -1,12 +1,14 @@
 import { degToRad, m4, Vec2, Vec3 } from '../utils'
 import Plane from './Plane'
-import Weapon from './Weapon'
+import { Weapon, weaponType } from './Weapon'
 import texture from '../../textures/weapons.png'
+
 
 export default class Weapons extends Plane {
     static importedTexture = texture
 
-    type = 'chaingun'
+    type: weaponType = 'knife'
+    justShot = false
 
     private weapons: Weapon[] = []
     private texturesCount = new Vec2(4, 8)
@@ -22,10 +24,10 @@ export default class Weapons extends Plane {
         this.transform.position.y = -0.66
         this.setInitialState()
 
-        this.weapons.push(new Weapon("knife", 2.4, [0, 1, 2, 3, 2, 1], []))
-        this.weapons.push(new Weapon("pistol", 2.4, [4, 5, 6, 7, 5], []))
-        this.weapons.push(new Weapon("machinegun", 6, [8, 9], [10, 11]))
-        this.weapons.push(new Weapon("chaingun", 12, [12, 13], [14, 15]))
+        this.weapons.push(new Weapon("knife", 2.4, [0, 1, 2, 3, 2, 1], [], 3))
+        this.weapons.push(new Weapon("pistol", 2.4, [4, 5, 6, 7, 5], [], 7))
+        this.weapons.push(new Weapon("machinegun", 6, [8, 9], [10, 11], 11))
+        this.weapons.push(new Weapon("chaingun", 12, [12, 13], [14, 15], 14))
 
         this.setTexture(this.currentWeapon.initTextures[0])
     }
@@ -55,6 +57,8 @@ export default class Weapons extends Plane {
 
         const weapon = this.currentWeapon
         const frameTime = 1 / (weapon.fireRate * weapon.framesCount)
+
+        weapon.justShot = false
 
         if (this.timeSinceLastUpdate >= frameTime) {
             this.timeSinceLastUpdate = 0

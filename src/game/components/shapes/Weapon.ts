@@ -1,25 +1,32 @@
-export default class WeaponData {
-    type: string
+export type weaponType = "knife" | "pistol" | "machinegun" | "chaingun"
+
+export class Weapon {
+    type: weaponType
     fireRate: number
     initTextures: number[]
     loopTextures: number[]
+    shootTexture: number
 
     shooting = false
     willShoot = false
+    justShot = false
 
     private textureIndex: number = 0
     private currentTextures: number[]
 
     constructor(
-        type: string,
+        type: weaponType,
         fireRate: number,
         initTextures: number[],
         loopTextures: number[],
+        shootTexture: number,
     ) {
         this.type = type
         this.fireRate = fireRate
         this.initTextures = initTextures
         this.loopTextures = loopTextures
+        this.shootTexture = shootTexture
+
         this.currentTextures = initTextures
     }
 
@@ -40,13 +47,10 @@ export default class WeaponData {
     }
 
     getNextTexture() {
+        this.justShot = false
         if (!this.isAutomatic) {
             if (this.willShoot) {
-                let texture = this.getNextShootingTexture()
-                if (this.currentTextures == this.initTextures && this.textureIndex == this.initTextures.length - 1) {
-                    this.willShoot = false
-                }
-                return texture
+                return this.getNextShootingTexture()
             } else {
                 return this.initTextures[0]
             }
@@ -64,10 +68,15 @@ export default class WeaponData {
         if (this.textureIndex >= this.currentTextures.length) {
             if (this.currentTextures == this.initTextures && this.isAutomatic) {
                 this.currentTextures = this.loopTextures
+            } else {
+                this.willShoot = false
             }
             this.textureIndex = 0
         }
         const texture = this.currentTextures[this.textureIndex]
+        if (texture == this.shootTexture) {
+            this.justShot = true
+        }
         return texture
     }
 
