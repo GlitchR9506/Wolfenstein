@@ -1,22 +1,18 @@
 import { degToRad, m4, Vec2, Vec3 } from '../utils'
 import Plane from './Plane'
-import WeaponData from './WeaponData'
+import Weapon from './Weapon'
 import texture from '../../textures/weapons.png'
 
 export default class Weapons extends Plane {
     static importedTexture = texture
 
-    type = 'pistol'
-    shooting = false
-    shot = false
+    type = 'chaingun'
 
-    private weapons: WeaponData[] = []
+    private weapons: Weapon[] = []
     private texturesCount = new Vec2(4, 8)
     private currentTextureNumber: number
 
     private timeSinceLastUpdate = 0
-    private frameTextureIndex = 0
-    private stoppedShootingIndex = 0
 
     constructor(gl: WebGLRenderingContext) {
         super(gl)
@@ -26,10 +22,10 @@ export default class Weapons extends Plane {
         this.transform.position.y = -0.66
         this.setInitialState()
 
-        this.weapons.push(new WeaponData("knife", 2.4, [0, 1, 2, 3, 2, 1], []))
-        this.weapons.push(new WeaponData("pistol", 2.4, [4, 5, 6, 7, 5], []))
-        this.weapons.push(new WeaponData("machinegun", 6, [8, 9], [10, 11]))
-        this.weapons.push(new WeaponData("chaingun", 12, [12, 13], [14, 15]))
+        this.weapons.push(new Weapon("knife", 2.4, [0, 1, 2, 3, 2, 1], []))
+        this.weapons.push(new Weapon("pistol", 2.4, [4, 5, 6, 7, 5], []))
+        this.weapons.push(new Weapon("machinegun", 6, [8, 9], [10, 11]))
+        this.weapons.push(new Weapon("chaingun", 12, [12, 13], [14, 15]))
 
         this.setTexture(this.currentWeapon.initTextures[0])
     }
@@ -42,53 +38,27 @@ export default class Weapons extends Plane {
         return this.weapons.find(weapon => weapon.type == this.type)
     }
 
+    shoot() {
+        if (!this.currentWeapon.isAutomatic) {
+            this.currentWeapon.willShoot = true
+        }
+    }
+
+    setShooting(shooting: boolean) {
+        if (this.currentWeapon.isAutomatic) {
+            this.currentWeapon.shooting = shooting
+        }
+    }
+
     update(deltaTime: number) {
         this.timeSinceLastUpdate += deltaTime
+
         const weapon = this.currentWeapon
+        const frameTime = 1 / (weapon.fireRate * weapon.framesCount)
 
-        let framesCount
-        if (weapon.isAutomatic) {
-            framesCount = weapon.loopTextures.length
-        } else {
-            framesCount = weapon.initTextures.length
-        }
-
-        const fireRate = weapon.fireRate * framesCount
-
-        if (this.timeSinceLastUpdate >= 1 / fireRate) {
+        if (this.timeSinceLastUpdate >= frameTime) {
             this.timeSinceLastUpdate = 0
-            if (weapon.initTextures.length > 0 && this.shot) {
-                // first textures
-                this.frameTextureIndex++
-                if (this.frameTextureIndex >= weapon.initTextures.length) {
-                    this.frameTextureIndex = 1
-                    if (weapon.isAutomatic) {
-                        this.setTexture(weapon.loopTextures[this.frameTextureIndex])
-                    } else {
-                        this.frameTextureIndex = 0
-                        this.setTexture(weapon.initTextures[this.frameTextureIndex])
-                    }
-                    this.shot = false
-                } else {
-                    this.setTexture(weapon.initTextures[this.frameTextureIndex])
-                }
-            } else if (weapon.isAutomatic && this.shooting) {
-                // loop textures
-                this.frameTextureIndex++
-                if (this.frameTextureIndex >= weapon.loopTextures.length) {
-                    this.frameTextureIndex = 0
-                    this.shooting = false
-                    this.stoppedShootingIndex = weapon.initTextures.length - 1
-                }
-                this.setTexture(weapon.loopTextures[this.frameTextureIndex])
-            } else {
-                // first textures reversed
-                if (this.stoppedShootingIndex >= 0) {
-                    this.timeSinceLastUpdate = 0
-                    this.setTexture(weapon.initTextures[this.stoppedShootingIndex])
-                    this.stoppedShootingIndex--
-                }
-            }
+            this.setTexture(weapon.getNextTexture())
         }
     }
 
