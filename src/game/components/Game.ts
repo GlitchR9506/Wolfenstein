@@ -117,10 +117,14 @@ export default class Game {
         const shapeLookedAt = this.camera.raycast(this.level.collidingCuboids)
         for (let enemy of this.level.enemies) {
             if (this.camera.isLookingAt(enemy)) {
-                if (this.camera.transform.position.distanceTo(enemy.transform.position)
-                    < this.camera.transform.position.distanceTo(shapeLookedAt.transform.position)) {
+                const enemyDistance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
+                const shapeLookedAtDistance = this.camera.transform.position.horizontalDistanceTo(shapeLookedAt.transform.position)
+                if (enemyDistance < shapeLookedAtDistance) {
                     if (this.weapons.currentWeapon.justShot) {
-                        enemy.damage(100)
+                        const distance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
+                        if (distance <= this.weapons.currentWeapon.range) {
+                            enemy.damage(100)
+                        }
                     }
                 }
             }

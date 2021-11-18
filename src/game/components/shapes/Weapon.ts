@@ -7,6 +7,8 @@ export class Weapon {
     loopTextures: number[]
     shootTexture: number
 
+    range: number = 1000000
+
     shooting = false
     willShoot = false
     justShot = false

@@ -2,12 +2,13 @@ import { degToRad, m4, Vec2, Vec3 } from '../utils'
 import Plane from './Plane'
 import { Weapon, weaponType } from './Weapon'
 import texture from '../../textures/weapons.png'
+import Config from '../Config'
 
 
 export default class Weapons extends Plane {
     static importedTexture = texture
 
-    type: weaponType = 'knife'
+    type: weaponType = 'pistol'
     justShot = false
 
     private weapons: Weapon[] = []
@@ -25,6 +26,7 @@ export default class Weapons extends Plane {
         this.setInitialState()
 
         this.weapons.push(new Weapon("knife", 2.4, [0, 1, 2, 3, 2, 1], [], 3))
+        this.weapons[0].range = Config.gridSize * 0.75
         this.weapons.push(new Weapon("pistol", 2.4, [4, 5, 6, 7, 5], [], 7))
         this.weapons.push(new Weapon("machinegun", 6, [8, 9], [10, 11], 11))
         this.weapons.push(new Weapon("chaingun", 12, [12, 13], [14, 15], 14))
