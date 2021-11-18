@@ -3,6 +3,7 @@ export type weaponType = "knife" | "pistol" | "machinegun" | "chaingun"
 export class Weapon {
     type: weaponType
     fireRate: number
+    damage: number
     initTextures: number[]
     loopTextures: number[]
     shootTexture: number
@@ -19,12 +20,14 @@ export class Weapon {
     constructor(
         type: weaponType,
         fireRate: number,
+        damage: number,
         initTextures: number[],
         loopTextures: number[],
         shootTexture: number,
     ) {
         this.type = type
         this.fireRate = fireRate
+        this.damage = damage
         this.initTextures = initTextures
         this.loopTextures = loopTextures
         this.shootTexture = shootTexture

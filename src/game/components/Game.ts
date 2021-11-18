@@ -123,7 +123,7 @@ export default class Game {
                     if (this.weapons.currentWeapon.justShot) {
                         const distance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
                         if (distance <= this.weapons.currentWeapon.range) {
-                            enemy.damage(100)
+                            enemy.damage(this.weapons.currentWeapon.damage)
                         }
                     }
                 }
