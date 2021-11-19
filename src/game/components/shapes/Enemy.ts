@@ -16,8 +16,10 @@ export default class Enemy extends Plane {
         ['shooting', [0, 4, 8]],
         ['walking', [1, 5, 9, 13]],
         ['dying', [2, 6, 10, 14]],
+        ['hit', [2, 1]],
         ['dead', [14]],
     ])
+
     readonly frameTime = 0.2
 
     timeSinceLastUpdate = 0
@@ -30,8 +32,11 @@ export default class Enemy extends Plane {
             if (index < textures.length) {
                 this.setTexture(textures[index])
             } else {
+                this.textureNumber = 0
                 if (this.state == 'dying') {
                     this.state = 'dead'
+                } else if (this.state == 'hit') {
+                    this.state = 'walking'
                 } else {
                     this.setTexture(textures[0])
                 }
@@ -41,7 +46,9 @@ export default class Enemy extends Plane {
 
     hp = 100
     damage(value: number) {
+        if (['dying', 'dead'].includes(this.state)) return
         this.hp -= value
+        this.state = 'hit'
         if (this.hp <= 0) {
             this.hp = 0
             this.state = 'dying'
