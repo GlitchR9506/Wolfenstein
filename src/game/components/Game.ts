@@ -10,13 +10,12 @@ import Level from './Level'
 import Wall from './shapes/Wall'
 import Door from './shapes/Door'
 import Enemy from './shapes/Enemy'
-import Pickup from './shapes/Pickup'
+import Ammo from './shapes/pickups/Ammo'
 
 import Crosshair from './shapes/Crosshair'
 import Weapons from './shapes/Weapons'
 import Interactable from './shapes/Interactable'
 import Shape from './shapes/Shape'
-import Plane from './shapes/Plane'
 
 
 export default class Game {
@@ -28,7 +27,7 @@ export default class Game {
     private readonly level: Level
     private readonly crosshair: Crosshair
     private readonly weapons: Weapons
-    private readonly pickup: Pickup
+    private readonly ammo: Ammo
     private readonly gl: WebGLRenderingContext
     private lineShapes: Shape[] = []
 
@@ -44,13 +43,13 @@ export default class Game {
         this.level = new Level(this.gl)
         this.crosshair = new Crosshair(this.gl)
         this.weapons = new Weapons(this.gl)
-        this.pickup = new Pickup(this.gl)
-        this.textures.load([Wall, Enemy, Door, Weapons, Pickup], () => {
+        this.ammo = new Ammo(this.gl)
+        this.textures.load([Wall, Enemy, Door, Weapons, Ammo], () => {
             this.level.load(2, () => {
                 this.camera.transform.position = this.level.playerPosition
-                this.pickup.transform.position = this.level.playerPosition.clone()
-                this.pickup.transform.position.z -= 64
-                this.pickup.setInitialState()
+                this.ammo.transform.position = this.level.playerPosition.clone()
+                this.ammo.transform.position.z -= 64
+                this.ammo.setInitialState()
                 // console.log(this.pickup.transform.position)
                 this.startGameLoop()
             })
@@ -98,9 +97,9 @@ export default class Game {
 
         this.textureProgram.use()
 
-        this.textures.useTexture(Pickup)
-        this.pickup.lookAtCamera(this.camera.transform.rotation.y)
-        this.pickup.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
+        this.textures.useTexture(Ammo)
+        this.ammo.lookAtCamera(this.camera.transform.rotation.y)
+        this.ammo.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
 
         this.textures.useTexture(Weapons)
         this.weapons.setShooting(this.input.shooting)
@@ -145,7 +144,7 @@ export default class Game {
             enemy.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
         log('player', this.camera.transform.position)
-        log('pickup', this.pickup.transform.position)
+        log('pickup', this.ammo.transform.position)
     }
 
     private initWebgl() {
