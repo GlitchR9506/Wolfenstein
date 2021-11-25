@@ -17,17 +17,12 @@ export default class Textures {
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_LINEAR)
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE)
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE)
-                textureObjectsClasses[index].image = htmlImages[index]
+                this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, htmlImages[index])
+                this.gl.generateMipmap(this.gl.TEXTURE_2D)
                 textureObjectsClasses[index].webglTexture = webglTexture
             })
             callback?.()
         })
-    }
-
-    useTexture(textureObjectsClass: (typeof Shape)) {
-        this.gl.bindTexture(this.gl.TEXTURE_2D, textureObjectsClass.webglTexture)
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, textureObjectsClass.image)
-        this.gl.generateMipmap(this.gl.TEXTURE_2D)
     }
 
     private loadHtmlImages(urls: string[], callback: (images: HTMLImageElement[]) => void) {

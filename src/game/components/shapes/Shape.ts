@@ -3,7 +3,6 @@ import { ProgramInfo } from '../programs/Program'
 
 export default class Shape {
     static importedTexture: string
-    static image: HTMLImageElement
     static webglTexture: WebGLTexture
     protected readonly gl: WebGLRenderingContext
     protected positionBuffer: WebGLBuffer

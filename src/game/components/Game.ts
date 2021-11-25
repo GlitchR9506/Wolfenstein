@@ -97,11 +97,11 @@ export default class Game {
 
         this.textureProgram.use()
 
-        this.textures.useTexture(Ammo)
+        this.gl.bindTexture(this.gl.TEXTURE_2D, Ammo.webglTexture);
         this.ammo.lookAtCamera(this.camera.transform.rotation.y)
         this.ammo.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
 
-        this.textures.useTexture(Weapons)
+        this.gl.bindTexture(this.gl.TEXTURE_2D, Weapons.webglTexture);
         this.weapons.setShooting(this.input.shooting)
 
         if (this.input.shot) {
@@ -112,18 +112,17 @@ export default class Game {
         this.weapons.updateBuffers()
         this.weapons.draw(this.textureProgram.info, this.camera.projectionMatrix)
 
-        this.textures.useTexture(Wall)
+        this.gl.bindTexture(this.gl.TEXTURE_2D, Wall.webglTexture);
         for (let wall of this.level.walls) {
             wall.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
 
-
-        this.textures.useTexture(Door)
+        this.gl.bindTexture(this.gl.TEXTURE_2D, Door.webglTexture);
         for (let door of this.level.doors) {
             door.update(deltaTime)
             door.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
-        this.textures.useTexture(Enemy)
+        this.gl.bindTexture(this.gl.TEXTURE_2D, Enemy.webglTexture);
         const shapeLookedAt = this.camera.raycast(this.level.collidingCuboids)
         for (let enemy of this.level.enemies) {
             if (this.camera.isLookingAt(enemy)) {
