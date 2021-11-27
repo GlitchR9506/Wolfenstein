@@ -8,6 +8,8 @@ import Plane from './shapes/Plane';
 import Shape from './shapes/Shape';
 import Interactable from './shapes/Interactable';
 import Config from './Config'
+import { TextureProgram } from './programs/TextureProgram';
+import { ColorProgram } from './programs/ColorProgram';
 
 export default class Level {
     width: number
@@ -22,12 +24,16 @@ export default class Level {
     ceiling: Plane
     collidingCuboids: Cuboid[] = []
     interactables: Interactable[] = []
+    textureProgram: TextureProgram
+    colorProgram: ColorProgram
 
     private readonly gl: WebGLRenderingContext
     private fields: FieldData[]
 
-    constructor(gl: WebGLRenderingContext) {
+    constructor(gl: WebGLRenderingContext, textureProgram: TextureProgram, colorProgram: ColorProgram) {
         this.gl = gl
+        this.textureProgram = textureProgram
+        this.colorProgram = colorProgram
     }
 
     load(level: number, callback?: () => void) {
@@ -108,13 +114,13 @@ export default class Level {
         ]
         // this.doors[0].transform.position.x += 45
 
-        this.floor = new Plane(this.gl)
+        this.floor = new Plane(this.gl, this.colorProgram)
         this.floor.setColor("#707070")
         this.floor.transform.position = this.center.clone()
         this.floor.transform.position.y = -Config.gridSize / 2
         this.floor.transform.scale.set(this.width * Config.gridSize, 1, this.height * Config.gridSize)
 
-        this.ceiling = new Plane(this.gl)
+        this.ceiling = new Plane(this.gl, this.colorProgram)
         this.ceiling.setColor("#383838")
         this.ceiling.transform.position = this.center.clone()
         this.ceiling.transform.position.y = Config.gridSize / 2
@@ -125,7 +131,7 @@ export default class Level {
     private getLevelObjectsList(value: string, SpecificShape: (typeof Shape)) {
         const objects: Shape[] = []
         for (let field of this.fields.filter(f => f.value == value)) {
-            const shape = new SpecificShape(this.gl)
+            const shape = new SpecificShape(this.gl, this.textureProgram)
             shape.transform.position.x = field.x
             shape.transform.position.z = field.y
             if (field.rotation) {

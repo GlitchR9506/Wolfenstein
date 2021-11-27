@@ -1,12 +1,13 @@
 import texture from '../../textures/guard.png'
+import { Program } from '../programs/Program'
 import { degToRad, Vec2 } from '../utils'
 import Plane from './Plane'
 
 export default class Enemy extends Plane {
     static importedTexture = texture
 
-    constructor(gl: WebGLRenderingContext) {
-        super(gl)
+    constructor(gl: WebGLRenderingContext, program: Program) {
+        super(gl, program)
         this.transform.rotation.x = degToRad(90)
     }
 

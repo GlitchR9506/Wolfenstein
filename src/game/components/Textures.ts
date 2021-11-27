@@ -42,4 +42,8 @@ export default class Textures {
             image.onload = onImageLoad
         }
     }
+
+    bind(className: (typeof Shape)) {
+        this.gl.bindTexture(this.gl.TEXTURE_2D, className.webglTexture);
+    }
 }

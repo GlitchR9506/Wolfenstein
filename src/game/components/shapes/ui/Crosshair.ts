@@ -1,5 +1,6 @@
-import { m4, Vec3 } from '../utils'
-import Shape from './Shape'
+import { Program } from '../../programs/Program'
+import { m4, Vec3 } from '../../utils'
+import Shape from '../Shape'
 
 export default class Crosshair extends Shape {
     readonly VERTICES = new Float32Array([
@@ -20,8 +21,8 @@ export default class Crosshair extends Shape {
         200, 70, 0.520,
     ])
 
-    constructor(gl: WebGLRenderingContext) {
-        super(gl)
+    constructor(gl: WebGLRenderingContext, program: Program) {
+        super(gl, program)
         this.transform.scale = Vec3.one.multiply(0.01)
         this.transform.position.z = -2
     }

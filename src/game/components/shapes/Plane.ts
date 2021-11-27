@@ -2,6 +2,7 @@ import texture from '../../textures/uv-test.png'
 import { hexToRgb, Vec3 } from '../utils'
 import Shape from './Shape'
 import Config from '../Config'
+import { Program } from '../programs/Program'
 
 export default class Plane extends Shape {
     VERTICES = new Float32Array([
@@ -33,8 +34,8 @@ export default class Plane extends Shape {
 
     static importedTexture = texture
 
-    constructor(gl: WebGLRenderingContext) {
-        super(gl)
+    constructor(gl: WebGLRenderingContext, program: Program) {
+        super(gl, program)
         this.transform.scale.set(Config.gridSize, 1, Config.gridSize)
     }
 

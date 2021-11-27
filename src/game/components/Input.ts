@@ -1,6 +1,8 @@
 import { Vec3 } from './utils'
 
 export default class Input {
+    static instance = new this
+
     direction = Vec3.zero
     rotation = 0
     shooting = false

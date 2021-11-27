@@ -1,5 +1,5 @@
 import { m4, Vec3, Transform } from '../utils'
-import { ProgramInfo } from '../programs/Program'
+import { Program, ProgramInfo } from '../programs/Program'
 
 export default class Shape {
     static importedTexture: string
@@ -15,9 +15,11 @@ export default class Shape {
     private firstBufferReady = false
     transform = new Transform()
     initialTransform: Transform
+    program: Program
 
-    constructor(gl: WebGLRenderingContext) {
+    constructor(gl: WebGLRenderingContext, program: Program) {
         this.gl = gl
+        this.program = program
         setTimeout(() => {
             this.updateBuffers()
         })

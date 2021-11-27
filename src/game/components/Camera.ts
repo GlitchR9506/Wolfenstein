@@ -5,7 +5,8 @@ import Interactable from './shapes/Interactable'
 import Enemy from './shapes/Enemy'
 import Door from './shapes/Door'
 import Config from './Config'
-import Weapons from './shapes/Weapons'
+import Weapons from './shapes/ui/Weapons'
+import { Program } from './programs/Program'
 
 export default class Camera {
     transform = new Transform
@@ -23,10 +24,10 @@ export default class Camera {
 
     private blockedDirections: Vec3[] = []
 
-    constructor(gl: WebGLRenderingContext) {
+    constructor(gl: WebGLRenderingContext, program: Program) {
         this.gl = gl
         this.updateProjectionMatrix()
-        this.weapons = new Weapons(this.gl)
+        this.weapons = new Weapons(this.gl, program)
     }
 
     get matrix() {

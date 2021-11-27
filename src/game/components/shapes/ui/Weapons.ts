@@ -1,8 +1,10 @@
-import { degToRad, m4, Vec2, Vec3 } from '../utils'
-import Plane from './Plane'
+import { degToRad, m4, Vec2, Vec3 } from '../../utils'
+import Plane from '../Plane'
 import { Weapon, weaponType } from './Weapon'
-import texture from '../../textures/weapons.png'
-import Config from '../Config'
+import texture from '../../../textures/weapons.png'
+import Config from '../../Config'
+import Input from '../../Input'
+import { Program } from '../../programs/Program'
 
 
 export default class Weapons extends Plane {
@@ -18,8 +20,8 @@ export default class Weapons extends Plane {
 
     private timeSinceLastUpdate = 0
 
-    constructor(gl: WebGLRenderingContext) {
-        super(gl)
+    constructor(gl: WebGLRenderingContext, program: Program) {
+        super(gl, program)
         this.transform.position.z = -2
         this.transform.rotation.x = degToRad(90)
         this.transform.scale = Vec3.one.multiply(1)
@@ -43,47 +45,27 @@ export default class Weapons extends Plane {
         return this.weapons.find(weapon => weapon.type == this.type)
     }
 
-    decreaseAmmo() {
-        if (this.currentWeapon.type != 'knife') {
-            if (this.ammo > 0) {
-                this.ammo--
-            }
-        }
-    }
-
-    shoot() {
-        if (!this.currentWeapon.isAutomatic) {
-            this.currentWeapon.willShoot = true
-        }
-    }
-
-    setShooting(shooting: boolean) {
-        if (this.currentWeapon.isAutomatic) {
-            this.currentWeapon.shooting = shooting
-        }
-    }
-
     update(deltaTime: number) {
         this.timeSinceLastUpdate += deltaTime
 
-        const weapon = this.currentWeapon
-        const frameTime = 1 / (weapon.fireRate * weapon.framesCount)
+        this.setShooting(Input.instance.shooting && this.ammo > 0)
+        if (Input.instance.shot && (this.ammo > 0 || this.currentWeapon.type == 'knife')) {
+            this.shoot()
+            Input.instance.justShot = true
+        }
 
-        weapon.justShot = false
+        if (this.currentWeapon.justShot) {
+            this.decreaseAmmo()
+        }
+
+        const frameTime = 1 / (this.currentWeapon.fireRate * this.currentWeapon.framesCount)
+
+        this.currentWeapon.justShot = false
 
         if (this.timeSinceLastUpdate >= frameTime) {
             this.timeSinceLastUpdate = 0
-            this.setTexture(weapon.getNextTexture())
+            this.setTexture(this.currentWeapon.getNextTexture())
         }
-    }
-
-    setTexture(textureNumber: number) {
-        if (textureNumber == this.currentTextureNumber) return
-        this.currentTextureNumber = textureNumber
-        const currentVerticesVec2Array = Vec2.arrayToVec2Array(this.initialTexcoords)
-        const texturePos = new Vec2(textureNumber % this.texturesCount.x, Math.floor(textureNumber / this.texturesCount.x)).multiplyByVector(this.textureSize)
-        const newVerticesVec2Array = currentVerticesVec2Array.map(vec2 => vec2.multiplyByVector(this.textureSize).add(texturePos))
-        this.TEXCOORDS = new Float32Array(Vec2.vec2ArrayToArray(newVerticesVec2Array))
     }
 
     bindTransform(matrixLocation: WebGLUniformLocation, viewProjectionMatrix: number[]) {
@@ -95,5 +77,34 @@ export default class Weapons extends Plane {
         matrix = m4.translate(matrix, this.transform.position);
         matrix = m4.multiply(matrix, viewProjectionMatrix);
         this.gl.uniformMatrix4fv(matrixLocation, false, matrix);
+    }
+
+    private decreaseAmmo() {
+        if (this.currentWeapon.type != 'knife') {
+            if (this.ammo > 0) {
+                this.ammo--
+            }
+        }
+    }
+
+    private shoot() {
+        if (!this.currentWeapon.isAutomatic) {
+            this.currentWeapon.willShoot = true
+        }
+    }
+
+    private setShooting(shooting: boolean) {
+        if (this.currentWeapon.isAutomatic) {
+            this.currentWeapon.shooting = shooting
+        }
+    }
+
+    private setTexture(textureNumber: number) {
+        if (textureNumber == this.currentTextureNumber) return
+        this.currentTextureNumber = textureNumber
+        const currentVerticesVec2Array = Vec2.arrayToVec2Array(this.initialTexcoords)
+        const texturePos = new Vec2(textureNumber % this.texturesCount.x, Math.floor(textureNumber / this.texturesCount.x)).multiplyByVector(this.textureSize)
+        const newVerticesVec2Array = currentVerticesVec2Array.map(vec2 => vec2.multiplyByVector(this.textureSize).add(texturePos))
+        this.TEXCOORDS = new Float32Array(Vec2.vec2ArrayToArray(newVerticesVec2Array))
     }
 }

@@ -1,3 +1,4 @@
+import { Program } from '../programs/Program'
 import { degToRad } from '../utils'
 import Shape from './Shape'
 
@@ -261,8 +262,8 @@ export default class ShapeLetter extends Shape {
         160, 160, 220
     ])
 
-    constructor(gl: WebGLRenderingContext) {
-        super(gl)
+    constructor(gl: WebGLRenderingContext, program: Program) {
+        super(gl, program)
         this.transform.rotation.x = degToRad(180)
         this.transform.originTranslation.x = 15
     }

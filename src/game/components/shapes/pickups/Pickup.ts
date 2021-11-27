@@ -1,5 +1,6 @@
 import texture from '../../../textures/objects.png'
 import Config from '../../Config'
+import { Program } from '../../programs/Program'
 import { degToRad, Vec2, Vec3 } from '../../utils'
 import Plane from '../Plane'
 
@@ -9,8 +10,8 @@ export default class Pickup extends Plane {
     private firstTextureSet = false
     protected textureNumber: number
 
-    constructor(gl: WebGLRenderingContext) {
-        super(gl)
+    constructor(gl: WebGLRenderingContext, program: Program) {
+        super(gl, program)
         this.transform.scale = Vec3.one.multiply(Config.gridSize)
         this.transform.rotation.x = degToRad(90)
     }
