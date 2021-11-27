@@ -26,7 +26,6 @@ export default class Game {
     private readonly textures: Textures
     private readonly level: Level
     private readonly crosshair: Crosshair
-    private readonly weapons: Weapons
     private readonly ammo: Ammo
     private readonly gl: WebGLRenderingContext
     private lineShapes: Shape[] = []
@@ -42,7 +41,6 @@ export default class Game {
         this.textures = new Textures(this.gl)
         this.level = new Level(this.gl)
         this.crosshair = new Crosshair(this.gl)
-        this.weapons = new Weapons(this.gl)
         this.ammo = new Ammo(this.gl)
         this.textures.load([Wall, Enemy, Door, Weapons, Ammo], () => {
             this.level.load(2, () => {
@@ -81,6 +79,8 @@ export default class Game {
             }
         }
 
+        log('ammo', this.camera.weapons.ammo)
+
         this.camera.rotate(this.input.rotation * deltaTime)
         if (this.input.noclip) {
             this.camera.move(this.input.direction.multiply(deltaTime))
@@ -102,15 +102,16 @@ export default class Game {
         this.ammo.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
 
         this.gl.bindTexture(this.gl.TEXTURE_2D, Weapons.webglTexture);
-        this.weapons.setShooting(this.input.shooting)
 
-        if (this.input.shot) {
-            this.weapons.shoot()
+        this.camera.weapons.setShooting(this.input.shooting && this.camera.weapons.ammo > 0)
+
+        if (this.input.shot && this.camera.weapons.ammo > 0) {
+            this.camera.weapons.shoot()
             this.input.justShot = true
         }
-        this.weapons.update(deltaTime)
-        this.weapons.updateBuffers()
-        this.weapons.draw(this.textureProgram.info, this.camera.projectionMatrix)
+        this.camera.weapons.update(deltaTime)
+        this.camera.weapons.updateBuffers()
+        this.camera.weapons.draw(this.textureProgram.info, this.camera.projectionMatrix)
 
         this.gl.bindTexture(this.gl.TEXTURE_2D, Wall.webglTexture);
         for (let wall of this.level.walls) {
@@ -124,15 +125,18 @@ export default class Game {
         }
         this.gl.bindTexture(this.gl.TEXTURE_2D, Enemy.webglTexture);
         const shapeLookedAt = this.camera.raycast(this.level.collidingCuboids)
+        if (this.camera.weapons.currentWeapon.justShot) {
+            this.camera.weapons.decreaseAmmo()
+        }
         for (let enemy of this.level.enemies) {
             if (this.camera.isLookingAt(enemy)) {
                 const enemyDistance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
                 const shapeLookedAtDistance = this.camera.transform.position.horizontalDistanceTo(shapeLookedAt.transform.position)
                 if (enemyDistance < shapeLookedAtDistance) {
-                    if (this.weapons.currentWeapon.justShot) {
+                    if (this.camera.weapons.currentWeapon.justShot) {
                         const distance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
-                        if (distance <= this.weapons.currentWeapon.range) {
-                            enemy.damage(this.weapons.currentWeapon.damage)
+                        if (distance <= this.camera.weapons.currentWeapon.range) {
+                            enemy.damage(this.camera.weapons.currentWeapon.damage)
                         }
                     }
                 }
@@ -142,8 +146,6 @@ export default class Game {
             enemy.updateBuffers()
             enemy.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
-        log('player', this.camera.transform.position)
-        log('pickup', this.ammo.transform.position)
     }
 
     private initWebgl() {

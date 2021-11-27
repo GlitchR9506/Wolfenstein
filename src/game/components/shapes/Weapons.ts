@@ -8,6 +8,7 @@ import Config from '../Config'
 export default class Weapons extends Plane {
     static importedTexture = texture
 
+    ammo = 10
     type: weaponType = 'knife'
     justShot = false
 
@@ -40,6 +41,14 @@ export default class Weapons extends Plane {
 
     get currentWeapon() {
         return this.weapons.find(weapon => weapon.type == this.type)
+    }
+
+    decreaseAmmo() {
+        if (this.currentWeapon.type != 'knife') {
+            if (this.ammo > 0) {
+                this.ammo--
+            }
+        }
     }
 
     shoot() {

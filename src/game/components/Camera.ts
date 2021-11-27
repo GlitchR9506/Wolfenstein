@@ -5,11 +5,13 @@ import Interactable from './shapes/Interactable'
 import Enemy from './shapes/Enemy'
 import Door from './shapes/Door'
 import Config from './Config'
+import Weapons from './shapes/Weapons'
 
 export default class Camera {
     transform = new Transform
     projectionMatrix: number[]
 
+    readonly weapons: Weapons
     private readonly fov = 60
     private readonly zNear = Config.gridSize / 64
     private readonly zFar = Config.gridSize * 48
@@ -24,6 +26,7 @@ export default class Camera {
     constructor(gl: WebGLRenderingContext) {
         this.gl = gl
         this.updateProjectionMatrix()
+        this.weapons = new Weapons(this.gl)
     }
 
     get matrix() {
