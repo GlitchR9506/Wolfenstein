@@ -5,14 +5,18 @@ export default class Input {
 
     direction = Vec3.zero
     rotation = 0
+
     shooting = false
     shot = false
     justShot = false
+
     interacting = false
     justInteracted = false
-    noclip = false
 
+    noclip = false
     noclipDisabled = false
+
+    lastNumber: number = null
 
     private pressedKeys: string[] = []
 
@@ -60,6 +64,17 @@ export default class Input {
                 this.noclip = true
             }
         }
+
+        if (this.isPressed('Digit0')) this.lastNumber = 0
+        if (this.isPressed('Digit1')) this.lastNumber = 1
+        if (this.isPressed('Digit2')) this.lastNumber = 2
+        if (this.isPressed('Digit3')) this.lastNumber = 3
+        if (this.isPressed('Digit4')) this.lastNumber = 4
+        if (this.isPressed('Digit5')) this.lastNumber = 5
+        if (this.isPressed('Digit6')) this.lastNumber = 6
+        if (this.isPressed('Digit7')) this.lastNumber = 7
+        if (this.isPressed('Digit8')) this.lastNumber = 8
+        if (this.isPressed('Digit9')) this.lastNumber = 9
     }
 
     private isPressed(key: string) {

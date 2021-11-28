@@ -48,6 +48,14 @@ export default class Weapons extends Plane {
     update(deltaTime: number) {
         this.timeSinceLastUpdate += deltaTime
 
+        if (0 < Input.instance.lastNumber && Input.instance.lastNumber <= this.weapons.length) {
+            for (let i = 0; i < this.weapons.length; i++) {
+                if (Input.instance.lastNumber == i + 1) {
+                    this.type = this.weapons[i].type
+                }
+            }
+        }
+
         this.setShooting(Input.instance.shooting && this.ammo > 0)
         if (Input.instance.shot && (this.ammo > 0 || this.currentWeapon.type == 'knife')) {
             this.shoot()
