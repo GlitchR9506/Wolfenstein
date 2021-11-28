@@ -1,12 +1,12 @@
 import FieldData from '../../common/FieldData';
 import { degToRad, Vec3 } from './utils';
-import Wall from './shapes/Wall'
-import Enemy from './shapes/Enemy'
+import Wall from './shapes/level/Wall'
+import Enemy from './shapes/level/Enemy'
 import Cuboid from './shapes/level/Cuboid';
-import Door from './shapes/Door';
-import Plane from './shapes/Plane';
-import Shape from './shapes/Shape';
-import Interactable from './shapes/Interactable';
+import Door from './shapes/level/Door';
+import Plane from './shapes/level/Plane';
+import Shape from './shapes/level/Shape';
+import Interactable from './shapes/level/Interactable';
 
 import Pickup from './shapes/level/pickups/Pickup';
 import Ammo from './shapes/level/pickups/Ammo'
@@ -15,6 +15,9 @@ import Config from './Config'
 import { TextureProgram } from './programs/TextureProgram';
 import { ColorProgram } from './programs/ColorProgram';
 import { Program } from './programs/Program';
+import DogFood from './shapes/level/pickups/DogFood';
+import Food from './shapes/level/pickups/Food';
+import HealthPack from './shapes/level/pickups/HealthPack';
 
 export default class Level {
     width: number
@@ -139,6 +142,29 @@ export default class Level {
         this.ceiling.transform.position.y = Config.gridSize / 2
         this.ceiling.transform.scale.set(this.width * Config.gridSize, 1, this.height * Config.gridSize)
         this.ceiling.transform.rotation.z = degToRad(180)
+
+        {
+            const health = new DogFood(this.gl, this.textureProgram)
+            health.transform.position.x = 1888
+            health.transform.position.z = 1344
+            health.setInitialState()
+            this.pickups.push(health)
+        }
+        {
+            const health = new Food(this.gl, this.textureProgram)
+            health.transform.position.x = 1888 - Config.gridSize * 1
+            health.transform.position.z = 1344
+            health.setInitialState()
+            this.pickups.push(health)
+        }
+        {
+            const health = new HealthPack(this.gl, this.textureProgram)
+            health.transform.position.x = 1888 - Config.gridSize * 2
+            health.transform.position.z = 1344
+            health.setInitialState()
+            this.pickups.push(health)
+        }
+
 
         this.shapes = [
             ...this.walls,

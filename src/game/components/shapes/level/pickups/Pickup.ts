@@ -1,18 +1,18 @@
-import texture from '../../../textures/objects.png'
+import texture from '../../../../textures/objects.png'
 import Camera from '../../../Camera'
 import Config from '../../../Config'
 import { Program } from '../../../programs/Program'
 import { degToRad, Vec2, Vec3 } from '../../../utils'
 import Plane from '../Plane'
 
-export default class Pickup extends Plane {
+export default abstract class Pickup extends Plane {
     importedTexture = texture
 
     pickupRange = Config.gridSize * 0.3
     pickedUp = false
 
     private firstTextureSet = false
-    protected textureNumber: number
+    protected abstract textureNumber: number
 
     onCreation() {
         this.transform.scale = Vec3.one.multiply(Config.gridSize)
@@ -24,16 +24,21 @@ export default class Pickup extends Plane {
         this.transform.rotation.y = -cameraY
     }
 
-    texturesInLine = 8
+    private texturesInLine = 8
+
     get textureSize() {
         return 1 / this.texturesInLine
     }
 
+    canBePickedUp(camera: Camera) {
+        return true
+    }
+
     pickUp(camera: Camera) {
-        if (!this.pickedUp) {
+        if (!this.pickedUp && this.canBePickedUp(camera)) {
             this.onPickedUp(camera)
+            this.pickedUp = true
         }
-        this.pickedUp = true
     }
 
     onPickedUp(camera: Camera) { }

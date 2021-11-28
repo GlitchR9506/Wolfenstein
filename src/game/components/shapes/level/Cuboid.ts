@@ -2,7 +2,7 @@ import Shape from './Shape'
 import { CuboidBoundingBox } from './CuboidBoundingBox'
 import { Vec2 } from '../../utils'
 
-export default class Cuboid extends Shape {
+export default abstract class Cuboid extends Shape {
     VERTICES = new Float32Array([
         // front    
         -0.5, -0.5, 0.5,

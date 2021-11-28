@@ -72,6 +72,7 @@ export default class Game {
         }
 
         log('ammo', this.camera.weapons.ammo)
+        log('hp', this.camera.hp)
 
         this.camera.update(deltaTime)
 

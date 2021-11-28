@@ -1,6 +1,6 @@
 import { Vec2, Vec3 } from '../../utils'
 import Cuboid from './Cuboid'
-import texture from '../../textures/wall.png'
+import texture from '../../../textures/wall.png'
 import Config from '../../Config'
 import { Program } from '../../programs/Program'
 
