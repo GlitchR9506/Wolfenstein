@@ -1,15 +1,23 @@
 import texture from '../../textures/guard.png'
 import { Program } from '../programs/Program'
 import { degToRad, Vec2 } from '../utils'
+import Ammo from './pickups/Ammo'
 import Plane from './Plane'
 
 export default class Enemy extends Plane {
     importedTexture = texture
+    loot: Ammo
 
     constructor(gl: WebGLRenderingContext, program: Program) {
         super(gl, program)
+        this.loot = new Ammo(this.gl, program)
         this.transform.rotation.x = degToRad(90)
     }
+
+    get isDead() {
+        return this.hp <= 0
+    }
+
 
     private textureNumber: number
     state = 'walking'

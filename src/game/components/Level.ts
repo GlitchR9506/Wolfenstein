@@ -14,6 +14,7 @@ import Ammo from './shapes/pickups/Ammo'
 import Config from './Config'
 import { TextureProgram } from './programs/TextureProgram';
 import { ColorProgram } from './programs/ColorProgram';
+import { Program } from './programs/Program';
 
 export default class Level {
     width: number
@@ -47,6 +48,17 @@ export default class Level {
             this.createObjects()
             callback?.()
         })
+    }
+
+    spawnLoot(enemy: Enemy) {
+        if (enemy.loot) {
+            this.pickups.push(enemy.loot)
+            enemy.loot.transform.position = enemy.transform.position.clone()
+            // enemy.loot.transform.position.x += 30
+            // enemy.loot.transform.position.z += 30
+            enemy.loot.setInitialState()
+
+        }
     }
 
     get verticesCount() {
@@ -128,12 +140,6 @@ export default class Level {
         this.ceiling.transform.scale.set(this.width * Config.gridSize, 1, this.height * Config.gridSize)
         this.ceiling.transform.rotation.z = degToRad(180)
 
-        const ammo = new Ammo(this.gl, this.textureProgram)
-        ammo.transform.position.x = 1888
-        ammo.transform.position.z = 1380
-        ammo.setInitialState()
-        this.pickups.push(ammo)
-
         this.shapes = [
             ...this.walls,
             ...this.enemies,
@@ -144,7 +150,7 @@ export default class Level {
         ]
     }
 
-    private getLevelObjectsList(value: string, SpecificShape: (typeof Shape)) {
+    private getLevelObjectsList<T extends Shape>(value: string, SpecificShape: new (gl: WebGLRenderingContext, program: Program) => T) {
         const objects: Shape[] = []
         for (let field of this.fields.filter(f => f.value == value)) {
             const shape = new SpecificShape(this.gl, this.textureProgram)
@@ -154,8 +160,8 @@ export default class Level {
                 shape.transform.rotation.y = degToRad(field.rotation)
             }
             shape.setInitialState()
-            if (field.wallDirection) {
-                const wall = shape as Wall
+            if (field.wallDirection && shape instanceof Wall) {
+                const wall = shape
                 const textureToSet = 4
                 if (field.wallDirection[0] == 0 && field.wallDirection[1] == -1) {
                     wall.setTexture(textureToSet, 0)

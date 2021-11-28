@@ -1,7 +1,7 @@
 import { m4, Vec3, Transform } from '../utils'
 import { Program, ProgramInfo } from '../programs/Program'
 
-export default class Shape {
+export default abstract class Shape {
     importedTexture: string
     webglTexture: WebGLTexture
     protected readonly gl: WebGLRenderingContext

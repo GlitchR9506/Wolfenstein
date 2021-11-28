@@ -11,7 +11,7 @@ export default class Weapons extends Plane {
     importedTexture = texture
 
     ammo = 10
-    type: weaponType = 'knife'
+    type: weaponType = 'pistol'
     justShot = false
 
     private weapons: Weapon[] = []

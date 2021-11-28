@@ -39,12 +39,14 @@ export default class Game {
         this.level = new Level(this.gl, this.textureProgram, this.colorProgram)
         this.crosshair = new Crosshair(this.gl, this.colorProgram)
         this.level.load(2, () => {
-            this.textures.load(
-                [this.camera.weapons, ...this.level.shapes].filter(shape => shape.importedTexture),
-                () => {
-                    this.camera.transform.position = this.level.playerPosition
-                    this.startGameLoop()
-                }
+            let shapes = []
+            shapes.push(this.camera.weapons)
+            shapes.push(...this.level.enemies.map(enemy => enemy.loot))
+            shapes.push(...this.level.shapes)
+            this.textures.load(shapes, () => {
+                this.camera.transform.position = this.level.playerPosition
+                this.startGameLoop()
+            }
             )
         })
     }
@@ -91,6 +93,12 @@ export default class Game {
 
 
         this.textureProgram.use()
+        log('pickups count', this.level.pickups.length)
+        if (this.level.pickups[1]) {
+            log('pickup 1 pos', this.level.pickups[1].transform.position)
+            log('pickup 1 pickedUp', this.level.pickups[1].pickedUp)
+        }
+        log('pickups count', this.level.pickups.length)
         for (let pickup of this.level.pickups.filter(pickup => !pickup.pickedUp)) {
             pickup.lookAtCamera(this.camera.transform.rotation.y)
             if (this.camera.transform.position.horizontalDistanceTo(pickup.transform.position) <= pickup.pickupRange) {
@@ -122,6 +130,9 @@ export default class Game {
                         const distance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
                         if (distance <= this.camera.weapons.currentWeapon.range) {
                             enemy.damage(this.camera.weapons.currentWeapon.damage)
+                            if (enemy.isDead) {
+                                this.level.spawnLoot(enemy)
+                            }
                         }
                     }
                 }
