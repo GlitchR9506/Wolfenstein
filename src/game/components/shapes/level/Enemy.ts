@@ -1,6 +1,6 @@
-import texture from '../../textures/guard.png'
-import { Program } from '../programs/Program'
-import { degToRad, Vec2 } from '../utils'
+import texture from '../../../textures/guard.png'
+import { Program } from '../../programs/Program'
+import { degToRad, Vec2 } from '../../utils'
 import Ammo from './pickups/Ammo'
 import Plane from './Plane'
 
@@ -51,6 +51,7 @@ export default class Enemy extends Plane {
                 }
             }
         }
+        this.updateBuffers()
     }
 
     hp = 100

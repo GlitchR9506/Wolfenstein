@@ -1,5 +1,5 @@
-import { Program } from '../programs/Program'
-import { degToRad } from '../utils'
+import { Program } from '../../programs/Program'
+import { degToRad } from '../../utils'
 import Shape from './Shape'
 
 export default class ShapeLetter extends Shape {

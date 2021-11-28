@@ -1,4 +1,4 @@
-import Shape from "./shapes/Shape"
+import Shape from "./shapes/level/Shape"
 
 export default class Textures {
     private readonly gl: WebGLRenderingContext

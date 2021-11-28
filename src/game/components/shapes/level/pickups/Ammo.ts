@@ -1,5 +1,5 @@
-import Camera from '../../Camera'
-import { degToRad, Vec2, Vec3 } from '../../utils'
+import Camera from '../../../Camera'
+import { degToRad, Vec2, Vec3 } from '../../../utils'
 import Pickup from './Pickup'
 
 export default class Ammo extends Pickup {

@@ -1,16 +1,18 @@
 import { Vec3, Transform, radToDeg, m4, degToRad, log, Vec2 } from './utils'
-import Cuboid from './shapes/Cuboid'
-import Shape from './shapes/Shape'
-import Interactable from './shapes/Interactable'
-import Enemy from './shapes/Enemy'
-import Door from './shapes/Door'
+import Cuboid from './shapes/level/Cuboid'
+import Shape from './shapes/level/Shape'
+import Interactable from './shapes/level/Interactable'
+import Enemy from './shapes/level/Enemy'
+import Door from './shapes/level/Door'
 import Config from './Config'
 import Weapons from './shapes/ui/Weapons'
 import { Program } from './programs/Program'
+import Input from './Input'
 
 export default class Camera {
     transform = new Transform
     projectionMatrix: number[]
+    collidingCuboids: Cuboid[]
 
     readonly weapons: Weapons
     private readonly fov = 60
@@ -35,6 +37,15 @@ export default class Camera {
         cameraMatrix = m4.translate(cameraMatrix, this.transform.position.inverted)
         cameraMatrix = m4.yRotate(cameraMatrix, this.transform.rotation.y)
         return cameraMatrix
+    }
+
+    update(deltaTime: number) {
+        this.rotate(Input.instance.rotation * deltaTime)
+        if (Input.instance.noclip) {
+            this.move(Input.instance.direction.multiply(deltaTime))
+        } else {
+            this.move(Input.instance.direction.multiply(deltaTime), this.collidingCuboids)
+        }
     }
 
     nearest(shapes: Shape[]) {

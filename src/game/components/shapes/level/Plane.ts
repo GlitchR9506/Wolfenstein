@@ -1,8 +1,8 @@
 import texture from '../../textures/uv-test.png'
-import { hexToRgb, Vec3 } from '../utils'
+import { hexToRgb, Vec3 } from '../../utils'
 import Shape from './Shape'
-import Config from '../Config'
-import { Program } from '../programs/Program'
+import Config from '../../Config'
+import { Program } from '../../programs/Program'
 
 export default class Plane extends Shape {
     VERTICES = new Float32Array([

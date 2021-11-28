@@ -1,5 +1,5 @@
-import { m4, Vec3, Transform } from '../utils'
-import { Program, ProgramInfo } from '../programs/Program'
+import { m4, Vec3, Transform } from '../../utils'
+import { Program, ProgramInfo } from '../../programs/Program'
 
 export default abstract class Shape {
     importedTexture: string
@@ -154,17 +154,18 @@ export default abstract class Shape {
         this.gl.uniformMatrix4fv(matrixLocation, false, matrix);
     }
 
-    draw(programInfo: ProgramInfo, viewProjectionMatrix: number[]) {
+    draw(viewProjectionMatrix: number[]) {
         if (!this.firstBufferReady) return
         // console.log(programInfo.attributes)
-        this.bindGeometry(programInfo.attributes.position)
-        if (programInfo.attributes.color) {
-            this.bindColors(programInfo.attributes.color)
+        this.program.use()
+        this.bindGeometry(this.program.info.attributes.position)
+        if (this.program.info.attributes.color) {
+            this.bindColors(this.program.info.attributes.color)
         }
-        if (programInfo.attributes.texcoord) {
-            this.bindTexture(programInfo.attributes.texcoord)
+        if (this.program.info.attributes.texcoord) {
+            this.bindTexture(this.program.info.attributes.texcoord)
         }
-        this.bindTransform(programInfo.uniforms.matrix, viewProjectionMatrix)
+        this.bindTransform(this.program.info.uniforms.matrix, viewProjectionMatrix)
 
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.webglTexture);
 

@@ -7,15 +7,10 @@ import Input from './Input'
 import Textures from './Textures'
 
 import Level from './Level'
-import Wall from './shapes/Wall'
-import Door from './shapes/Door'
-import Enemy from './shapes/Enemy'
 
 import Crosshair from './shapes/ui/Crosshair'
-import Weapons from './shapes/ui/Weapons'
-import Interactable from './shapes/Interactable'
-import Shape from './shapes/Shape'
-import Pickup from './shapes/pickups/Pickup'
+import Interactable from './shapes/level/Interactable'
+import Shape from './shapes/level/Shape'
 
 
 export default class Game {
@@ -45,9 +40,9 @@ export default class Game {
             shapes.push(...this.level.shapes)
             this.textures.load(shapes, () => {
                 this.camera.transform.position = this.level.playerPosition
+                this.camera.collidingCuboids = this.level.collidingCuboids
                 this.startGameLoop()
-            }
-            )
+            })
         })
     }
 
@@ -78,46 +73,30 @@ export default class Game {
 
         log('ammo', this.camera.weapons.ammo)
 
-        this.camera.rotate(Input.instance.rotation * deltaTime)
-        if (Input.instance.noclip) {
-            this.camera.move(Input.instance.direction.multiply(deltaTime))
-        } else {
-            this.camera.move(Input.instance.direction.multiply(deltaTime), this.level.collidingCuboids)
-        }
+        this.camera.update(deltaTime)
 
-        this.colorProgram.use()
+        this.crosshair.draw(this.camera.projectionMatrix)
+        this.level.floor.draw(this.camera.viewProjectionMatrix)
+        this.level.ceiling.draw(this.camera.viewProjectionMatrix)
 
-        this.crosshair.draw(this.colorProgram.info, this.camera.projectionMatrix)
-        this.level.floor.draw(this.colorProgram.info, this.camera.viewProjectionMatrix)
-        this.level.ceiling.draw(this.colorProgram.info, this.camera.viewProjectionMatrix)
-
-
-        this.textureProgram.use()
-        log('pickups count', this.level.pickups.length)
-        if (this.level.pickups[1]) {
-            log('pickup 1 pos', this.level.pickups[1].transform.position)
-            log('pickup 1 pickedUp', this.level.pickups[1].pickedUp)
-        }
-        log('pickups count', this.level.pickups.length)
         for (let pickup of this.level.pickups.filter(pickup => !pickup.pickedUp)) {
             pickup.lookAtCamera(this.camera.transform.rotation.y)
             if (this.camera.transform.position.horizontalDistanceTo(pickup.transform.position) <= pickup.pickupRange) {
                 pickup.pickUp(this.camera)
             }
-            pickup.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
+            pickup.draw(this.camera.viewProjectionMatrix)
         }
 
         this.camera.weapons.update(deltaTime)
-        this.camera.weapons.updateBuffers()
-        this.camera.weapons.draw(this.textureProgram.info, this.camera.projectionMatrix)
+        this.camera.weapons.draw(this.camera.projectionMatrix)
 
         for (let wall of this.level.walls) {
-            wall.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
+            wall.draw(this.camera.viewProjectionMatrix)
         }
 
         for (let door of this.level.doors) {
             door.update(deltaTime)
-            door.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
+            door.draw(this.camera.viewProjectionMatrix)
         }
 
         const shapeLookedAt = this.camera.raycast(this.level.collidingCuboids)
@@ -139,8 +118,7 @@ export default class Game {
             }
             enemy.lookAtCamera(this.camera.transform.rotation.y)
             enemy.update(deltaTime)
-            enemy.updateBuffers()
-            enemy.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
+            enemy.draw(this.camera.viewProjectionMatrix)
         }
     }
 

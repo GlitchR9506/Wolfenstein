@@ -1,5 +1,5 @@
 import Shape from "./Shape";
-import { log, m4, Transform, Vec3 } from "../utils";
+import { log, m4, Transform, Vec3 } from "../../utils";
 
 export class CuboidBoundingBox {
     readonly shape: Shape

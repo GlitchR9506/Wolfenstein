@@ -2,14 +2,14 @@ import FieldData from '../../common/FieldData';
 import { degToRad, Vec3 } from './utils';
 import Wall from './shapes/Wall'
 import Enemy from './shapes/Enemy'
-import Cuboid from './shapes/Cuboid';
+import Cuboid from './shapes/level/Cuboid';
 import Door from './shapes/Door';
 import Plane from './shapes/Plane';
 import Shape from './shapes/Shape';
 import Interactable from './shapes/Interactable';
 
-import Pickup from './shapes/pickups/Pickup';
-import Ammo from './shapes/pickups/Ammo'
+import Pickup from './shapes/level/pickups/Pickup';
+import Ammo from './shapes/level/pickups/Ammo'
 
 import Config from './Config'
 import { TextureProgram } from './programs/TextureProgram';

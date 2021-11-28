@@ -1,8 +1,8 @@
 import texture from '../../../textures/objects.png'
-import Camera from '../../Camera'
-import Config from '../../Config'
-import { Program } from '../../programs/Program'
-import { degToRad, Vec2, Vec3 } from '../../utils'
+import Camera from '../../../Camera'
+import Config from '../../../Config'
+import { Program } from '../../../programs/Program'
+import { degToRad, Vec2, Vec3 } from '../../../utils'
 import Plane from '../Plane'
 
 export default class Pickup extends Plane {

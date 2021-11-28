@@ -1,6 +1,6 @@
 import { Program } from '../../programs/Program'
 import { m4, Vec3 } from '../../utils'
-import Shape from '../Shape'
+import Shape from '../level/Shape'
 
 export default class Crosshair extends Shape {
     readonly VERTICES = new Float32Array([

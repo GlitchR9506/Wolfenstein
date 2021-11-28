@@ -1,5 +1,5 @@
 import { degToRad, m4, Vec2, Vec3 } from '../../utils'
-import Plane from '../Plane'
+import Plane from '../level/Plane'
 import { Weapon, weaponType } from './Weapon'
 import texture from '../../../textures/weapons.png'
 import Config from '../../Config'
@@ -74,6 +74,8 @@ export default class Weapons extends Plane {
             this.timeSinceLastUpdate = 0
             this.setTexture(this.currentWeapon.getNextTexture())
         }
+
+        this.updateBuffers()
     }
 
     bindTransform(matrixLocation: WebGLUniformLocation, viewProjectionMatrix: number[]) {
