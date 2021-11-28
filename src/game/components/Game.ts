@@ -10,12 +10,12 @@ import Level from './Level'
 import Wall from './shapes/Wall'
 import Door from './shapes/Door'
 import Enemy from './shapes/Enemy'
-import Ammo from './shapes/pickups/Ammo'
 
 import Crosshair from './shapes/ui/Crosshair'
 import Weapons from './shapes/ui/Weapons'
 import Interactable from './shapes/Interactable'
 import Shape from './shapes/Shape'
+import Pickup from './shapes/pickups/Pickup'
 
 
 export default class Game {
@@ -25,7 +25,6 @@ export default class Game {
     private readonly textures: Textures
     private readonly level: Level
     private readonly crosshair: Crosshair
-    private readonly ammo: Ammo
     private readonly gl: WebGLRenderingContext
     private lineShapes: Shape[] = []
 
@@ -39,13 +38,9 @@ export default class Game {
         this.textures = new Textures(this.gl)
         this.level = new Level(this.gl, this.textureProgram, this.colorProgram)
         this.crosshair = new Crosshair(this.gl, this.colorProgram)
-        this.ammo = new Ammo(this.gl, this.textureProgram)
-        this.textures.load([Wall, Enemy, Door, Weapons, Ammo], () => {
+        this.textures.load([Wall, Enemy, Door, Weapons, Pickup], () => {
             this.level.load(2, () => {
                 this.camera.transform.position = this.level.playerPosition
-                this.ammo.transform.position = this.level.playerPosition.clone()
-                this.ammo.transform.position.z -= 64
-                this.ammo.setInitialState()
                 // console.log(this.pickup.transform.position)
                 this.startGameLoop()
             })
@@ -94,10 +89,14 @@ export default class Game {
 
 
         this.textureProgram.use()
-
-        this.textures.bind(Ammo)
-        this.ammo.lookAtCamera(this.camera.transform.rotation.y)
-        this.ammo.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
+        this.textures.bind(Pickup)
+        for (let pickup of this.level.pickups.filter(pickup => !pickup.pickedUp)) {
+            pickup.lookAtCamera(this.camera.transform.rotation.y)
+            if (this.camera.transform.position.horizontalDistanceTo(pickup.transform.position) <= pickup.pickupRange) {
+                pickup.pickUp(this.camera)
+            }
+            pickup.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
+        }
 
         this.textures.bind(Weapons)
         this.camera.weapons.update(deltaTime)

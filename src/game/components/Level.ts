@@ -7,6 +7,10 @@ import Door from './shapes/Door';
 import Plane from './shapes/Plane';
 import Shape from './shapes/Shape';
 import Interactable from './shapes/Interactable';
+
+import Pickup from './shapes/pickups/Pickup';
+import Ammo from './shapes/pickups/Ammo'
+
 import Config from './Config'
 import { TextureProgram } from './programs/TextureProgram';
 import { ColorProgram } from './programs/ColorProgram';
@@ -26,6 +30,7 @@ export default class Level {
     interactables: Interactable[] = []
     textureProgram: TextureProgram
     colorProgram: ColorProgram
+    pickups: Pickup[] = []
 
     private readonly gl: WebGLRenderingContext
     private fields: FieldData[]
@@ -126,6 +131,12 @@ export default class Level {
         this.ceiling.transform.position.y = Config.gridSize / 2
         this.ceiling.transform.scale.set(this.width * Config.gridSize, 1, this.height * Config.gridSize)
         this.ceiling.transform.rotation.z = degToRad(180)
+
+        const ammo = new Ammo(this.gl, this.textureProgram)
+        ammo.transform.position.x = 1888
+        ammo.transform.position.z = 1380
+        ammo.setInitialState()
+        this.pickups.push(ammo)
     }
 
     private getLevelObjectsList(value: string, SpecificShape: (typeof Shape)) {

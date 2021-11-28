@@ -1,4 +1,5 @@
 import texture from '../../../textures/objects.png'
+import Camera from '../../Camera'
 import Config from '../../Config'
 import { Program } from '../../programs/Program'
 import { degToRad, Vec2, Vec3 } from '../../utils'
@@ -6,6 +7,9 @@ import Plane from '../Plane'
 
 export default class Pickup extends Plane {
     static importedTexture = texture
+
+    pickupRange = Config.gridSize * 0.3
+    pickedUp = false
 
     private firstTextureSet = false
     protected textureNumber: number
@@ -30,6 +34,15 @@ export default class Pickup extends Plane {
     get textureSize() {
         return 1 / this.texturesInLine
     }
+
+    pickUp(camera: Camera) {
+        if (!this.pickedUp) {
+            this.onPickedUp(camera)
+        }
+        this.pickedUp = true
+    }
+
+    onPickedUp(camera: Camera) { }
 
     setTexture(textureNumber: number) {
         if (textureNumber == this.textureNumber && this.firstTextureSet) return
