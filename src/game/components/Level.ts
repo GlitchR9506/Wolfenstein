@@ -112,11 +112,7 @@ export default class Level {
         this.collidingCuboids.push(...this.walls)
         this.collidingCuboids.push(...this.doors)
         this.interactables.push(...this.doors)
-        this.shapes = [
-            ...this.walls,
-            ...this.enemies,
-            ...this.doors,
-        ]
+
         // this.doors[0].transform.position.x += 45
 
         this.floor = new Plane(this.gl, this.colorProgram)
@@ -137,6 +133,15 @@ export default class Level {
         ammo.transform.position.z = 1380
         ammo.setInitialState()
         this.pickups.push(ammo)
+
+        this.shapes = [
+            ...this.walls,
+            ...this.enemies,
+            ...this.doors,
+            ...this.pickups,
+            this.floor,
+            this.ceiling,
+        ]
     }
 
     private getLevelObjectsList(value: string, SpecificShape: (typeof Shape)) {

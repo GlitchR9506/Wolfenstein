@@ -7,43 +7,50 @@ export default class Textures {
         this.gl = gl
     }
 
-    load(textureObjectsClasses: (typeof Shape)[], callback?: () => void) {
-        const textures = textureObjectsClasses.map(el => el.importedTexture)
-        this.loadHtmlImages(textures, htmlImages => {
-            textures.forEach((texture, index) => {
-                const webglTexture = this.gl.createTexture()
-                this.gl.bindTexture(this.gl.TEXTURE_2D, webglTexture)
-                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST)
-                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_LINEAR)
-                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE)
-                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE)
-                this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, htmlImages[index])
-                this.gl.generateMipmap(this.gl.TEXTURE_2D)
-                textureObjectsClasses[index].webglTexture = webglTexture
-            })
+    load(shapes: Shape[], callback?: () => void) {
+        let alreadyCreatedTextures: Map<string, WebGLTexture> = new Map()
+        const textures = [...new Set(shapes.map(shape => shape.importedTexture))]
+        this.loadHtmlImages(textures, textureToHtmlImageMap => {
+            for (let shape of shapes) {
+                let webglTexture
+                if (!alreadyCreatedTextures.has(shape.importedTexture)) {
+                    webglTexture = this.gl.createTexture()
+                    this.gl.bindTexture(this.gl.TEXTURE_2D, webglTexture)
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST)
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_LINEAR)
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE)
+                    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE)
+                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, textureToHtmlImageMap.get(shape.importedTexture))
+                    this.gl.generateMipmap(this.gl.TEXTURE_2D)
+
+                } else {
+                    webglTexture = alreadyCreatedTextures.get(shape.importedTexture)
+                }
+                shape.webglTexture = webglTexture
+            }
             callback?.()
         })
     }
 
-    private loadHtmlImages(urls: string[], callback: (images: HTMLImageElement[]) => void) {
-        let images: HTMLImageElement[] = []
-        let imagesToLoad = urls.length
+    private loadHtmlImages(importedTextures: string[], callback: (map: Map<string, HTMLImageElement>) => void) {
+        let htmlImages: HTMLImageElement[] = []
+        let imagesToLoad = importedTextures.length
 
         const onImageLoad = () => {
             if (--imagesToLoad == 0) {
-                callback(images)
+                const map = new Map();
+                for (let i = 0; i < importedTextures.length; i++) {
+                    map.set(importedTextures[i], htmlImages[i]);
+                };
+                callback(map)
             }
         }
 
         for (let i = 0; i < imagesToLoad; i++) {
             const image = new Image()
-            image.src = urls[i]
-            images.push(image)
+            image.src = importedTextures[i]
+            htmlImages.push(image)
             image.onload = onImageLoad
         }
-    }
-
-    bind(className: (typeof Shape)) {
-        this.gl.bindTexture(this.gl.TEXTURE_2D, className.webglTexture);
     }
 }

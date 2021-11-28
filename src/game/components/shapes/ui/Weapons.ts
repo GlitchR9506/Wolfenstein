@@ -8,7 +8,7 @@ import { Program } from '../../programs/Program'
 
 
 export default class Weapons extends Plane {
-    static importedTexture = texture
+    importedTexture = texture
 
     ammo = 10
     type: weaponType = 'knife'

@@ -6,7 +6,7 @@ import { degToRad, Vec2, Vec3 } from '../../utils'
 import Plane from '../Plane'
 
 export default class Pickup extends Plane {
-    static importedTexture = texture
+    importedTexture = texture
 
     pickupRange = Config.gridSize * 0.3
     pickedUp = false
@@ -14,16 +14,10 @@ export default class Pickup extends Plane {
     private firstTextureSet = false
     protected textureNumber: number
 
-    constructor(gl: WebGLRenderingContext, program: Program) {
-        super(gl, program)
+    onCreation() {
         this.transform.scale = Vec3.one.multiply(Config.gridSize)
         this.transform.rotation.x = degToRad(90)
-    }
-
-    setInitialState() {
-        super.setInitialState()
         this.setTexture(this.textureNumber)
-        this.updateBuffers()
     }
 
     lookAtCamera(cameraY: number) {

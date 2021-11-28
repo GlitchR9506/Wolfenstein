@@ -4,7 +4,7 @@ import { degToRad, Vec2 } from '../utils'
 import Plane from './Plane'
 
 export default class Enemy extends Plane {
-    static importedTexture = texture
+    importedTexture = texture
 
     constructor(gl: WebGLRenderingContext, program: Program) {
         super(gl, program)

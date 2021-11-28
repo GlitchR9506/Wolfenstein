@@ -151,8 +151,7 @@ export default class Cuboid extends Shape {
     readonly bb = new CuboidBoundingBox(this)
     readonly defaultColors = this.COLORS
 
-    setInitialState() {
-        super.setInitialState()
+    onCreation() {
         this.setTexture(0)
     }
 

@@ -32,7 +32,7 @@ export default class Plane extends Shape {
         80, 70, 200,
     ])
 
-    static importedTexture = texture
+    importedTexture = texture
 
     constructor(gl: WebGLRenderingContext, program: Program) {
         super(gl, program)

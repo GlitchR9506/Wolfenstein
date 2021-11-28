@@ -5,17 +5,11 @@ import Config from '../Config'
 import { Program } from '../programs/Program'
 
 export default class Wall extends Cuboid {
-    static importedTexture = texture
+    importedTexture = texture
     texturesInLine = 4
-    constructor(gl: WebGLRenderingContext, program: Program) {
-        super(gl, program)
-        this.transform.scale = Vec3.one.multiply(Config.gridSize)
-    }
 
-    setInitialState() {
-        super.setInitialState()
-        // const textureNumber = Math.floor(Math.random() * 4)
-        // this.setTexture(textureNumber)
+    onCreation() {
+        this.transform.scale = Vec3.one.multiply(Config.gridSize)
         this.setTexture(0)
     }
 }

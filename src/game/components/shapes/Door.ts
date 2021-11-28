@@ -7,7 +7,7 @@ import { Program } from '../programs/Program'
 
 
 export default class Door extends Cuboid implements Interactable {
-    static importedTexture = texture
+    importedTexture = texture
 
     private opening = false
     private closing = false
@@ -69,13 +69,8 @@ export default class Door extends Cuboid implements Interactable {
         0.546875, 0,
     ])
 
-    constructor(gl: WebGLRenderingContext, program: Program) {
-        super(gl, program)
+    onCreation() {
         this.transform.scale = new Vec3(Config.gridSize, Config.gridSize, Config.gridSize * 6 / 64)
-    }
-
-    setInitialState() {
-        super.setInitialState()
         const translationFinal = new Vec3(this.openingLength, 0, 0)
         let mFinal = m4.identity
         mFinal = m4.translate(mFinal, translationFinal)

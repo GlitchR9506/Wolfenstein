@@ -38,12 +38,14 @@ export default class Game {
         this.textures = new Textures(this.gl)
         this.level = new Level(this.gl, this.textureProgram, this.colorProgram)
         this.crosshair = new Crosshair(this.gl, this.colorProgram)
-        this.textures.load([Wall, Enemy, Door, Weapons, Pickup], () => {
-            this.level.load(2, () => {
-                this.camera.transform.position = this.level.playerPosition
-                // console.log(this.pickup.transform.position)
-                this.startGameLoop()
-            })
+        this.level.load(2, () => {
+            this.textures.load(
+                [this.camera.weapons, ...this.level.shapes].filter(shape => shape.importedTexture),
+                () => {
+                    this.camera.transform.position = this.level.playerPosition
+                    this.startGameLoop()
+                }
+            )
         })
     }
 
@@ -89,7 +91,6 @@ export default class Game {
 
 
         this.textureProgram.use()
-        this.textures.bind(Pickup)
         for (let pickup of this.level.pickups.filter(pickup => !pickup.pickedUp)) {
             pickup.lookAtCamera(this.camera.transform.rotation.y)
             if (this.camera.transform.position.horizontalDistanceTo(pickup.transform.position) <= pickup.pickupRange) {
@@ -98,23 +99,19 @@ export default class Game {
             pickup.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
 
-        this.textures.bind(Weapons)
         this.camera.weapons.update(deltaTime)
         this.camera.weapons.updateBuffers()
         this.camera.weapons.draw(this.textureProgram.info, this.camera.projectionMatrix)
 
-        this.textures.bind(Wall)
         for (let wall of this.level.walls) {
             wall.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
 
-        this.textures.bind(Door)
         for (let door of this.level.doors) {
             door.update(deltaTime)
             door.draw(this.textureProgram.info, this.camera.viewProjectionMatrix)
         }
 
-        this.textures.bind(Enemy)
         const shapeLookedAt = this.camera.raycast(this.level.collidingCuboids)
         for (let enemy of this.level.enemies) {
             if (this.camera.isLookingAt(enemy)) {

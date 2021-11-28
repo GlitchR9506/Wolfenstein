@@ -2,8 +2,8 @@ import { m4, Vec3, Transform } from '../utils'
 import { Program, ProgramInfo } from '../programs/Program'
 
 export default class Shape {
-    static importedTexture: string
-    static webglTexture: WebGLTexture
+    importedTexture: string
+    webglTexture: WebGLTexture
     protected readonly gl: WebGLRenderingContext
     protected positionBuffer: WebGLBuffer
     protected colorBuffer: WebGLBuffer
@@ -85,7 +85,11 @@ export default class Shape {
     setInitialState() {
         this.initialTransform = this.transform.clone()
         this.initialTexcoords = this.TEXCOORDS.slice(0)
+        this.onCreation()
+        this.updateBuffers()
     }
+
+    onCreation() { }
 
     updateBuffers() {
         this.setPositionBuffer()
@@ -161,6 +165,9 @@ export default class Shape {
             this.bindTexture(programInfo.attributes.texcoord)
         }
         this.bindTransform(programInfo.uniforms.matrix, viewProjectionMatrix)
+
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.webglTexture);
+
         this._draw()
     }
 
