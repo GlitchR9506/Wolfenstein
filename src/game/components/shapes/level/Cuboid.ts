@@ -151,6 +151,9 @@ export default abstract class Cuboid extends Shape {
     readonly bb = new CuboidBoundingBox(this)
     readonly defaultColors = this.COLORS
 
+    abstract lightTexture: number
+    abstract darkTexture: number
+
     onCreation() {
         this.setTexture(0)
     }

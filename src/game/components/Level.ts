@@ -187,19 +187,18 @@ export default class Level {
             }
             shape.setInitialState()
             if (field.wallDirection && shape instanceof Wall) {
-                const wall = shape
-                const textureToSet = 4
-                if (field.wallDirection[0] == 0 && field.wallDirection[1] == -1) {
-                    wall.setTexture(textureToSet, 0)
+                const dir = new Vec3(field.wallDirection[0], 0, field.wallDirection[1])
+                if (dir.equals(Vec3.backward)) {
+                    shape.setTexture(shape.nearDoorDarkTexture, 0)
                 }
-                if (field.wallDirection[0] == 0 && field.wallDirection[1] == 1) {
-                    wall.setTexture(textureToSet, 1)
+                if (dir.equals(Vec3.forward)) {
+                    shape.setTexture(shape.nearDoorDarkTexture, 1)
                 }
-                if (field.wallDirection[0] == -1 && field.wallDirection[1] == 0) {
-                    wall.setTexture(textureToSet, 3)
+                if (dir.equals(Vec3.left)) {
+                    shape.setTexture(shape.nearDoorLightTexture, 3)
                 }
-                if (field.wallDirection[0] == 1 && field.wallDirection[1] == 0) {
-                    wall.setTexture(textureToSet, 2)
+                if (dir.equals(Vec3.right)) {
+                    shape.setTexture(shape.nearDoorLightTexture, 2)
                 }
             }
             objects.push(shape)

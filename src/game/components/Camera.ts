@@ -14,7 +14,7 @@ export default class Camera {
     projectionMatrix: number[]
     collidingCuboids: Cuboid[]
 
-    hp = 65
+    hp = 72
     readonly weapons: Weapons
     private readonly fov = 60
     private readonly zNear = Config.gridSize / 64

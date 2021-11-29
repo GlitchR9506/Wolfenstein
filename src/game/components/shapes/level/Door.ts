@@ -1,13 +1,17 @@
 import { log, m4, Vec3 } from '../../utils'
 import Cuboid from './Cuboid'
 import Interactable from './Interactable'
-import texture from '../../../textures/door.png'
+import texture from '../../../textures/wall.png'
 import Config from '../../Config'
-import { Program } from '../../programs/Program'
 
 
 export default class Door extends Cuboid implements Interactable {
     importedTexture = texture
+
+    lightTexture = 104
+    lightSideTexture = 108
+    darkTexture = 105
+    darkSideTexture = 109
 
     private opening = false
     private closing = false
@@ -19,54 +23,57 @@ export default class Door extends Cuboid implements Interactable {
 
     private positionFinal: Vec3
 
+    texturesInLine = 16
+
     TEXCOORDS = new Float32Array([
         // front
         0, 1,
-        0.5, 0,
+        1, 0,
         0, 0,
         0, 1,
-        0.5, 1,
-        0.5, 0,
+        1, 1,
+        1, 0,
 
         // back
         0, 1,
         0, 0,
-        0.5, 0,
+        1, 0,
         0, 1,
-        0.5, 0,
-        0.5, 1,
+        1, 0,
+        1, 1,
 
         // left
-        0.5, 1,
-        0.546875, 1,
-        0.546875, 0,
-        0.5, 1,
-        0.546875, 0,
-        0.5, 0,
+        0, 1,
+        1, 1,
+        1, 0,
+        0, 1,
+        1, 0,
+        0, 0,
 
         // right
-        0.5, 1,
-        0.546875, 0,
-        0.546875, 1,
-        0.5, 1,
-        0.5, 0,
-        0.546875, 0,
+        1, 1,
+        0, 0,
+        0, 1,
+        1, 1,
+        1, 0,
+        0, 0,
+
 
         // top
-        0.5, 1,
-        0.546875, 0,
-        0.5, 0,
-        0.546875, 1,
-        0.546875, 0,
-        0.5, 1,
+        0, 0,
+        1, 1,
+        1, 0,
+        0, 1,
+        1, 1,
+        0, 0,
 
         // bottom
-        0.5, 1,
-        0.546875, 1,
-        0.5, 0,
-        0.5, 0,
-        0.546875, 1,
-        0.546875, 0,
+        1, 1,
+        1, 0,
+        0, 1,
+        0, 1,
+        1, 0,
+        0, 0,
     ])
 
     onCreation() {
@@ -77,6 +84,15 @@ export default class Door extends Cuboid implements Interactable {
         mFinal = m4.yRotate(mFinal, this.transform.rotation.y)
         const positionDeltaFinal = m4.getPositionVector(mFinal)
         this.positionFinal = this.initialTransform.position.add(positionDeltaFinal)
+        if (this.transform.rotation.y) {
+            this.setTexture(this.darkTexture)
+            this.setTexture(this.lightSideTexture, 2)
+            this.setTexture(this.lightSideTexture, 3)
+        } else {
+            this.setTexture(this.lightTexture)
+            this.setTexture(this.darkSideTexture, 2)
+            this.setTexture(this.darkSideTexture, 3)
+        }
     }
 
     update(deltaTime: number) {

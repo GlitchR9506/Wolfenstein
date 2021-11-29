@@ -12,9 +12,8 @@ export default class Textures {
         const textures = [...new Set(shapes.map(shape => shape.importedTexture))]
         this.loadHtmlImages(textures, textureToHtmlImageMap => {
             for (let shape of shapes) {
-                let webglTexture
                 if (!alreadyCreatedTextures.has(shape.importedTexture)) {
-                    webglTexture = this.gl.createTexture()
+                    const webglTexture = this.gl.createTexture()
                     this.gl.bindTexture(this.gl.TEXTURE_2D, webglTexture)
                     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST)
                     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_LINEAR)
@@ -22,11 +21,9 @@ export default class Textures {
                     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE)
                     this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, textureToHtmlImageMap.get(shape.importedTexture))
                     this.gl.generateMipmap(this.gl.TEXTURE_2D)
-
-                } else {
-                    webglTexture = alreadyCreatedTextures.get(shape.importedTexture)
+                    alreadyCreatedTextures.set(shape.importedTexture, webglTexture)
                 }
-                shape.webglTexture = webglTexture
+                shape.webglTexture = alreadyCreatedTextures.get(shape.importedTexture)
             }
             callback?.()
         })
