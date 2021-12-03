@@ -51,4 +51,20 @@ export class Vec2 {
     multiplyByVector(v: Vec2) {
         return new Vec2(this.x * v.x, this.y * v.y)
     }
+
+    substract(v: Vec2) {
+        return new Vec2(
+            this.x - v.x,
+            this.y - v.y,
+        )
+    }
+
+    get abs() {
+        return this.map(v => Math.abs(v))
+    }
+
+    equals(v: Vec2) {
+        return this.x == v.x && this.y == v.y
+    }
+
 }

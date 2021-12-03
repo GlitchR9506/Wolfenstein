@@ -12,7 +12,6 @@ export default class Weapons extends Plane {
 
     ammo = 10
     type: weaponType = 'pistol'
-    justShot = false
 
     private weapons: Weapon[] = []
     private texturesCount = new Vec2(4, 8)
@@ -76,17 +75,6 @@ export default class Weapons extends Plane {
         }
 
         this.updateBuffers()
-    }
-
-    bindTransform(matrixLocation: WebGLUniformLocation, viewProjectionMatrix: number[]) {
-        let matrix = m4.identity
-        matrix = m4.scale(matrix, this.transform.scale);
-        matrix = m4.xRotate(matrix, this.transform.rotation.x);
-        matrix = m4.yRotate(matrix, this.transform.rotation.y);
-        matrix = m4.zRotate(matrix, this.transform.rotation.z);
-        matrix = m4.translate(matrix, this.transform.position);
-        matrix = m4.multiply(matrix, viewProjectionMatrix);
-        this.gl.uniformMatrix4fv(matrixLocation, false, matrix);
     }
 
     private decreaseAmmo() {

@@ -1,16 +1,26 @@
+import FieldData from '../../../../common/FieldData'
 import texture from '../../../textures/guard.png'
+import Camera from '../../Camera'
+import Config from '../../Config'
+import Pathfinder from '../../Pathfinder'
 import { Program } from '../../programs/Program'
-import { degToRad, Vec2 } from '../../utils'
+import { degToRad, log, Vec2, Vec3 } from '../../utils'
 import Ammo from './pickups/Ammo'
+import Flag from './pickups/Flag'
 import Plane from './Plane'
 
 export default class Enemy extends Plane {
     importedTexture = texture
     loot: Ammo
+    noticeDistance = Config.gridSize * 5
+    tempFlag: Flag
+    tempFlagLocations: Vec3[] = []
 
     constructor(gl: WebGLRenderingContext, program: Program) {
         super(gl, program)
         this.loot = new Ammo(this.gl, program)
+        this.tempFlag = new Flag(this.gl, program)
+        this.tempFlag.setInitialState()
         this.transform.rotation.x = degToRad(90)
     }
 
@@ -83,5 +93,40 @@ export default class Enemy extends Plane {
         const texturePos = new Vec2(textureNumber % this.texturesInLine, Math.floor(textureNumber / this.texturesInLine)).multiply(this.textureSize)
         verticesVec2Array = verticesVec2Array.map(vertex => vertex.multiply(this.textureSize).add(texturePos))
         this.TEXCOORDS = new Float32Array(Vec2.vec2ArrayToArray(verticesVec2Array))
+    }
+
+    inNoticeDistance(camera: Camera) {
+        return this.transform.position.horizontalDistanceTo(camera.transform.position) <= this.noticeDistance
+    }
+
+    followingPlayer: Camera
+    followingSpeed = Config.gridSize * 1.25
+
+    pathfind(destination: Vec3) {
+
+    }
+
+    makeStep(deltaTime: number, fields: FieldData[]) {
+        if (this.followingPlayer) {
+            const dir = this.followingPlayer.transform.position.substract(this.transform.position).yZeroed.normalize
+
+            // const nextLocation = Pathfinder.instance.getNextLocation(this.transform.position, this.followingPlayer.transform.position, fields)
+
+            // this.tempFlag.transform.position = new Vec3(nextLocation.x, 0, nextLocation.y)
+            // const nextLocation2 = Pathfinder.instance.getNextLocation(new Vec3(nextLocation.x, 0, nextLocation.y), this.followingPlayer.transform.position, fields)
+
+            // // this.tempFlag.transform.position = new Vec3(nextLocation.x, 0, nextLocation.y)
+            // // this.tempFlag.transform.position = new Vec3(nextLocation2.x, 0, nextLocation2.y)
+            // this.tempFlagLocations = []
+            // this.tempFlagLocations.push(new Vec3(nextLocation.x, 0, nextLocation.y))
+            // this.tempFlagLocations.push(new Vec3(nextLocation2.x, 0, nextLocation2.y))
+            this.tempFlagLocations = Pathfinder.instance.getAllPathfindLocations(this.transform.position, this.followingPlayer.transform.position, fields)
+
+            log('current pos', this.transform.position)
+            log('flag pos', this.tempFlag.transform.position)
+
+            this.transform.position = this.transform.position.add(dir.multiply(this.followingSpeed * deltaTime))
+            this.followingPlayer = null
+        }
     }
 }

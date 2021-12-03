@@ -38,6 +38,7 @@ export default class Level {
 
     private readonly gl: WebGLRenderingContext
     private fields: FieldData[]
+    gridFields: FieldData[]
 
     constructor(gl: WebGLRenderingContext, textureProgram: TextureProgram, colorProgram: ColorProgram) {
         this.gl = gl
@@ -47,7 +48,6 @@ export default class Level {
 
     load(level: number, callback?: () => void) {
         this.loadLevel(level, () => {
-            this.applyGridSize()
             this.createObjects()
             callback?.()
         })
@@ -60,7 +60,6 @@ export default class Level {
             // enemy.loot.transform.position.x += 30
             // enemy.loot.transform.position.z += 30
             enemy.loot.setInitialState()
-
         }
     }
 
@@ -74,12 +73,16 @@ export default class Level {
     private loadLevel(number: number, callback?: () => void) {
         import(`../levels/${number}.json`)
             .then(({ default: level }) => {
+                console.log(level)
                 this.width = level.width
                 this.height = level.height
                 this.center = new Vec3(this.width * Config.gridSize / 2, 0, this.height * Config.gridSize / 2)
-                this.fields = level.fields
+                this.fields = JSON.parse(JSON.stringify(level.fields))
                 this.checkWallsDirections()
                 this.changeWallsNeighboursTextures()
+                this.applyGridSize()
+                this.gridFields = JSON.parse(JSON.stringify(level.fields))
+                console.log(this.gridFields)
                 callback?.()
             });
     }

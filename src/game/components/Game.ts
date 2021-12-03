@@ -1,7 +1,7 @@
 import { ColorProgram } from './programs/ColorProgram'
 import { TextureProgram } from './programs/TextureProgram'
 
-import { degToRad, log, radToDeg, Vec3 } from './utils'
+import { degToRad, log, m4, radToDeg, Vec3 } from './utils'
 import Camera from './Camera'
 import Input from './Input'
 import Textures from './Textures'
@@ -37,6 +37,7 @@ export default class Game {
             let shapes = []
             shapes.push(this.camera.weapons)
             shapes.push(...this.level.enemies.map(enemy => enemy.loot))
+            shapes.push(...this.level.enemies.map(enemy => enemy.tempFlag))
             shapes.push(...this.level.shapes)
             this.textures.load(shapes, () => {
                 this.camera.transform.position = this.level.playerPosition
@@ -91,8 +92,10 @@ export default class Game {
         this.camera.weapons.update(deltaTime)
         this.camera.weapons.draw(this.camera.projectionMatrix)
 
-        for (let wall of this.level.walls) {
-            wall.draw(this.camera.viewProjectionMatrix)
+        if (Input.instance.renderWalls) {
+            for (let wall of this.level.walls) {
+                wall.draw(this.camera.viewProjectionMatrix)
+            }
         }
 
         for (let door of this.level.doors) {
@@ -102,6 +105,8 @@ export default class Game {
 
         const shapeLookedAt = this.camera.raycast(this.level.collidingCuboids)
         for (let enemy of this.level.enemies) {
+            enemy.lookAtCamera(this.camera.transform.rotation.y)
+            enemy.update(deltaTime)
             if (this.camera.isLookingAt(enemy)) {
                 const enemyDistance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
                 const shapeLookedAtDistance = this.camera.transform.position.horizontalDistanceTo(shapeLookedAt.transform.position)
@@ -117,9 +122,28 @@ export default class Game {
                     }
                 }
             }
-            enemy.lookAtCamera(this.camera.transform.rotation.y)
-            enemy.update(deltaTime)
             enemy.draw(this.camera.viewProjectionMatrix)
+            // log('enemy' + this.level.enemies.indexOf(enemy), enemy.inNoticeDistance(this.camera))
+            if (enemy.isDead) {
+                enemy.followingPlayer = null
+            } else {
+                if (enemy.inNoticeDistance(this.camera) && this.camera.weapons.currentWeapon.justShot) {
+                    enemy.followingPlayer = this.camera
+                }
+            }
+            if (enemy.followingPlayer) {
+                enemy.makeStep(deltaTime, this.level.gridFields)
+                // for (let location of enemy.tempFlagLocations) {
+                //     enemy.tempFlag.transform.position = location
+                //     enemy.tempFlag.lookAtCamera(this.camera.transform.rotation.y)
+                //     enemy.tempFlag.draw(this.camera.viewProjectionMatrix)
+                // }
+            }
+            for (let location of enemy.tempFlagLocations) {
+                enemy.tempFlag.transform.position = location
+                enemy.tempFlag.lookAtCamera(this.camera.transform.rotation.y)
+                enemy.tempFlag.draw(this.camera.viewProjectionMatrix)
+            }
         }
     }
 

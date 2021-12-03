@@ -16,6 +16,9 @@ export default class Input {
     noclip = false
     noclipDisabled = false
 
+    renderWalls = true
+    justChangedRenderWalls = false
+
     lastNumber: number = null
 
     private pressedKeys: string[] = []
@@ -63,6 +66,15 @@ export default class Input {
             if (this.isPressed('KeyC')) {
                 this.noclip = true
             }
+        }
+
+        if (this.isPressed('KeyV')) {
+            if (!this.justChangedRenderWalls) {
+                this.renderWalls = !this.renderWalls
+                this.justChangedRenderWalls = true
+            }
+        } else {
+            this.justChangedRenderWalls = false
         }
 
         if (this.isPressed('Digit0')) this.lastNumber = 0
