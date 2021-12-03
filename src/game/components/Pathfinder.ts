@@ -25,13 +25,20 @@ export default class Pathfinder {
     }
 
     getAllPathfindLocations(from: Vec3, to: Vec3, fields: FieldData[]) {
-        let gridFrom = this.realVec3ToGridVec2(from)
-        let gridTo = this.realVec3ToGridVec2(to)
-        let gridLocations = [gridFrom]
+        this.checkedFields = []
+
+        const gridFrom = this.realVec3ToGridVec2(from)
+        const gridTo = this.realVec3ToGridVec2(to)
+
+        // let gridLocations = [gridFrom]
+        let gridLocations = []
         let gridLocation
         let iteration = 0
+
+        console.trace('źle')
         do {
-            gridLocation = this.getBestField(gridLocations[gridLocations.length - 1], gridTo, fields, iteration)
+            // console.log(iteration, iteration == 0 ? gridFrom : gridLocations[gridLocations.length - 1])
+            gridLocation = this.getBestField(iteration == 0 ? gridFrom : gridLocations[gridLocations.length - 1], gridTo, fields, iteration)
             if (gridLocation) {
                 gridLocations.push(gridLocation)
             }
@@ -68,9 +75,9 @@ export default class Pathfinder {
             }
         }
         availableNextFields = availableNextFields
-            .filter(gridPosDiff => {
-                const fieldWithDiff = fields.find(f => f.x == gridPosDiff.y && f.y == gridPosDiff.y)
-                return !fieldWithDiff || (fieldWithDiff.value != 'wall' && fieldWithDiff.value != 'door')
+            .filter(candidate => {
+                const fieldWithDiff = fields.find(field => field.x == candidate.x && field.y == candidate.y)
+                return !fieldWithDiff || fieldWithDiff.value != 'wall'
             })
 
         if (!availableNextFields) return

@@ -108,25 +108,17 @@ export default class Enemy extends Plane {
 
     makeStep(deltaTime: number, fields: FieldData[]) {
         if (this.followingPlayer) {
-            const dir = this.followingPlayer.transform.position.substract(this.transform.position).yZeroed.normalize
+            // const dir = this.followingPlayer.transform.position.substract(this.transform.position).yZeroed.normalize
 
-            // const nextLocation = Pathfinder.instance.getNextLocation(this.transform.position, this.followingPlayer.transform.position, fields)
-
-            // this.tempFlag.transform.position = new Vec3(nextLocation.x, 0, nextLocation.y)
-            // const nextLocation2 = Pathfinder.instance.getNextLocation(new Vec3(nextLocation.x, 0, nextLocation.y), this.followingPlayer.transform.position, fields)
-
-            // // this.tempFlag.transform.position = new Vec3(nextLocation.x, 0, nextLocation.y)
-            // // this.tempFlag.transform.position = new Vec3(nextLocation2.x, 0, nextLocation2.y)
-            // this.tempFlagLocations = []
-            // this.tempFlagLocations.push(new Vec3(nextLocation.x, 0, nextLocation.y))
-            // this.tempFlagLocations.push(new Vec3(nextLocation2.x, 0, nextLocation2.y))
             this.tempFlagLocations = Pathfinder.instance.getAllPathfindLocations(this.transform.position, this.followingPlayer.transform.position, fields)
+            if (this.tempFlagLocations.length == 0) return
+            const dir = this.tempFlagLocations[0].substract(this.transform.position).yZeroed.normalize
 
-            log('current pos', this.transform.position)
-            log('flag pos', this.tempFlag.transform.position)
+            // log('current pos', this.transform.position)
+            // log('flag pos', this.tempFlag.transform.position)
 
             this.transform.position = this.transform.position.add(dir.multiply(this.followingSpeed * deltaTime))
-            this.followingPlayer = null
+            // this.followingPlayer = null
         }
     }
 }

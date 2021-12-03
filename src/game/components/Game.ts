@@ -107,7 +107,7 @@ export default class Game {
         for (let enemy of this.level.enemies) {
             enemy.lookAtCamera(this.camera.transform.rotation.y)
             enemy.update(deltaTime)
-            if (this.camera.isLookingAt(enemy)) {
+            if (this.camera.isLookingAt(enemy) && shapeLookedAt) {
                 const enemyDistance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
                 const shapeLookedAtDistance = this.camera.transform.position.horizontalDistanceTo(shapeLookedAt.transform.position)
                 if (enemyDistance < shapeLookedAtDistance) {
@@ -123,7 +123,6 @@ export default class Game {
                 }
             }
             enemy.draw(this.camera.viewProjectionMatrix)
-            // log('enemy' + this.level.enemies.indexOf(enemy), enemy.inNoticeDistance(this.camera))
             if (enemy.isDead) {
                 enemy.followingPlayer = null
             } else {

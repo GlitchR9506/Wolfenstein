@@ -10,7 +10,7 @@ import { Program } from '../../programs/Program'
 export default class Weapons extends Plane {
     importedTexture = texture
 
-    ammo = 10
+    ammo = 10000
     type: weaponType = 'pistol'
 
     private weapons: Weapon[] = []
