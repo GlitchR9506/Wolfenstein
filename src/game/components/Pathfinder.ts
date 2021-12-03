@@ -53,7 +53,7 @@ export default class Pathfinder {
         }
     }
 
-    getBestField(gridFrom: Vec2, gridPosTo: Vec2, fields: FieldData[], iteration: number) {
+    getBestField(gridFrom: Vec2, gridTo: Vec2, fields: FieldData[], iteration: number) {
         const gridPosDiffs = [
             new Vec2(0, -1),
             new Vec2(0, 1),
@@ -85,12 +85,24 @@ export default class Pathfinder {
         let fieldWithBestScore = availableNextFields[0]
         for (let availableNextField of availableNextFields) {
             const distFromStart = iteration + 1
-            const toEndVec = gridPosTo.substract(availableNextField).abs
+            const toEndVec = gridTo.substract(availableNextField).abs
             const distToEnd = toEndVec.x + toEndVec.y
             const score = distFromStart + distToEnd
             if (!bestScore || score < bestScore) {
                 bestScore = score
                 fieldWithBestScore = availableNextField
+            } else if (score == bestScore) {
+                const fromToDist = gridFrom.substract(gridTo).abs
+                const bestDir = fromToDist.x < fromToDist.y ? Vec3.up : Vec3.right
+                const a = fieldWithBestScore
+                const aDir = gridFrom.x == a.x ? Vec3.up : Vec3.right
+                const b = availableNextField
+                const bDir = gridFrom.x == b.x ? Vec3.up : Vec3.right
+                if (aDir.equals(bestDir)) {
+                    fieldWithBestScore = a
+                } else {
+                    fieldWithBestScore = b
+                }
             }
             this.checkedFields.push(availableNextField)
         }
