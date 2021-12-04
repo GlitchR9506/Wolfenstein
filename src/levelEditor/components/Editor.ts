@@ -11,6 +11,10 @@ export default class Editor {
         ['wall', 'lightslategray'],
         ['player', 'forestgreen'],
         ['enemy', 'crimson'],
+        ['dogFood', 'yellow'],
+        ['food', 'orange'],
+        ['health', 'red'],
+        ['ammo', 'green'],
     ])
 
 

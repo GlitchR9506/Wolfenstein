@@ -33,7 +33,7 @@ export default class Game {
         this.textures = new Textures(this.gl)
         this.level = new Level(this.gl, this.textureProgram, this.colorProgram)
         this.crosshair = new Crosshair(this.gl, this.colorProgram)
-        this.level.load(2, () => {
+        this.level.load(1, () => {
             let shapes = []
             shapes.push(this.camera.weapons)
             shapes.push(...this.level.enemies.map(enemy => enemy.loot))
