@@ -25,6 +25,9 @@ export default class Level {
     center: Vec3
     playerPosition: Vec3
     walls: Wall[] = []
+    grayWalls: Wall[] = []
+    blueWalls: Wall[] = []
+    brownWalls: Wall[] = []
     enemies: Enemy[] = []
     doors: Door[] = []
     shapes: Shape[] = []
@@ -35,6 +38,10 @@ export default class Level {
     textureProgram: TextureProgram
     colorProgram: ColorProgram
     pickups: Pickup[] = []
+    ammos: Ammo[] = []
+    dogFoods: DogFood[] = []
+    foods: Food[] = []
+    healthPacks: HealthPack[] = []
 
     private readonly gl: WebGLRenderingContext
     private fields: FieldData[]
@@ -89,8 +96,12 @@ export default class Level {
 
     private checkWallsDirections() {
         for (let door of this.fields.filter(f => f.value == 'door')) {
-            const horizontalNeighbours = this.fields.filter(f => f.y == door.y && (f.x == door.x + 1 || f.x == door.x - 1))
-            const verticalNeighbours = this.fields.filter(f => f.x == door.x && (f.y == door.y + 1 || f.y == door.y - 1))
+            const horizontalNeighbours = this.fields
+                .filter(f => f.y == door.y && (f.x == door.x + 1 || f.x == door.x - 1))
+                .filter(f => f.value.toLowerCase().includes('wall'))
+            const verticalNeighbours = this.fields
+                .filter(f => f.x == door.x && (f.y == door.y + 1 || f.y == door.y - 1))
+                .filter(f => f.value.toLowerCase().includes('wall'))
             if (horizontalNeighbours.length == 2 && verticalNeighbours.length == 0) {
                 door.rotation = 0
             } else if (horizontalNeighbours.length == 0 && verticalNeighbours.length == 2) {
@@ -123,13 +134,27 @@ export default class Level {
         const playerPositionData = this.fields.find(f => f.value == 'player')
         this.playerPosition = new Vec3(playerPositionData.x, 0, playerPositionData.y)
 
-        this.walls = this.getLevelObjectsList('wall', Wall) as Wall[]
+        this.grayWalls = this.getLevelObjectsList('wall', Wall, 'gray') as Wall[]
+        this.blueWalls = this.getLevelObjectsList('blueWall', Wall, 'blue') as Wall[]
+        this.brownWalls = this.getLevelObjectsList('brownWall', Wall, 'brown') as Wall[]
         this.enemies = this.getLevelObjectsList('enemy', Enemy) as Enemy[]
         this.doors = this.getLevelObjectsList('door', Door) as Door[]
+        this.ammos = this.getLevelObjectsList('ammo', Ammo) as Ammo[]
+        this.dogFoods = this.getLevelObjectsList('dogFood', DogFood) as DogFood[]
+        this.foods = this.getLevelObjectsList('food', Food) as Food[]
+        this.healthPacks = this.getLevelObjectsList('health', HealthPack) as HealthPack[]
+
+        this.walls.push(...this.grayWalls)
+        this.walls.push(...this.blueWalls)
+        this.walls.push(...this.brownWalls)
 
         this.collidingCuboids.push(...this.walls)
         this.collidingCuboids.push(...this.doors)
         this.interactables.push(...this.doors)
+        this.pickups.push(...this.ammos)
+        this.pickups.push(...this.dogFoods)
+        this.pickups.push(...this.foods)
+        this.pickups.push(...this.healthPacks)
 
         // this.doors[0].transform.position.x += 45
 
@@ -146,27 +171,27 @@ export default class Level {
         this.ceiling.transform.scale.set(this.width * Config.gridSize, 1, this.height * Config.gridSize)
         this.ceiling.transform.rotation.z = degToRad(180)
 
-        {
-            const health = new DogFood(this.gl, this.textureProgram)
-            health.transform.position.x = 1888
-            health.transform.position.z = 1344
-            health.setInitialState()
-            this.pickups.push(health)
-        }
-        {
-            const health = new Food(this.gl, this.textureProgram)
-            health.transform.position.x = 1888 - Config.gridSize * 1
-            health.transform.position.z = 1344
-            health.setInitialState()
-            this.pickups.push(health)
-        }
-        {
-            const health = new HealthPack(this.gl, this.textureProgram)
-            health.transform.position.x = 1888 - Config.gridSize * 2
-            health.transform.position.z = 1344
-            health.setInitialState()
-            this.pickups.push(health)
-        }
+        // {
+        //     const health = new DogFood(this.gl, this.textureProgram)
+        //     health.transform.position.x = 1888
+        //     health.transform.position.z = 1344
+        //     health.setInitialState()
+        //     this.pickups.push(health)
+        // }
+        // {
+        //     const health = new Food(this.gl, this.textureProgram)
+        //     health.transform.position.x = 1888 - Config.gridSize * 1
+        //     health.transform.position.z = 1344
+        //     health.setInitialState()
+        //     this.pickups.push(health)
+        // }
+        // {
+        //     const health = new HealthPack(this.gl, this.textureProgram)
+        //     health.transform.position.x = 1888 - Config.gridSize * 2
+        //     health.transform.position.z = 1344
+        //     health.setInitialState()
+        //     this.pickups.push(health)
+        // }
 
 
         this.shapes = [
@@ -179,10 +204,15 @@ export default class Level {
         ]
     }
 
-    private getLevelObjectsList<T extends Shape>(value: string, SpecificShape: new (gl: WebGLRenderingContext, program: Program) => T) {
+    private getLevelObjectsList<T extends Shape>(value: string, SpecificShape: new (gl: WebGLRenderingContext, program: Program, type?: 'gray' | 'blue' | 'brown') => T, type?: 'gray' | 'blue' | 'brown') {
         const objects: Shape[] = []
         for (let field of this.fields.filter(f => f.value == value)) {
-            const shape = new SpecificShape(this.gl, this.textureProgram)
+            let shape
+            if (value.toLowerCase().includes('wall')) {
+                shape = new Wall(this.gl, this.textureProgram, type)
+            } else {
+                shape = new SpecificShape(this.gl, this.textureProgram)
+            }
             shape.transform.position.x = field.x
             shape.transform.position.z = field.y
             if (field.rotation) {
@@ -190,6 +220,7 @@ export default class Level {
             }
             shape.setInitialState()
             if (field.wallDirection && shape instanceof Wall) {
+                // shape.type == type
                 const dir = new Vec3(field.wallDirection[0], 0, field.wallDirection[1])
                 if (dir.equals(Vec3.backward)) {
                     shape.setTexture(shape.nearDoorDarkTexture, 0)

@@ -16,7 +16,7 @@ export default class Door extends Cuboid implements Interactable {
     private opening = false
     private closing = false
 
-    private readonly openingSpeed = Config.gridSize / 2
+    private readonly openingSpeed = Config.gridSize
     private readonly openingLength = Config.gridSize
 
     private readonly hiddenInWallScaleCorrection = new Vec3(0.1, 0.1, 0)

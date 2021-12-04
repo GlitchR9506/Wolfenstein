@@ -8,13 +8,19 @@ export default class Editor {
     private select: Select
     private readonly colors = new Map([
         ['door', 'chocolate'],
+        ['secretDoor', '#73de33'],
+        ['exitDoor', '#5fff00'],
         ['wall', 'lightslategray'],
+        ['blueWall', '#1a00a2'],
+        ['brownWall', '#7f5526'],
         ['player', 'forestgreen'],
-        ['enemy', 'crimson'],
-        ['dogFood', 'yellow'],
-        ['food', 'orange'],
+        ['enemy', '#e62e53'],
+        ['dogFood', '#c75454'],
+        ['food', '#cc3333'],
         ['health', 'red'],
         ['ammo', 'green'],
+        ['exit', 'yellow'],
+        ['secretExit', '#d6d633'],
     ])
 
 

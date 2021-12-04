@@ -19,8 +19,8 @@ export default class Camera {
     private readonly fov = 60
     private readonly zNear = Config.gridSize / 64
     private readonly zFar = Config.gridSize * 48
-    private readonly rotationSpeed = 1.5
-    private readonly movementSpeed = Config.gridSize * 3
+    private readonly rotationSpeed = 1.6
+    private readonly movementSpeed = Config.gridSize * 5
     private readonly collisionRadius = Config.gridSize / 3
     private readonly interactionDistance = Config.gridSize * 1.5
     private readonly gl: WebGLRenderingContext
@@ -31,6 +31,7 @@ export default class Camera {
         this.gl = gl
         this.updateProjectionMatrix()
         this.weapons = new Weapons(this.gl, program)
+        this.transform.rotation.y = degToRad(90)
     }
 
     get matrix() {

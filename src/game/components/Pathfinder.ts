@@ -77,7 +77,7 @@ export default class Pathfinder {
         availableNextFields = availableNextFields
             .filter(candidate => {
                 const fieldWithDiff = fields.find(field => field.x == candidate.x && field.y == candidate.y)
-                return !fieldWithDiff || fieldWithDiff.value != 'wall'
+                return !fieldWithDiff || !fieldWithDiff.value.toLowerCase().includes('wall')
             })
 
         if (!availableNextFields) return
