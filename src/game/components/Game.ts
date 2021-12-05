@@ -11,6 +11,8 @@ import Level from './Level'
 import Crosshair from './shapes/ui/Crosshair'
 import Interactable from './shapes/level/Interactable'
 import Shape from './shapes/level/Shape'
+import Config from './Config'
+import UI from './shapes/ui/UI'
 
 
 export default class Game {
@@ -20,16 +22,17 @@ export default class Game {
     private readonly textures: Textures
     private readonly level: Level
     private readonly crosshair: Crosshair
-    private readonly gl: WebGLRenderingContext
-    private lineShapes: Shape[] = []
+    private gl: WebGLRenderingContext
+    private canvas: HTMLCanvasElement
 
     constructor() {
-        this.initWebgl()
 
+        this.initWebgl()
         this.colorProgram = new ColorProgram(this.gl)
         this.textureProgram = new TextureProgram(this.gl)
 
         this.camera = new Camera(this.gl, this.textureProgram)
+        this.camera.updateProjectionMatrix()
         this.textures = new Textures(this.gl)
         this.level = new Level(this.gl, this.textureProgram, this.colorProgram)
         this.crosshair = new Crosshair(this.gl, this.colorProgram)
@@ -71,9 +74,6 @@ export default class Game {
                 Input.instance.justInteracted = true
             }
         }
-
-        log('ammo', this.camera.weapons.ammo)
-        log('hp', this.camera.hp)
 
         this.camera.update(deltaTime)
 
@@ -118,11 +118,12 @@ export default class Game {
                 if (enemyDistance < shapeLookedAtDistance) {
                     if (this.camera.weapons.currentWeapon.justShot) {
                         const distance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
-                        if (distance <= this.camera.weapons.currentWeapon.range) {
+                        if (distance <= this.camera.weapons.currentWeapon.range && !enemy.isDead) {
                             enemy.damage(this.camera.weapons.currentWeapon.damage)
-                            if (enemy.isDead) {
-                                this.level.spawnLoot(enemy)
-                            }
+                            UI.instance.score += enemy.score
+                        }
+                        if (enemy.isDead) {
+                            this.level.spawnLoot(enemy)
                         }
                     }
                 }
@@ -149,12 +150,18 @@ export default class Game {
                 enemy.tempFlag.draw(this.camera.viewProjectionMatrix)
             }
         }
+        UI.instance.draw(this.canvas)
     }
 
     private initWebgl() {
-        const canvas = document.getElementById("canvas") as HTMLCanvasElement
+        this.canvas = document.getElementById("canvas") as HTMLCanvasElement
+        this.canvas.width = 608 * Config.uiScale
+        this.canvas.height = 304 * Config.uiScale;
 
-        (this.gl as WebGLRenderingContext) = canvas.getContext("webgl")
+        UI.instance.init();
+
+        this.gl = this.canvas.getContext("webgl")
+
 
         if (!this.gl) {
             alert("No webgl for you")
@@ -185,9 +192,9 @@ export default class Game {
         const resizeNeeded = canvas.width !== displayWidth || canvas.height !== displayHeight
 
         if (resizeNeeded) {
-            canvas.width = displayWidth
-            canvas.height = displayHeight
-            this.camera.updateProjectionMatrix()
+            // canvas.width = displayWidth
+            // canvas.height = displayHeight
+            // this.camera.updateProjectionMatrix()
         }
 
         return resizeNeeded

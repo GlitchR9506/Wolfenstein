@@ -131,7 +131,6 @@ export default abstract class Shape {
 
     bindTexture(texcoordsLocation: number) {
         // Turn on the color attribute
-        // console.log(texcoordsLocation)
         this.gl.enableVertexAttribArray(texcoordsLocation);
 
         // Bind the color buffer.
@@ -156,7 +155,6 @@ export default abstract class Shape {
 
     draw(viewProjectionMatrix: number[]) {
         if (!this.firstBufferReady) return
-        // console.log(programInfo.attributes)
         this.program.use()
         this.bindGeometry(this.program.info.attributes.position)
         if (this.program.info.attributes.color) {

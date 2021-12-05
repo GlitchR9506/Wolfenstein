@@ -8,13 +8,14 @@ import Config from './Config'
 import Weapons from './shapes/ui/Weapons'
 import { Program } from './programs/Program'
 import Input from './Input'
+import UI from './shapes/ui/UI'
 
 export default class Camera {
     transform = new Transform
     projectionMatrix: number[]
     collidingCuboids: Cuboid[]
 
-    hp = 72
+    hp = UI.instance.health
     readonly weapons: Weapons
     private readonly fov = 60
     private readonly zNear = Config.gridSize / 64
@@ -135,7 +136,7 @@ export default class Camera {
                         collisionSide.x = 0
                     }
                 }
-                log('col side', collisionSide)
+                // log('col side', collisionSide)
 
                 // this.transform.position = this.transform.position.add(collisionSide)
                 return collisionSide
@@ -194,13 +195,11 @@ export default class Camera {
         let dirClone = dir.clone()
         const gridSize = Config.gridSize
         const firstTileCenter = startClone.map(v => Math.floor(v / gridSize) * gridSize + gridSize / 2).yZeroed
-        // console.log('firstTileCenter', firstTileCenter)
         yield firstTileCenter
         let firstYield = true
         while (true) {
             const [nextTileCenter, nextIntersection] = this.nextSquareInner(startClone, dirClone)
             if (firstYield) {
-                // console.log('nextTileCenter', nextTileCenter)
                 firstYield = false
             }
             yield nextTileCenter
@@ -270,7 +269,8 @@ export default class Camera {
 
     updateProjectionMatrix() {
         const fieldOfViewRadians = degToRad(this.fov)
-        const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight
+        // const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight
+        const aspect = 2
         const zNear = this.zNear
         const zFar = this.zFar
         this.projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);

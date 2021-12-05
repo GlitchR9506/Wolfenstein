@@ -5,12 +5,13 @@ import texture from '../../../textures/weapons.png'
 import Config from '../../Config'
 import Input from '../../Input'
 import { Program } from '../../programs/Program'
+import UI from './UI'
 
 
 export default class Weapons extends Plane {
     importedTexture = texture
 
-    ammo = 10000
+    ammo = UI.instance.ammo
     type: weaponType = 'pistol'
 
     private weapons: Weapon[] = []
@@ -51,6 +52,7 @@ export default class Weapons extends Plane {
             for (let i = 0; i < this.weapons.length; i++) {
                 if (Input.instance.lastNumber == i + 1) {
                     this.type = this.weapons[i].type
+                    UI.instance.weapon = this.type
                 }
             }
         }
@@ -83,6 +85,7 @@ export default class Weapons extends Plane {
                 this.ammo--
             }
         }
+        UI.instance.ammo = this.ammo
     }
 
     private shoot() {

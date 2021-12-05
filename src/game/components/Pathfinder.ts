@@ -37,7 +37,6 @@ export default class Pathfinder {
 
         console.trace('źle')
         do {
-            // console.log(iteration, iteration == 0 ? gridFrom : gridLocations[gridLocations.length - 1])
             gridLocation = this.getBestField(iteration == 0 ? gridFrom : gridLocations[gridLocations.length - 1], gridTo, fields, iteration)
             if (gridLocation) {
                 gridLocations.push(gridLocation)

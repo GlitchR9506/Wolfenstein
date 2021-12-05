@@ -48,7 +48,6 @@ export abstract class Program {
             return shader;
         }
 
-        console.log(gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
     }
 
@@ -62,7 +61,6 @@ export abstract class Program {
             return program;
         }
 
-        console.log(gl.getProgramInfoLog(program));
         gl.deleteProgram(program);
     }
 }

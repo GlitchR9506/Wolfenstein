@@ -15,6 +15,7 @@ export default class Enemy extends Plane {
     noticeDistance = Config.gridSize * 5
     tempFlag: Flag
     tempFlagLocations: Vec3[] = []
+    score = 100
 
     constructor(gl: WebGLRenderingContext, program: Program) {
         super(gl, program)
@@ -108,14 +109,9 @@ export default class Enemy extends Plane {
 
     makeStep(deltaTime: number, fields: FieldData[]) {
         if (this.followingPlayer) {
-            // const dir = this.followingPlayer.transform.position.substract(this.transform.position).yZeroed.normalize
-
             this.tempFlagLocations = Pathfinder.instance.getAllPathfindLocations(this.transform.position, this.followingPlayer.transform.position, fields)
             if (this.tempFlagLocations.length == 0) return
             const dir = this.tempFlagLocations[0].substract(this.transform.position).yZeroed.normalize
-
-            // log('current pos', this.transform.position)
-            // log('flag pos', this.tempFlag.transform.position)
 
             this.transform.position = this.transform.position.add(dir.multiply(this.followingSpeed * deltaTime))
             // this.followingPlayer = null

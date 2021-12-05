@@ -1,5 +1,6 @@
 import Camera from '../../../Camera'
 import { degToRad, Vec2, Vec3 } from '../../../utils'
+import UI from '../../ui/UI'
 import Pickup from './Pickup'
 
 export default abstract class HealthItem extends Pickup {
@@ -10,6 +11,7 @@ export default abstract class HealthItem extends Pickup {
         if (camera.hp > 100) {
             camera.hp = 100
         }
+        UI.instance.health = camera.hp
     }
 
     canBePickedUp(camera: Camera) {

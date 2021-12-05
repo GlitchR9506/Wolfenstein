@@ -20,7 +20,6 @@ export default class Wall extends Cuboid {
 
     onCreation() {
         this.transform.scale = Vec3.one.multiply(Config.gridSize)
-        // console.log(this.lightTexture, this.textureColor, this.textureName, this.value)
         this.setTexture(this.lightTexture)
         this.setTexture(this.darkTexture, 2)
         this.setTexture(this.darkTexture, 3)

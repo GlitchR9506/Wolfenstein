@@ -91,7 +91,6 @@ export class CuboidBoundingBox {
     pointFarthestSideRotated(v: Vec3) {
         const pointSide = this.pointFarthestSide(v)
         const rotationMatrix = m4.yRotation(-this.transform.rotation.y)
-        log('pointFarthestSideRotated', pointSide.transformMat4(rotationMatrix))
         return pointSide.transformMat4(rotationMatrix)
     }
 

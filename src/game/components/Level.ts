@@ -73,7 +73,6 @@ export default class Level {
     private loadLevel(number: number, callback?: () => void) {
         import(`../levels/${number}.json`)
             .then(({ default: level }) => {
-                console.log(level)
                 this.width = level.width
                 this.height = level.height
                 this.center = new Vec3(this.width * Config.gridSize / 2, 0, this.height * Config.gridSize / 2)
@@ -82,7 +81,6 @@ export default class Level {
                 this.changeWallsNeighboursTextures()
                 this.applyGridSize()
                 this.gridFields = JSON.parse(JSON.stringify(level.fields))
-                console.log(this.gridFields)
                 callback?.()
             });
     }
