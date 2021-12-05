@@ -18,17 +18,16 @@ import { Program } from './programs/Program';
 import DogFood from './shapes/level/pickups/DogFood';
 import Food from './shapes/level/pickups/Food';
 import HealthPack from './shapes/level/pickups/HealthPack';
+import Lamp from './shapes/level/decorations/Lamp';
+import Decoration from './shapes/level/decorations/Decoration';
 
 export default class Level {
     width: number
     height: number
     center: Vec3
     playerPosition: Vec3
-    walls: Wall[] = []
-    grayWalls: Wall[] = []
-    blueWalls: Wall[] = []
-    brownWalls: Wall[] = []
     enemies: Enemy[] = []
+    walls: Wall[] = []
     doors: Door[] = []
     shapes: Shape[] = []
     floor: Plane
@@ -38,10 +37,7 @@ export default class Level {
     textureProgram: TextureProgram
     colorProgram: ColorProgram
     pickups: Pickup[] = []
-    ammos: Ammo[] = []
-    dogFoods: DogFood[] = []
-    foods: Food[] = []
-    healthPacks: HealthPack[] = []
+    decorations: Decoration[] = []
 
     private readonly gl: WebGLRenderingContext
     private fields: FieldData[]
@@ -71,10 +67,7 @@ export default class Level {
     }
 
     get verticesCount() {
-        let count = 0
-        count += this.walls.map(el => el.verticesCount).reduce((a, b) => a + b)
-        count += this.enemies.map(el => el.verticesCount).reduce((a, b) => a + b)
-        return count
+        return this.shapes.map(el => el.verticesCount).reduce((a, b) => a + b)
     }
 
     private loadLevel(number: number, callback?: () => void) {
@@ -134,27 +127,29 @@ export default class Level {
         const playerPositionData = this.fields.find(f => f.value == 'player')
         this.playerPosition = new Vec3(playerPositionData.x, 0, playerPositionData.y)
 
-        this.grayWalls = this.getLevelObjectsList('wall', Wall, 'gray') as Wall[]
-        this.blueWalls = this.getLevelObjectsList('blueWall', Wall, 'blue') as Wall[]
-        this.brownWalls = this.getLevelObjectsList('brownWall', Wall, 'brown') as Wall[]
+        const grayWalls = this.getLevelObjectsList('wall', Wall) as Wall[]
+        const blueWalls = this.getLevelObjectsList('blueWall', Wall) as Wall[]
+        const brownWalls = this.getLevelObjectsList('brownWall', Wall) as Wall[]
         this.enemies = this.getLevelObjectsList('enemy', Enemy) as Enemy[]
         this.doors = this.getLevelObjectsList('door', Door) as Door[]
-        this.ammos = this.getLevelObjectsList('ammo', Ammo) as Ammo[]
-        this.dogFoods = this.getLevelObjectsList('dogFood', DogFood) as DogFood[]
-        this.foods = this.getLevelObjectsList('food', Food) as Food[]
-        this.healthPacks = this.getLevelObjectsList('health', HealthPack) as HealthPack[]
+        const ammos = this.getLevelObjectsList('ammo', Ammo) as Ammo[]
+        const dogFoods = this.getLevelObjectsList('dogFood', DogFood) as DogFood[]
+        const foods = this.getLevelObjectsList('food', Food) as Food[]
+        const healthPacks = this.getLevelObjectsList('health', HealthPack) as HealthPack[]
+        const lamps = this.getLevelObjectsList('lamp', Lamp) as Lamp[]
 
-        this.walls.push(...this.grayWalls)
-        this.walls.push(...this.blueWalls)
-        this.walls.push(...this.brownWalls)
+        this.walls.push(...grayWalls)
+        this.walls.push(...blueWalls)
+        this.walls.push(...brownWalls)
 
         this.collidingCuboids.push(...this.walls)
         this.collidingCuboids.push(...this.doors)
         this.interactables.push(...this.doors)
-        this.pickups.push(...this.ammos)
-        this.pickups.push(...this.dogFoods)
-        this.pickups.push(...this.foods)
-        this.pickups.push(...this.healthPacks)
+        this.pickups.push(...ammos)
+        this.pickups.push(...dogFoods)
+        this.pickups.push(...foods)
+        this.pickups.push(...healthPacks)
+        this.decorations.push(...lamps)
 
         // this.doors[0].transform.position.x += 45
 
@@ -199,17 +194,18 @@ export default class Level {
             ...this.enemies,
             ...this.doors,
             ...this.pickups,
+            ...this.decorations,
             this.floor,
             this.ceiling,
         ]
     }
 
-    private getLevelObjectsList<T extends Shape>(value: string, SpecificShape: new (gl: WebGLRenderingContext, program: Program, type?: 'gray' | 'blue' | 'brown') => T, type?: 'gray' | 'blue' | 'brown') {
+    private getLevelObjectsList<T extends Shape>(value: string, SpecificShape: new (gl: WebGLRenderingContext, program: Program, type?: string) => T) {
         const objects: Shape[] = []
-        for (let field of this.fields.filter(f => f.value == value)) {
+        for (let field of this.fields.filter(f => f.value.includes(value))) {
             let shape
             if (value.toLowerCase().includes('wall')) {
-                shape = new Wall(this.gl, this.textureProgram, type)
+                shape = new Wall(this.gl, this.textureProgram, field.value)
             } else {
                 shape = new SpecificShape(this.gl, this.textureProgram)
             }

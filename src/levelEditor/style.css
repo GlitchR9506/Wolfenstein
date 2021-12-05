@@ -78,7 +78,8 @@ level-field {
 }
 
 #ui {
-    min-width: 200px;
+    /* min-width: 200px; */
+    width: 290px;
     background-color: powderblue;
     display: flex;
     flex-direction: column;
@@ -90,7 +91,16 @@ level-field {
 }
 
 #ui #objects > * {
-    margin: 20px;
+    margin: 10px;
+}
+
+#objects {
+    display: flex;
+    /* flex-direction: column; */
+    flex-wrap: wrap;
+    /* height: 100%; */
+    align-items: flex-start;
+    justify-content: flex-start;
 }
 
 select-field {

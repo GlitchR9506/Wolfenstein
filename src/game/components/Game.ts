@@ -89,6 +89,11 @@ export default class Game {
             pickup.draw(this.camera.viewProjectionMatrix)
         }
 
+        for (let decoration of this.level.decorations) {
+            decoration.lookAtCamera(this.camera.transform.rotation.y)
+            decoration.draw(this.camera.viewProjectionMatrix)
+        }
+
         this.camera.weapons.update(deltaTime)
         this.camera.weapons.draw(this.camera.projectionMatrix)
 
