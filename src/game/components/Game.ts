@@ -22,6 +22,7 @@ export default class Game {
     private readonly textures: Textures
     private readonly level: Level
     private readonly crosshair: Crosshair
+    private readonly fixedUpdateInterval = 20
     private gl: WebGLRenderingContext
     private canvas: HTMLCanvasElement
 
@@ -62,11 +63,14 @@ export default class Game {
             requestAnimationFrame(render)
         }
         requestAnimationFrame(render)
+
+        const fixedDeltaTime = this.fixedUpdateInterval * 0.001
+        setInterval(() => {
+            this.fixedUpdate(fixedDeltaTime)
+        }, this.fixedUpdateInterval)
     }
 
-    private draw(deltaTime: number) {
-        this.setDrawSettings()
-
+    private fixedUpdate(deltaTime: number) {
         if (Input.instance.interacting) {
             const nearestInteractable = this.camera.nearest(this.level.interactables) as Interactable
             if (this.camera.inInteractionDistance(nearestInteractable)) {
@@ -77,40 +81,20 @@ export default class Game {
 
         this.camera.update(deltaTime)
 
-        this.crosshair.draw(this.camera.projectionMatrix)
-        this.level.floor.draw(this.camera.viewProjectionMatrix)
-        this.level.ceiling.draw(this.camera.viewProjectionMatrix)
-
         for (let pickup of this.level.pickups.filter(pickup => !pickup.pickedUp)) {
-            pickup.lookAtCamera(this.camera.transform.rotation.y)
             if (this.camera.transform.position.horizontalDistanceTo(pickup.transform.position) <= pickup.pickupRange) {
                 pickup.pickUp(this.camera)
             }
-            pickup.draw(this.camera.viewProjectionMatrix)
-        }
-
-        for (let decoration of this.level.decorations) {
-            decoration.lookAtCamera(this.camera.transform.rotation.y)
-            decoration.draw(this.camera.viewProjectionMatrix)
         }
 
         this.camera.weapons.update(deltaTime)
-        this.camera.weapons.draw(this.camera.projectionMatrix)
-
-        if (Input.instance.renderWalls) {
-            for (let wall of this.level.walls) {
-                wall.draw(this.camera.viewProjectionMatrix)
-            }
-        }
 
         for (let door of this.level.doors) {
             door.update(deltaTime)
-            door.draw(this.camera.viewProjectionMatrix)
         }
 
         const shapeLookedAt = this.camera.raycast(this.level.collidingCuboids)
         for (let enemy of this.level.enemies) {
-            enemy.lookAtCamera(this.camera.transform.rotation.y)
             enemy.update(deltaTime)
             if (this.camera.isLookingAt(enemy) && shapeLookedAt) {
                 const enemyDistance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
@@ -128,7 +112,6 @@ export default class Game {
                     }
                 }
             }
-            enemy.draw(this.camera.viewProjectionMatrix)
             if (enemy.isDead) {
                 enemy.followingPlayer = null
             } else {
@@ -139,6 +122,41 @@ export default class Game {
             if (enemy.followingPlayer) {
                 enemy.makeStep(deltaTime, this.level.gridFields)
             }
+        }
+    }
+
+    private draw(deltaTime: number) {
+        this.setDrawSettings()
+
+        this.crosshair.draw(this.camera.projectionMatrix)
+        this.level.floor.draw(this.camera.viewProjectionMatrix)
+        this.level.ceiling.draw(this.camera.viewProjectionMatrix)
+
+        for (let pickup of this.level.pickups.filter(pickup => !pickup.pickedUp)) {
+            pickup.lookAtCamera(this.camera.transform.rotation.y)
+            pickup.draw(this.camera.viewProjectionMatrix)
+        }
+
+        for (let decoration of this.level.decorations) {
+            decoration.lookAtCamera(this.camera.transform.rotation.y)
+            decoration.draw(this.camera.viewProjectionMatrix)
+        }
+
+        this.camera.weapons.draw(this.camera.projectionMatrix)
+
+        if (Input.instance.renderWalls) {
+            for (let wall of this.level.walls) {
+                wall.draw(this.camera.viewProjectionMatrix)
+            }
+        }
+
+        for (let door of this.level.doors) {
+            door.draw(this.camera.viewProjectionMatrix)
+        }
+
+        for (let enemy of this.level.enemies) {
+            enemy.lookAtCamera(this.camera.transform.rotation.y)
+            enemy.draw(this.camera.viewProjectionMatrix)
             for (let location of enemy.tempFlagLocations) {
                 enemy.tempFlag.transform.position = location
                 enemy.tempFlag.lookAtCamera(this.camera.transform.rotation.y)
@@ -157,7 +175,6 @@ export default class Game {
 
         this.gl = this.canvas.getContext("webgl")
 
-
         if (!this.gl) {
             alert("No webgl for you")
         }
@@ -172,7 +189,7 @@ export default class Game {
     }
 
     private setDrawSettings() {
-        this.resizeCanvasToDisplaySize(this.gl.canvas)
+        // this.resizeCanvasToDisplaySize(this.gl.canvas)
 
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height)
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT)
@@ -180,18 +197,18 @@ export default class Game {
         Input.instance.update()
     }
 
-    private resizeCanvasToDisplaySize(canvas: HTMLCanvasElement) {
-        const displayWidth = canvas.clientWidth
-        const displayHeight = canvas.clientHeight
+    // private resizeCanvasToDisplaySize(canvas: HTMLCanvasElement) {
+    //     const displayWidth = canvas.clientWidth
+    //     const displayHeight = canvas.clientHeight
 
-        const resizeNeeded = canvas.width !== displayWidth || canvas.height !== displayHeight
+    //     const resizeNeeded = canvas.width !== displayWidth || canvas.height !== displayHeight
 
-        if (resizeNeeded) {
-            // canvas.width = displayWidth
-            // canvas.height = displayHeight
-            // this.camera.updateProjectionMatrix()
-        }
+    //     if (resizeNeeded) {
+    //         // canvas.width = displayWidth
+    //         // canvas.height = displayHeight
+    //         // this.camera.updateProjectionMatrix()
+    //     }
 
-        return resizeNeeded
-    }
+    //     return resizeNeeded
+    // }
 }
