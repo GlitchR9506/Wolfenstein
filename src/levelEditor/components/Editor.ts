@@ -25,6 +25,8 @@ export default class Editor {
         ['ammo', 'green'],
         ['exit', 'yellow'],
         ['secretExit', '#d6d633'],
+        ['machinegun', '#aaaaaa'],
+        ['chaingun', '#20b2b2'],
     ])
 
 

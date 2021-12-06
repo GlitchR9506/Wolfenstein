@@ -138,11 +138,6 @@ export default class Game {
             }
             if (enemy.followingPlayer) {
                 enemy.makeStep(deltaTime, this.level.gridFields)
-                // for (let location of enemy.tempFlagLocations) {
-                //     enemy.tempFlag.transform.position = location
-                //     enemy.tempFlag.lookAtCamera(this.camera.transform.rotation.y)
-                //     enemy.tempFlag.draw(this.camera.viewProjectionMatrix)
-                // }
             }
             for (let location of enemy.tempFlagLocations) {
                 enemy.tempFlag.transform.position = location

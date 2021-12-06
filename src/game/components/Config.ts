@@ -1,6 +1,6 @@
 const Config = {
     gridSize: 64,
-    uiScale: 1,
+    uiScale: 2,
 }
 
 export default Config

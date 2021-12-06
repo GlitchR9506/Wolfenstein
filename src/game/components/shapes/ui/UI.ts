@@ -1,7 +1,6 @@
 import Config from '../../Config';
 import uiTexture from '../../../textures/ui.png'
 import uiElements from '../../../textures/ui-elements.png'
-import { weaponType } from './Weapon';
 
 export default class UI {
     static instance = new this

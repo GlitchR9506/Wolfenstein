@@ -3,6 +3,7 @@ import Cuboid from './Cuboid'
 import Interactable from './Interactable'
 import texture from '../../../textures/wall.png'
 import Config from '../../Config'
+import { Program } from '../../programs/Program'
 
 
 export default class Door extends Cuboid implements Interactable {
@@ -20,6 +21,7 @@ export default class Door extends Cuboid implements Interactable {
     private readonly openingLength = Config.gridSize
 
     private readonly hiddenInWallScaleCorrection = new Vec3(0.1, 0.1, 0)
+    // private readonly hiddenInWallScaleCorrection = new Vec3(10, 10, 0)
 
     private positionFinal: Vec3
 
@@ -76,8 +78,12 @@ export default class Door extends Cuboid implements Interactable {
         0, 0,
     ])
 
-    onCreation() {
+    constructor(gl: WebGLRenderingContext, program: Program) {
+        super(gl, program)
         this.transform.scale = new Vec3(Config.gridSize, Config.gridSize, Config.gridSize * 6 / 64)
+    }
+
+    onCreation() {
         const translationFinal = new Vec3(this.openingLength, 0, 0)
         let mFinal = m4.identity
         mFinal = m4.translate(mFinal, translationFinal)
@@ -105,6 +111,7 @@ export default class Door extends Cuboid implements Interactable {
         if (this.opening) {
             if (this.transform.position.equals(this.positionFinal)) {
                 this.opening = false
+                console.log(this.initialTransform.scale, this.transform.scale)
                 if (this.initialTransform.scale.equals(this.transform.scale)) {
                     this.transform.scale = this.transform.scale.substract(this.hiddenInWallScaleCorrection)
                 }

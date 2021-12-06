@@ -14,6 +14,8 @@ export default class Weapons extends Plane {
     ammo = UI.instance.ammo
     type: weaponType = 'pistol'
 
+    availableTypes: weaponType[] = ['knife', 'pistol']
+
     private weapons: Weapon[] = []
     private texturesCount = new Vec2(4, 8)
     private currentTextureNumber: number
@@ -51,8 +53,10 @@ export default class Weapons extends Plane {
         if (0 < Input.instance.lastNumber && Input.instance.lastNumber <= this.weapons.length) {
             for (let i = 0; i < this.weapons.length; i++) {
                 if (Input.instance.lastNumber == i + 1) {
-                    this.type = this.weapons[i].type
-                    UI.instance.weapon = this.type
+                    if (this.availableTypes.includes(this.weapons[i].type)) {
+                        this.type = this.weapons[i].type
+                        UI.instance.weapon = this.type
+                    }
                 }
             }
         }

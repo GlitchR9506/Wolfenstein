@@ -20,6 +20,7 @@ import Food from './shapes/level/pickups/Food';
 import HealthPack from './shapes/level/pickups/HealthPack';
 import Lamp from './shapes/level/decorations/Lamp';
 import Decoration from './shapes/level/decorations/Decoration';
+import Machinegun from './shapes/level/pickups/Machinegun';
 
 export default class Level {
     width: number
@@ -135,6 +136,7 @@ export default class Level {
         const foods = this.getLevelObjectsList('food', Food) as Food[]
         const healthPacks = this.getLevelObjectsList('health', HealthPack) as HealthPack[]
         const lamps = this.getLevelObjectsList('lamp', Lamp) as Lamp[]
+        const machineguns = this.getLevelObjectsList('machinegun', Machinegun) as Machinegun[]
 
         this.walls.push(...grayWalls)
         this.walls.push(...blueWalls)
@@ -147,6 +149,7 @@ export default class Level {
         this.pickups.push(...dogFoods)
         this.pickups.push(...foods)
         this.pickups.push(...healthPacks)
+        this.pickups.push(...machineguns)
         this.decorations.push(...lamps)
 
         // this.doors[0].transform.position.x += 45
