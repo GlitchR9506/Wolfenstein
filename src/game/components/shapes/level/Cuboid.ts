@@ -148,7 +148,7 @@ export default abstract class Cuboid extends Shape {
         0, 0,
     ])
 
-    readonly bb = new CuboidBoundingBox(this)
+    readonly bb: CuboidBoundingBox = new CuboidBoundingBox(this)
     readonly defaultColors = this.COLORS
 
     abstract lightTexture: number

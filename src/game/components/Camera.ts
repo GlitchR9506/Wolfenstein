@@ -1,5 +1,4 @@
 import { Vec3, Transform, radToDeg, m4, degToRad, log, Vec2 } from './utils'
-import Cuboid from './shapes/level/Cuboid'
 import Shape from './shapes/level/Shape'
 import Interactable from './shapes/level/Interactable'
 import Enemy from './shapes/level/Enemy'
@@ -13,7 +12,7 @@ import UI from './shapes/ui/UI'
 export default class Camera {
     transform = new Transform
     projectionMatrix: number[]
-    collidingCuboids: Cuboid[]
+    collidingShapes: Shape[]
 
     hp = UI.instance.health
     readonly weapons: Weapons
@@ -44,10 +43,14 @@ export default class Camera {
 
     update(deltaTime: number) {
         this.rotate(Input.instance.rotation * deltaTime)
+        let speed = Input.instance.direction.multiply(deltaTime)
+        if (Input.instance.sprinting) {
+            speed = speed.multiply(5)
+        }
         if (Input.instance.noclip) {
-            this.move(Input.instance.direction.multiply(deltaTime))
+            this.move(speed)
         } else {
-            this.move(Input.instance.direction.multiply(deltaTime), this.collidingCuboids)
+            this.move(speed, this.collidingShapes)
         }
     }
 
@@ -69,7 +72,7 @@ export default class Camera {
         this.transform.rotation.y += rotation * this.rotationSpeed
     }
 
-    move(direction: Vec3, collidingCuboids?: Cuboid[]) {
+    move(direction: Vec3, collidingShapes?: Shape[]) {
         const transformMatrix = m4.yRotation(-this.transform.rotation.y)
         let deltaPosition = direction.inverted.multiply(this.movementSpeed).transformMat4(transformMatrix)
 
@@ -88,8 +91,8 @@ export default class Camera {
             if (blockedDirection.x * deltaPosition.x < 0) deltaPosition.x = 0
         }
 
-        if (collidingCuboids) {
-            this.checkCollisions(collidingCuboids.filter(c => c.transform.position.distanceTo(this.transform.position) < Config.gridSize * 2))
+        if (collidingShapes) {
+            this.checkCollisions(collidingShapes.filter(c => c.transform.position.distanceTo(this.transform.position) < Config.gridSize * 2))
         } else {
             this.blockedDirections = []
         }
@@ -108,7 +111,7 @@ export default class Camera {
         return angleDiff
     }
 
-    cuboidCollisionSide(cuboid: Cuboid) {
+    cuboidCollisionSide(cuboid: Shape) {
         const cameraToWall = this.transform.position.yZeroed.to(cuboid.transform.position.yZeroed)
         const cameraToWallDirection = cameraToWall.normalize
 
@@ -136,7 +139,7 @@ export default class Camera {
                         collisionSide.x = 0
                     }
                 }
-                // log('col side', collisionSide)
+                log('col side', collisionSide)
 
                 // this.transform.position = this.transform.position.add(collisionSide)
                 return collisionSide
@@ -145,8 +148,8 @@ export default class Camera {
         return null
     }
 
-    checkCollisions(cuboids: Cuboid[]) {
-        const collidingSides = cuboids
+    checkCollisions(shapes: Shape[]) {
+        const collidingSides = shapes
             .map(c => this.cuboidCollisionSide(c))
             .filter(side => side !== null)
         // const blockedDirections = collidingSides.map(side => side.inverted)

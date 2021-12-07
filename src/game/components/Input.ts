@@ -6,6 +6,7 @@ export default class Input {
     direction = Vec3.zero
     rotation = 0
 
+    sprinting = false
     shooting = false
     shot = false
     justShot = false
@@ -66,6 +67,11 @@ export default class Input {
             if (this.isPressed('KeyC')) {
                 this.noclip = true
             }
+        }
+
+        this.sprinting = false
+        if (this.isPressed('ShiftLeft')) {
+            this.sprinting = true
         }
 
         if (this.isPressed('KeyV')) {

@@ -13,6 +13,7 @@ import Interactable from './shapes/level/Interactable'
 import Shape from './shapes/level/Shape'
 import Config from './Config'
 import UI from './shapes/ui/UI'
+import { GridBoundingBox } from './shapes/level/GridBoundingBox'
 
 
 export default class Game {
@@ -45,7 +46,7 @@ export default class Game {
             shapes.push(...this.level.shapes)
             this.textures.load(shapes, () => {
                 this.camera.transform.position = this.level.playerPosition
-                this.camera.collidingCuboids = this.level.collidingCuboids
+                this.camera.collidingShapes = [...this.level.collidingCuboids, ...this.level.decorations.filter(decoration => decoration.bb)]
                 this.startGameLoop()
             })
         })

@@ -150,7 +150,9 @@ export default class Level {
 
         for (let decorationName of DecorationMap.keys()) {
             this.decorations.push(...this.getLevelObjectsList(decorationName, Decoration) as Decoration[])
+
         }
+        this.decorations.filter(d => !NotCollidingDecorations.includes(d.type)).forEach(d => d.createBB())
 
         this.walls.push(...grayWalls)
         this.walls.push(...blueWalls)

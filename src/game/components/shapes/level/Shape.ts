@@ -1,5 +1,7 @@
 import { m4, Vec3, Transform } from '../../utils'
 import { Program, ProgramInfo } from '../../programs/Program'
+import { GridBoundingBox } from './GridBoundingBox'
+import { CuboidBoundingBox } from './CuboidBoundingBox'
 
 export default abstract class Shape {
     importedTexture: string
@@ -16,6 +18,7 @@ export default abstract class Shape {
     transform = new Transform()
     initialTransform: Transform
     program: Program
+    bb: GridBoundingBox | CuboidBoundingBox = null
 
     constructor(gl: WebGLRenderingContext, program: Program) {
         this.gl = gl

@@ -3,12 +3,30 @@ import Config from '../../../Config'
 import { Program } from '../../../programs/Program'
 import { degToRad, Vec2, Vec3 } from '../../../utils'
 import Plane from '../Plane'
+import DecorationMap from '../../../../../common/DecorationMap'
+import { GridBoundingBox } from '../GridBoundingBox'
+import NotCollidingDecorations from '../../../../../common/NotCollidingDecorations'
 
-export default abstract class Decoration extends Plane {
+export default class Decoration extends Plane {
+    type: string
+    bb: GridBoundingBox
+
+    constructor(gl: WebGLRenderingContext, program: Program, type: string) {
+        super(gl, program)
+        this.type = type
+    }
+
+    createBB() {
+        this.bb = new GridBoundingBox(this.transform.position, Vec3.one.multiply(Config.gridSize))
+    }
+
+    get textureNumber() {
+        return DecorationMap.get(this.type)
+    }
+
     importedTexture = texture
 
     private firstTextureSet = false
-    protected abstract textureNumber: number
 
     onCreation() {
         this.transform.scale = Vec3.one.multiply(Config.gridSize)
@@ -27,8 +45,6 @@ export default abstract class Decoration extends Plane {
     }
 
     setTexture(textureNumber: number) {
-        if (textureNumber == this.textureNumber && this.firstTextureSet) return
-        this.textureNumber = textureNumber
         let verticesVec2Array = Vec2.arrayToVec2Array(this.initialTexcoords)
         const texturePos = new Vec2(textureNumber % this.texturesInLine, Math.floor(textureNumber / this.texturesInLine)).multiply(this.textureSize)
         verticesVec2Array = verticesVec2Array.map(vertex => vertex.multiply(this.textureSize).add(texturePos))
