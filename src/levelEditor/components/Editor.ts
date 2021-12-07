@@ -31,7 +31,7 @@ export default class Editor {
         ['secretExit', '#d6d633'],
         ['machinegun', '#aaaaaa'],
         ['chaingun', '#20b2b2'],
-        // ['lamp', 'gold'],
+        ['powerUp', '#009df5'],
     ])
 
 
@@ -39,7 +39,6 @@ export default class Editor {
         for (let decorationName of DecorationMap.keys()) {
             this.colors.set(decorationName, 'gold')
         }
-        console.log(this.colors)
         this.select = new Select(this.colors)
         this.addLevelCreationListener()
         this.addSelectingListener()

@@ -8,7 +8,6 @@ export default class Machinegun extends Pickup {
 
     onPickedUp(camera: Camera) {
         camera.weapons.availableTypes.push('machinegun')
-        camera.weapons.type = 'machinegun'
-        UI.instance.weapon = 'chaingun'
+        UI.instance.weapon = 'machinegun'
     }
 }

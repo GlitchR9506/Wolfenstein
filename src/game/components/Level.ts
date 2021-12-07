@@ -27,6 +27,7 @@ import GoldenCross from './shapes/level/pickups/GoldenCross';
 import GoldenCup from './shapes/level/pickups/GoldenCup';
 import GoldenBox from './shapes/level/pickups/GoldenBox';
 import GoldenCrown from './shapes/level/pickups/GoldenCrown';
+import PowerUp from './shapes/level/pickups/PowerUp';
 
 
 export default class Level {
@@ -142,6 +143,7 @@ export default class Level {
         const dogFoods = this.getLevelObjectsList('dogFood', DogFood) as DogFood[]
         const foods = this.getLevelObjectsList('food', Food) as Food[]
         const healthPacks = this.getLevelObjectsList('health', HealthPack) as HealthPack[]
+        const powerUps = this.getLevelObjectsList('powerUp', PowerUp) as PowerUp[]
         const machineguns = this.getLevelObjectsList('machinegun', Machinegun) as Machinegun[]
         const goldenCrosses = this.getLevelObjectsList('goldCross', GoldenCross) as GoldenCross[]
         const goldenCups = this.getLevelObjectsList('goldCup', GoldenCup) as GoldenCup[]
@@ -165,6 +167,7 @@ export default class Level {
         this.pickups.push(...dogFoods)
         this.pickups.push(...foods)
         this.pickups.push(...healthPacks)
+        this.pickups.push(...powerUps)
         this.pickups.push(...machineguns)
         this.pickups.push(...goldenCrosses)
         this.pickups.push(...goldenCups)

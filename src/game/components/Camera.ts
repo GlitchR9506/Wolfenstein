@@ -7,14 +7,12 @@ import Config from './Config'
 import Weapons from './shapes/ui/Weapons'
 import { Program } from './programs/Program'
 import Input from './Input'
-import UI from './shapes/ui/UI'
 
 export default class Camera {
     transform = new Transform
     projectionMatrix: number[]
     collidingShapes: Shape[]
 
-    hp = UI.instance.health
     readonly weapons: Weapons
     private readonly fov = 60
     private readonly zNear = Config.gridSize / 64

@@ -7,14 +7,13 @@ export default abstract class HealthItem extends Pickup {
     abstract healthRestored: number
 
     onPickedUp(camera: Camera) {
-        camera.hp += this.healthRestored
-        if (camera.hp > 100) {
-            camera.hp = 100
+        UI.instance.health += this.healthRestored
+        if (UI.instance.health > 100) {
+            UI.instance.health = 100
         }
-        UI.instance.health = camera.hp
     }
 
     canBePickedUp(camera: Camera) {
-        return camera.hp < 100
+        return UI.instance.health < 100
     }
 }

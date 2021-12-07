@@ -1,6 +1,7 @@
 import Config from '../../Config';
 import uiTexture from '../../../textures/ui.png'
 import uiElements from '../../../textures/ui-elements.png'
+import Camera from '../../Camera';
 
 export default class UI {
     static instance = new this
@@ -30,7 +31,6 @@ export default class UI {
 
         this.context = uiCanvas.getContext('2d') as CanvasRenderingContext2D
         this.context.imageSmoothingEnabled = false;
-
     }
 
     draw(canvas: HTMLCanvasElement) {

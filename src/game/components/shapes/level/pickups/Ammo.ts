@@ -8,7 +8,6 @@ export default class Ammo extends Pickup {
     ammoCount = 4
 
     onPickedUp(camera: Camera) {
-        camera.weapons.ammo += this.ammoCount
-        UI.instance.ammo = camera.weapons.ammo
+        UI.instance.ammo += this.ammoCount
     }
 }

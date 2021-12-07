@@ -11,9 +11,6 @@ import UI from './UI'
 export default class Weapons extends Plane {
     importedTexture = texture
 
-    ammo = UI.instance.ammo
-    type: weaponType = 'pistol'
-
     availableTypes: weaponType[] = ['knife', 'pistol']
 
     private weapons: Weapon[] = []
@@ -44,7 +41,7 @@ export default class Weapons extends Plane {
     }
 
     get currentWeapon() {
-        return this.weapons.find(weapon => weapon.type == this.type)
+        return this.weapons.find(weapon => weapon.type == UI.instance.weapon)
     }
 
     update(deltaTime: number) {
@@ -54,15 +51,14 @@ export default class Weapons extends Plane {
             for (let i = 0; i < this.weapons.length; i++) {
                 if (Input.instance.lastNumber == i + 1) {
                     if (this.availableTypes.includes(this.weapons[i].type)) {
-                        this.type = this.weapons[i].type
-                        UI.instance.weapon = this.type
+                        UI.instance.weapon = this.weapons[i].type
                     }
                 }
             }
         }
 
-        this.setShooting(Input.instance.shooting && this.ammo > 0)
-        if (Input.instance.shot && (this.ammo > 0 || this.currentWeapon.type == 'knife')) {
+        this.setShooting(Input.instance.shooting && UI.instance.ammo > 0)
+        if (Input.instance.shot && (UI.instance.ammo > 0 || this.currentWeapon.type == 'knife')) {
             this.shoot()
             Input.instance.justShot = true
         }
@@ -85,11 +81,10 @@ export default class Weapons extends Plane {
 
     private decreaseAmmo() {
         if (this.currentWeapon.type != 'knife') {
-            if (this.ammo > 0) {
-                this.ammo--
+            if (UI.instance.ammo > 0) {
+                UI.instance.ammo--
             }
         }
-        UI.instance.ammo = this.ammo
     }
 
     private shoot() {
