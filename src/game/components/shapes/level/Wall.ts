@@ -31,7 +31,7 @@ export default class Wall extends Cuboid {
 
     get textureColor() {
         for (let color of ['gray', 'blue', 'brown']) {
-            if (this.value.includes(color)) {
+            if (this.value.toLowerCase().includes(color)) {
                 return color
             }
         }
@@ -39,7 +39,7 @@ export default class Wall extends Cuboid {
     }
 
     get textureName() {
-        for (let lastLetter of ['F', 'E', 'H']) {
+        for (let lastLetter of ['F', 'E', 'H', 'B', 'S', 'E', 'H']) {
             if (this.value.substr(-1) == lastLetter) {
                 return lastLetter
             }
@@ -51,13 +51,23 @@ export default class Wall extends Cuboid {
         switch (this.textureColor) {
             case 'gray':
                 switch (this.textureName) {
-                    case 'F': return 4
-                    case 'H': return 16
-                    case 'E': return 20
+                    case 'F': return 4      //flag
+                    case 'H': return 16     //hitler
+                    case 'E': return 20     //eagle
                     default: return 0
                 }
-            case 'blue': return 34
-            case 'brown': return 52
+            case 'blue':
+                switch (this.textureName) {
+                    case 'B': return 18    //bars
+                    case 'S': return 32     //skeleton bars
+                    default: return 34
+                }
+            case 'brown':
+                switch (this.textureName) {
+                    case 'E': return 48     //eagle
+                    case 'H': return 50     //hitler
+                    default: return 52
+                }
         }
     }
 

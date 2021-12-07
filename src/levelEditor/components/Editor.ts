@@ -2,6 +2,7 @@ import Level from "./Level";
 import LevelField from "./LevelField";
 import FieldData from "../../common/FieldData";
 import Select from "./Select";
+import DecorationMap from "../../common/DecorationMap";
 
 export default class Editor {
     private editedLevel: Level | null = null
@@ -14,9 +15,12 @@ export default class Editor {
         ['wallH', 'lightslategray'],
         ['wallE', 'lightslategray'],
         ['wallF', 'lightslategray'],
-        ['lamp', 'gold'],
-        ['blueWall', '#1a00a2'],
+        ['blueWall', '#5c60fc'],
+        ['blueWallB', '#5c60fc'],
+        ['blueWallS', '#5c60fc'],
         ['brownWall', '#7f5526'],
+        ['brownWallE', '#7f5526'],
+        ['brownWallH', '#7f5526'],
         ['player', 'forestgreen'],
         ['enemy', '#e62e53'],
         ['dogFood', '#c75454'],
@@ -27,10 +31,15 @@ export default class Editor {
         ['secretExit', '#d6d633'],
         ['machinegun', '#aaaaaa'],
         ['chaingun', '#20b2b2'],
+        // ['lamp', 'gold'],
     ])
 
 
     constructor() {
+        for (let decorationName of DecorationMap.keys()) {
+            this.colors.set(decorationName, 'gold')
+        }
+        console.log(this.colors)
         this.select = new Select(this.colors)
         this.addLevelCreationListener()
         this.addSelectingListener()
@@ -42,6 +51,7 @@ export default class Editor {
                 return "You have unsaved changes on this page. Do you want to leave this page and discard your changes or stay on this page?";
             }
         }
+
     }
 
     private addLevelCreationListener() {
@@ -71,7 +81,7 @@ export default class Editor {
     }
 
     private stopEditingLevel() {
-        this.editedLevel.clearHtml()
+        this.editedLevel?.clearHtml()
         this.editedLevel = null
     }
 
@@ -89,6 +99,8 @@ export default class Editor {
                     const level = JSON.parse(content)
                     const fieldsData = level.fields as FieldData[]
                     this.stopEditingLevel()
+                    const formElement = document.getElementById('createLevelForm') as HTMLFormElement
+                    formElement?.remove()
                     this.editedLevel = new Level(level.width, level.height, this.colors, fieldsData)
                 }
             }

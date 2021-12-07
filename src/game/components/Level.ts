@@ -18,9 +18,16 @@ import { Program } from './programs/Program';
 import DogFood from './shapes/level/pickups/DogFood';
 import Food from './shapes/level/pickups/Food';
 import HealthPack from './shapes/level/pickups/HealthPack';
-import Lamp from './shapes/level/decorations/Lamp';
-import Decoration from './shapes/level/decorations/Decoration';
 import Machinegun from './shapes/level/pickups/Machinegun';
+
+import Decoration from './shapes/level/decorations/Decoration';
+import DecorationMap from '../../common/DecorationMap'
+import NotCollidingDecorations from '../../common/NotCollidingDecorations';
+import GoldenCross from './shapes/level/pickups/GoldenCross';
+import GoldenCup from './shapes/level/pickups/GoldenCup';
+import GoldenBox from './shapes/level/pickups/GoldenBox';
+import GoldenCrown from './shapes/level/pickups/GoldenCrown';
+
 
 export default class Level {
     width: number
@@ -135,8 +142,15 @@ export default class Level {
         const dogFoods = this.getLevelObjectsList('dogFood', DogFood) as DogFood[]
         const foods = this.getLevelObjectsList('food', Food) as Food[]
         const healthPacks = this.getLevelObjectsList('health', HealthPack) as HealthPack[]
-        const lamps = this.getLevelObjectsList('lamp', Lamp) as Lamp[]
         const machineguns = this.getLevelObjectsList('machinegun', Machinegun) as Machinegun[]
+        const goldenCrosses = this.getLevelObjectsList('goldCross', GoldenCross) as GoldenCross[]
+        const goldenCups = this.getLevelObjectsList('goldCup', GoldenCup) as GoldenCup[]
+        const goldenBoxes = this.getLevelObjectsList('goldBox', GoldenBox) as GoldenBox[]
+        const goldenCrowns = this.getLevelObjectsList('goldCrown', GoldenCrown) as GoldenCrown[]
+
+        for (let decorationName of DecorationMap.keys()) {
+            this.decorations.push(...this.getLevelObjectsList(decorationName, Decoration) as Decoration[])
+        }
 
         this.walls.push(...grayWalls)
         this.walls.push(...blueWalls)
@@ -150,7 +164,10 @@ export default class Level {
         this.pickups.push(...foods)
         this.pickups.push(...healthPacks)
         this.pickups.push(...machineguns)
-        this.decorations.push(...lamps)
+        this.pickups.push(...goldenCrosses)
+        this.pickups.push(...goldenCups)
+        this.pickups.push(...goldenBoxes)
+        this.pickups.push(...goldenCrowns)
 
         // this.doors[0].transform.position.x += 45
 
@@ -231,6 +248,10 @@ export default class Level {
                 if (dir.equals(Vec3.right)) {
                     shape.setTexture(shape.nearDoorLightTexture, 2)
                 }
+            } else if (shape instanceof Decoration) {
+                shape.type = value
+                shape.setTexture(shape.textureNumber)
+                // console.log(value)
             }
             objects.push(shape)
         }
