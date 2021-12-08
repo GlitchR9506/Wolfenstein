@@ -5,7 +5,6 @@ import { degToRad, Vec2, Vec3 } from '../../../utils'
 import Plane from '../Plane'
 import DecorationMap from '../../../../../common/DecorationMap'
 import { GridBoundingBox } from '../GridBoundingBox'
-import NotCollidingDecorations from '../../../../../common/NotCollidingDecorations'
 
 export default class Decoration extends Plane {
     type: string

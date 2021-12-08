@@ -9,4 +9,12 @@ export default [
     'bones2',
     'bones3',
     'bloodBones',
+    'enemy',
+    'dogFood',
+    'food',
+    'health',
+    'ammo',
+    'powerUp',
+    'machinegun',
+    'chaingun',
 ]

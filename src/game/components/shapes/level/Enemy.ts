@@ -107,9 +107,10 @@ export default class Enemy extends Plane {
 
     }
 
-    makeStep(deltaTime: number, fields: FieldData[]) {
+    makeStep(deltaTime: number) {
         if (this.followingPlayer) {
-            this.tempFlagLocations = Pathfinder.instance.getAllPathfindLocations(this.transform.position, this.followingPlayer.transform.position, fields)
+            this.tempFlagLocations = Pathfinder.instance.getAllPathLocations(this.transform.position, this.followingPlayer.transform.position)
+            this.tempFlagLocations = this.tempFlagLocations.map(v => new Vec3(v.x, -30, v.z))
             if (this.tempFlagLocations.length == 0) return
             const dir = this.tempFlagLocations[0].substract(this.transform.position).yZeroed.normalize
 

@@ -121,7 +121,7 @@ export default class Game {
                 }
             }
             if (enemy.followingPlayer) {
-                enemy.makeStep(deltaTime, this.level.gridFields)
+                enemy.makeStep(deltaTime)
             }
         }
     }

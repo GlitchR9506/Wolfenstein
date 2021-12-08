@@ -22,12 +22,13 @@ import Machinegun from './shapes/level/pickups/Machinegun';
 
 import Decoration from './shapes/level/decorations/Decoration';
 import DecorationMap from '../../common/DecorationMap'
-import NotCollidingDecorations from '../../common/NotCollidingDecorations';
+import NotCollidingFieldValues from '../../common/NotCollidingFieldValues';
 import GoldenCross from './shapes/level/pickups/GoldenCross';
 import GoldenCup from './shapes/level/pickups/GoldenCup';
 import GoldenBox from './shapes/level/pickups/GoldenBox';
 import GoldenCrown from './shapes/level/pickups/GoldenCrown';
 import PowerUp from './shapes/level/pickups/PowerUp';
+import Pathfinder from './Pathfinder';
 
 
 export default class Level {
@@ -90,6 +91,7 @@ export default class Level {
                 this.changeWallsNeighboursTextures()
                 this.applyGridSize()
                 this.gridFields = JSON.parse(JSON.stringify(level.fields))
+                Pathfinder.instance.prepareLevel(this)
                 callback?.()
             });
     }
@@ -154,7 +156,7 @@ export default class Level {
             this.decorations.push(...this.getLevelObjectsList(decorationName, Decoration) as Decoration[])
 
         }
-        this.decorations.filter(d => !NotCollidingDecorations.includes(d.type)).forEach(d => d.createBB())
+        this.decorations.filter(d => !NotCollidingFieldValues.includes(d.type)).forEach(d => d.createBB())
 
         this.walls.push(...grayWalls)
         this.walls.push(...blueWalls)
