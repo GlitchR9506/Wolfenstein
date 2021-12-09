@@ -63,42 +63,56 @@ export default class Pathfinder {
             if (this.open.length == 0) {
                 return []
             }
-            let current = this.open.reduce((acc, loc) => acc.fCost < loc.fCost ? acc : loc)
-            this.open = this.open.filter(field => field != current)
-            this.closed.push(current)
-            if (current.position.equals(endField.position)) {
-                return this.path(endField)
+            const current = this.leastFCostField()
+            if (current == endField) {
+                return this.getPathUsingParents(endField)
             } else {
-                const neighbourDiffs = [
-                    new Vec2(0, -1),
-                    new Vec2(0, 1),
-                    new Vec2(-1, 0),
-                    new Vec2(1, 0),
-                ]
-                const neighbourPositions = neighbourDiffs.map(diff => current.position.add(diff))
-                const neighbours = neighbourPositions.map(neighbourPos => this.allFields.find(field => field.position.equals(neighbourPos)))
-                const validNeighbours = neighbours.filter(field => field.walkable && !this.closed.includes(field))
+                const validNeighbours = this.getValidNeighbours(current)
                 for (let neighbour of validNeighbours) {
-                    const hDiff = endField.position.substract(neighbour.position).abs
-                    const newHCost = hDiff.x + hDiff.y
-                    if (!this.open.includes(neighbour) || newHCost < neighbour.hCost) {
-                        neighbour.parent = current
-                        neighbour.hCost = newHCost
-                        if (!this.open.includes(neighbour)) {
-                            this.open.push(neighbour)
-                        }
-                    }
+                    this.calculateCost(neighbour, current, endField)
                 }
             }
         }
     }
 
-    path(toReturn: PathField) {
+    private leastFCostField() {
+        const current = this.open.reduce((acc, loc) => acc.fCost < loc.fCost ? acc : loc)
+        this.open = this.open.filter(field => field != current)
+        this.closed.push(current)
+        return current
+    }
+
+    private calculateCost(neighbour: PathField, current: PathField, endField: PathField) {
+        const hDiff = endField.position.substract(neighbour.position).abs
+        const newHCost = hDiff.x + hDiff.y
+        if (!this.open.includes(neighbour) || newHCost < neighbour.hCost) {
+            neighbour.parent = current
+            neighbour.hCost = newHCost
+            if (!this.open.includes(neighbour)) {
+                this.open.push(neighbour)
+            }
+        }
+    }
+
+    private getValidNeighbours(field: PathField) {
+        const neighbourDiffs = [
+            new Vec2(0, -1),
+            new Vec2(0, 1),
+            new Vec2(-1, 0),
+            new Vec2(1, 0),
+        ]
+        const neighbourPositions = neighbourDiffs.map(diff => field.position.add(diff))
+        const neighbours = neighbourPositions.map(neighbourPos => this.allFields.find(field => field.position.equals(neighbourPos)))
+        const validNeighbours = neighbours.filter(field => field.walkable && !this.closed.includes(field))
+        return validNeighbours
+    }
+
+    private getPathUsingParents(end: PathField) {
         let path = []
-        path.push(toReturn)
-        while (toReturn.parent) {
-            toReturn = toReturn.parent
-            path.push(toReturn)
+        path.push(end)
+        while (end.parent) {
+            end = end.parent
+            path.push(end)
         }
         path.reverse()
         path.shift()

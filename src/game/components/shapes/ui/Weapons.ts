@@ -11,10 +11,11 @@ import UI from './UI'
 export default class Weapons extends Plane {
     importedTexture = texture
 
-    availableTypes: weaponType[] = ['knife', 'pistol']
+    // availableTypes: weaponType[] = ['knife', 'pistol']
+    availableTypes: weaponType[] = ['knife', 'pistol', 'machinegun', 'chaingun']
 
     private weapons: Weapon[] = []
-    private texturesCount = new Vec2(4, 8)
+    private texturesCount = new Vec2(8, 4)
     private currentTextureNumber: number
 
     private timeSinceLastUpdate = 0
@@ -27,11 +28,11 @@ export default class Weapons extends Plane {
         this.transform.position.y = -0.66
         this.setInitialState()
 
-        this.weapons.push(new Weapon("knife", 2.4, 70, [0, 1, 2, 3, 2, 1], [], 3))
+        this.weapons.push(new Weapon("knife", 2.4, 70, [0, 1, 2, 3, 4], [], 3))
         this.weapons[0].range = Config.gridSize * 0.75
-        this.weapons.push(new Weapon("pistol", 2.4, 100, [4, 5, 6, 7, 5], [], 7))
-        this.weapons.push(new Weapon("machinegun", 6, 100, [8, 9], [10, 11], 11))
-        this.weapons.push(new Weapon("chaingun", 12, 100, [12, 13], [14, 15], 14))
+        this.weapons.push(new Weapon("pistol", 2.4, 100, [8, 9, 10, 11, 12], [], 10))
+        this.weapons.push(new Weapon("machinegun", 6, 100, [16, 17], [18, 19], 19))
+        this.weapons.push(new Weapon("chaingun", 12, 100, [24, 25], [26, 27], 26))
 
         this.setTexture(this.currentWeapon.initTextures[0])
     }
