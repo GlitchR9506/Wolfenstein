@@ -4,7 +4,7 @@ import Camera from '../../Camera'
 import Config from '../../Config'
 import Pathfinder from '../../Pathfinder'
 import { Program } from '../../programs/Program'
-import { degToRad, log, Vec2, Vec3 } from '../../utils'
+import { degToRad, log, radToDeg, Vec2, Vec3 } from '../../utils'
 import Ammo from './pickups/Ammo'
 import Flag from './pickups/Flag'
 import Plane from './Plane'
@@ -16,6 +16,8 @@ export default class Enemy extends Plane {
     tempFlag: Flag
     tempFlagLocations: Vec3[] = []
     score = 100
+    dir: Vec3 = Vec3.zero
+    textureRotation = 0
 
     constructor(gl: WebGLRenderingContext, program: Program) {
         super(gl, program)
@@ -33,11 +35,12 @@ export default class Enemy extends Plane {
     private textureNumber: number
     state = 'walking'
     readonly stateToTextureMap = new Map([
-        ['shooting', [0, 4, 8]],
-        ['walking', [1, 5, 9, 13]],
-        ['dying', [2, 6, 10, 14]],
-        ['hit', [2, 1]],
-        ['dead', [14]],
+        ['shooting', [48, 49, 50]],
+        ['standing', [0]],
+        ['walking', [8, 16, 24, 32]],
+        ['dying', [40, 41, 42, 43, 44]],
+        ['hit', [47, 0]],
+        ['dead', [44]],
     ])
 
     readonly frameTime = 0.2
@@ -82,14 +85,33 @@ export default class Enemy extends Plane {
 
     texturedWidth = 28 / 64
 
-    texturesInLine = 4
+    texturesInLine = 8
     get textureSize() {
         return 1 / this.texturesInLine
     }
 
     setTexture(textureNumber: number) {
-        if (textureNumber == this.textureNumber) return
+        // if (textureNumber == this.textureNumber) {
+        //     console.log('olewam', textureNumber)
+        //     return
+
+        // }
         this.textureNumber = textureNumber
+
+        if (this.followingPlayer)
+            console.log('from', Math.floor(textureNumber / 8))
+        // if (this.followingPlayer)
+        //     console.log('from', textureNumber)
+        if (this.state == 'walking' || this.state == 'standing') {
+            if (this.textureRotation >= 0) {
+                textureNumber += this.textureRotation
+            } else {
+                textureNumber += this.textureRotation + this.texturesInLine
+            }
+        }
+        // if (this.followingPlayer)
+        //     console.log('to', Math.floor(textureNumber / 8))
+
         let verticesVec2Array = Vec2.arrayToVec2Array(this.initialTexcoords)
         const texturePos = new Vec2(textureNumber % this.texturesInLine, Math.floor(textureNumber / this.texturesInLine)).multiply(this.textureSize)
         verticesVec2Array = verticesVec2Array.map(vertex => vertex.multiply(this.textureSize).add(texturePos))
@@ -112,10 +134,23 @@ export default class Enemy extends Plane {
             this.tempFlagLocations = Pathfinder.instance.getAllPathLocations(this.transform.position, this.followingPlayer.transform.position)
             this.tempFlagLocations = this.tempFlagLocations.map(v => new Vec3(v.x, -30, v.z))
             if (this.tempFlagLocations.length == 0) return
-            const dir = this.tempFlagLocations[0].substract(this.transform.position).yZeroed.normalize
+            this.dir = this.tempFlagLocations[0].substract(this.transform.position).yZeroed.normalize
 
-            this.transform.position = this.transform.position.add(dir.multiply(this.followingSpeed * deltaTime))
+            this.transform.position = this.transform.position.add(this.dir.multiply(this.followingSpeed * deltaTime))
             // this.followingPlayer = null
         }
+    }
+
+    rotateTexture(targetPosition: Vec3) {
+        let toTargetDir = targetPosition.substract(this.transform.position).yZeroed.normalize
+        let toTargetAngle = Math.atan2(toTargetDir.z, toTargetDir.x)
+        let walkingAngle = Math.atan2(this.dir.z, this.dir.x)
+        let angleDiff = radToDeg(walkingAngle - toTargetAngle)
+        if (angleDiff > 180) angleDiff -= 360
+        if (angleDiff < -180) angleDiff += 360
+        log('diff', angleDiff)
+        const correctedDiff = angleDiff > 0 ? angleDiff + 22.5 : angleDiff - 22.5
+        this.textureRotation = parseInt((correctedDiff / 45).toString())
+        log('textureRotatation', this.textureRotation)
     }
 }

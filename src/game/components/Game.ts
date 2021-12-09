@@ -123,6 +123,7 @@ export default class Game {
             if (enemy.followingPlayer) {
                 enemy.makeStep(deltaTime)
             }
+            enemy.rotateTexture(this.camera.transform.position)
         }
     }
 

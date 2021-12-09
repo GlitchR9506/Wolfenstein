@@ -65,7 +65,11 @@ export default class Pathfinder {
             }
             const current = this.leastFCostField()
             if (current == endField) {
-                return this.getPathUsingParents(endField)
+                if (startField.position.equals(endField.position)) {
+                    return []
+                } else {
+                    return this.getPathUsingParents(endField)
+                }
             } else {
                 const validNeighbours = this.getValidNeighbours(current)
                 for (let neighbour of validNeighbours) {
