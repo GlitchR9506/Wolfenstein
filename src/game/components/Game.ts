@@ -10,10 +10,8 @@ import Level from './Level'
 
 import Crosshair from './shapes/ui/Crosshair'
 import Interactable from './shapes/level/Interactable'
-import Shape from './shapes/level/Shape'
 import Config from './Config'
 import UI from './shapes/ui/UI'
-import { GridBoundingBox } from './shapes/level/GridBoundingBox'
 import Raycaster from './Raycaster'
 
 
@@ -27,6 +25,9 @@ export default class Game {
     private readonly fixedUpdateInterval = 20
     private gl: WebGLRenderingContext
     private canvas: HTMLCanvasElement
+    private currentLevel = 1
+    private state = "menu"
+    private firstLevelLoaded = false
 
     constructor() {
 
@@ -39,7 +40,11 @@ export default class Game {
         this.textures = new Textures(this.gl)
         this.level = new Level(this.gl, this.textureProgram, this.colorProgram)
         this.crosshair = new Crosshair(this.gl, this.colorProgram)
-        this.level.load(1, () => {
+        this.loadLevel(this.currentLevel)
+    }
+
+    private loadLevel(number: number) {
+        this.level.load(number, () => {
             let shapes = []
             shapes.push(this.camera.weapons)
             shapes.push(...this.level.enemies.map(enemy => enemy.loot))
@@ -47,8 +52,12 @@ export default class Game {
             shapes.push(...this.level.shapes)
             this.textures.load(shapes, () => {
                 this.camera.transform.position = this.level.playerPosition
+                this.camera.initialTransform = this.camera.transform.clone()
                 this.camera.collidingShapes = [...this.level.collidingCuboids, ...this.level.decorations.filter(decoration => decoration.bb)]
-                this.startGameLoop()
+                if (!this.firstLevelLoaded) {
+                    this.firstLevelLoaded = true
+                    this.startGameLoop()
+                }
             })
         })
     }
@@ -73,6 +82,10 @@ export default class Game {
     }
 
     private fixedUpdate(deltaTime: number) {
+        UI.instance.state = this.state
+        if (Input.instance.startGame && this.state == "menu") {
+            this.state = "game"
+        }
         if (Input.instance.interacting) {
             const nearestInteractable = this.camera.nearest(this.level.interactables) as Interactable
             if (this.camera.inInteractionDistance(nearestInteractable)) {
@@ -90,7 +103,6 @@ export default class Game {
         }
 
         this.camera.weapons.update(deltaTime)
-
         for (let door of this.level.doors) {
             door.update(deltaTime)
         }
@@ -131,10 +143,25 @@ export default class Game {
             }
             enemy.rotateTexture(this.camera.transform.position)
         }
-        if (UI.instance.health == 0) {
+
+        if (UI.instance.health == 0 && this.state == "game") {
+            this.state = "dead"
+            UI.instance.deadScreen()
+            setTimeout(() => {
+                UI.instance.takeLife()
+                this.camera.transform = this.camera.initialTransform
+                this.state = "game"
+                this.camera.killer = null
+                this.loadLevel(this.currentLevel)
+            }, 3000)
+        }
+        if (this.camera.killer) {
             this.camera.lookAtKillerStep(deltaTime)
         }
         UI.instance.update(deltaTime)
+        UI.instance.state = this.state
+        // console.log(this.state)
+        // console.log(UI.instance.health)
     }
 
     private draw(deltaTime: number) {

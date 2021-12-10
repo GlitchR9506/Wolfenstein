@@ -11,8 +11,8 @@ import UI from './UI'
 export default class Weapons extends Plane {
     importedTexture = texture
 
-    // availableTypes: weaponType[] = ['knife', 'pistol']
-    availableTypes: weaponType[] = ['knife', 'pistol', 'machinegun', 'chaingun']
+    availableTypes: weaponType[] = ['knife', 'pistol']
+    // availableTypes: weaponType[] = ['knife', 'pistol', 'machinegun', 'chaingun']
 
     private weapons: Weapon[] = []
     private texturesCount = new Vec2(8, 4)

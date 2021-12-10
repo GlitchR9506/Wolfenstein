@@ -75,9 +75,12 @@ export default class Enemy extends Plane {
                     UI.instance.health -= this.damageDealed
                     if (UI.instance.health <= 0) {
                         UI.instance.health = 0
-                        UI.instance.deadScreen()
                         camera.killer = this
                     }
+                } else {
+                    this.followingPlayer = null
+                    this.dir = this.transform.position.to(camera.transform.position)
+                    this.state = "standing"
                 }
             }
         }

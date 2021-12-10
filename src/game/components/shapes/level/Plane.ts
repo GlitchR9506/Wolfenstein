@@ -1,4 +1,4 @@
-import texture from '../../../textures/uv-test.png'
+import texture from '../../../textures/uvTest.png'
 import { hexToRgb, Vec3 } from '../../utils'
 import Shape from './Shape'
 import Config from '../../Config'

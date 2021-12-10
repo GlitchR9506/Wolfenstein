@@ -11,18 +11,19 @@ export default class Input {
     sprinting = false
     shooting = false
     shot = false
-    justShot = false
+    justShot = true
 
     interacting = false
     justInteracted = false
 
     noclip = false
-    noclipDisabled = false
 
     renderWalls = true
     justChangedRenderWalls = false
 
     lastNumber: number = null
+
+    startGame = false
 
     private pressedKeys: string[] = []
 
@@ -30,6 +31,11 @@ export default class Input {
         this.addKeyUpListener()
         this.addKeyDownListener()
         this.addAdditionalListeners()
+    }
+
+    get inputsBlocked() {
+        // return !UI.instance.health || UI.instance.showingMenu
+        return UI.instance.state != "game"
     }
 
     update() {
@@ -49,7 +55,8 @@ export default class Input {
 
         this.lastNumber = null
 
-        if (UI.instance.health) {
+        // console.log(this.inputsBlocked)
+        if (!this.inputsBlocked) {
             if (this.isPressed('KeyW') && !this.isPressed('KeyS')) this.direction.z = 1
             if (this.isPressed('KeyS') && !this.isPressed('KeyW')) this.direction.z = -1
             if (this.isPressed('KeyA') && !this.isPressed('KeyD')) this.direction.x = 1
@@ -77,14 +84,13 @@ export default class Input {
                 this.justInteracted = false
             }
 
-            if (!this.noclipDisabled) {
+            if (Config.debug) {
                 if (this.isPressed('KeyC')) {
                     this.noclip = true
                 }
-            }
-
-            if (this.isPressed('ShiftLeft')) {
-                this.sprinting = true
+                if (this.isPressed('ShiftLeft')) {
+                    this.sprinting = true
+                }
             }
 
             if (this.isPressed('Digit0')) this.lastNumber = 0
@@ -97,17 +103,9 @@ export default class Input {
             if (this.isPressed('Digit7')) this.lastNumber = 7
             if (this.isPressed('Digit8')) this.lastNumber = 8
             if (this.isPressed('Digit9')) this.lastNumber = 9
-
         }
 
-        if (this.isPressed('KeyV')) {
-            if (!this.justChangedRenderWalls) {
-                this.renderWalls = !this.renderWalls
-                this.justChangedRenderWalls = true
-            }
-        } else {
-            this.justChangedRenderWalls = false
-        }
+        if (this.isPressed('Space')) this.startGame = true
     }
 
     private isPressed(key: string) {
@@ -139,7 +137,8 @@ export default class Input {
                 Config.uiScale += 0.1
             } else if (e.code == "Backspace") {
                 Config.uiScale = 1
-
+            } else if (e.code == "KeyV" && Config.debug) {
+                this.renderWalls = !this.renderWalls
             }
         })
     }

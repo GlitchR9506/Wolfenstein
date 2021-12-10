@@ -11,6 +11,7 @@ import Raycaster from './Raycaster'
 
 export default class Camera {
     transform = new Transform
+    initialTransform: Transform
     projectionMatrix: number[]
     collidingShapes: Shape[]
     killer: Enemy = null

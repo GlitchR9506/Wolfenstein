@@ -152,19 +152,24 @@ export default class Level {
         const goldenBoxes = this.getLevelObjectsList('goldBox', GoldenBox) as GoldenBox[]
         const goldenCrowns = this.getLevelObjectsList('goldCrown', GoldenCrown) as GoldenCrown[]
 
+        this.decorations = []
         for (let decorationName of DecorationMap.keys()) {
             this.decorations.push(...this.getLevelObjectsList(decorationName, Decoration) as Decoration[])
 
         }
         this.decorations.filter(d => !NotCollidingFieldValues.includes(d.type)).forEach(d => d.createBB())
 
+        this.walls = []
         this.walls.push(...grayWalls)
         this.walls.push(...blueWalls)
         this.walls.push(...brownWalls)
 
+        this.collidingCuboids = []
         this.collidingCuboids.push(...this.walls)
         this.collidingCuboids.push(...this.doors)
+        this.interactables = []
         this.interactables.push(...this.doors)
+        this.pickups = []
         this.pickups.push(...ammos)
         this.pickups.push(...dogFoods)
         this.pickups.push(...foods)

@@ -1,7 +1,7 @@
 import Config from '../../Config';
 import uiTexture from '../../../textures/ui.png'
-import uiElements from '../../../textures/ui-elements.png'
-import Camera from '../../Camera';
+import uiElements from '../../../textures/uiElements.png'
+import startScreen from '../../../textures/startScreen.png'
 
 type FaceDirection = "left" | "normal" | "right"
 type FaceState = "normal" | "dead" | "win"
@@ -14,6 +14,7 @@ export default class UI {
     static instance = new this
     texture: HTMLImageElement
     elements: HTMLImageElement
+    startScreen: HTMLImageElement
     context: CanvasRenderingContext2D
 
     floor: number = 1
@@ -31,12 +32,19 @@ export default class UI {
     faceAnimationSteps: FaceAnimationStep[] = []
     lastFaceAnimationStepsCount: number = null
 
+    showingMenu = true
+
+    state: string
+
     init() {
         this.texture = new Image();
         this.texture.src = uiTexture;
 
         this.elements = new Image();
         this.elements.src = uiElements;
+
+        this.startScreen = new Image();
+        this.startScreen.src = startScreen;
 
         const uiCanvas = document.getElementById("uiCanvas") as HTMLCanvasElement
         uiCanvas.width = 640 * Config.uiScale
@@ -46,10 +54,18 @@ export default class UI {
         this.context.imageSmoothingEnabled = false;
     }
 
-    update(deltaTime: number) {
-        if (this.health <= 0) {
-            this.faceState = "dead"
+    takeLife() {
+        if (this.lives == 9) {
+            this.floor = 1
+        } else {
+            this.lives--
         }
+        this.health = 100
+        this.ammo = 8
+        this.weapon = "pistol"
+    }
+
+    update(deltaTime: number) {
         const currentStep = this.faceAnimationSteps[0]
         if (currentStep) {
             currentStep.duration -= deltaTime
@@ -95,13 +111,18 @@ export default class UI {
         this.drawNumber(this.ammo, 464, 352)
         this.drawWeapon()
         this.drawFace()
+        if (this.state == "menu") {
+            this.context.drawImage(this.startScreen, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
+        }
     }
 
     drawFace() {
         let faceColumn = 0
         let faceRow = 0
-
-        if (this.faceState == 'normal') {
+        if (this.health == 0) {
+            faceRow = 7
+            faceColumn = 1
+        } else if (this.faceState == 'normal') {
             if (this.faceDirection == 'left') {
                 faceColumn = 0
             } else if (this.faceDirection == 'normal') {
@@ -118,9 +139,6 @@ export default class UI {
         } else if (this.faceState == 'win') {
             faceRow = 7
             faceColumn = 0
-        } else if (this.faceState == 'dead') {
-            faceRow = 7
-            faceColumn = 1
         }
 
         this.context.drawImage(
