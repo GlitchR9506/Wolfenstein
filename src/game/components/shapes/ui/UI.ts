@@ -57,16 +57,13 @@ export default class UI {
                 this.faceAnimationSteps.shift()
             }
             if (this.faceAnimationSteps.length == 0) {
-                console.log('startnew')
                 this.startFaceAnimation()
             }
             this.faceDirection = this.faceAnimationSteps[0].direction
         }
         if (!currentStep) {
-            console.log('startnew')
             this.startFaceAnimation()
         }
-        console.log(currentStep)
     }
 
     startFaceAnimation() {
@@ -183,6 +180,10 @@ export default class UI {
             16 * Config.uiScale,
             32 * Config.uiScale
         )
+    }
+
+    deadScreen() {
+
     }
 
 }

@@ -121,7 +121,10 @@ export default class Game {
                 }
             }
             if (enemy.followingPlayer) {
-                enemy.makeStep(deltaTime)
+                if (!enemy.tryToShoot(this.camera)) {
+                    enemy.makeStep(deltaTime)
+                }
+
             }
             enemy.rotateTexture(this.camera.transform.position)
         }

@@ -5,6 +5,7 @@ import Config from '../../Config'
 import Pathfinder from '../../Pathfinder'
 import { Program } from '../../programs/Program'
 import { degToRad, log, radToDeg, Vec2, Vec3 } from '../../utils'
+import UI from '../ui/UI'
 import Ammo from './pickups/Ammo'
 import Flag from './pickups/Flag'
 import Plane from './Plane'
@@ -18,6 +19,8 @@ export default class Enemy extends Plane {
     score = 100
     dir: Vec3 = Vec3.zero
     textureRotation = 0
+    shootingDistance = Config.gridSize * 5
+    damageDealed = 8
 
     constructor(gl: WebGLRenderingContext, program: Program) {
         super(gl, program)
@@ -48,7 +51,8 @@ export default class Enemy extends Plane {
     timeSinceLastUpdate = 0
     update(deltaTime: number) {
         this.timeSinceLastUpdate += deltaTime
-        if (this.timeSinceLastUpdate > this.frameTime) {
+        const frameTime = this.state == "shooting" ? 0.3 : this.frameTime
+        if (this.timeSinceLastUpdate > frameTime) {
             this.timeSinceLastUpdate = 0
             const textures = this.stateToTextureMap.get(this.state)
             const index = textures.indexOf(this.textureNumber) + 1
@@ -63,6 +67,14 @@ export default class Enemy extends Plane {
                 } else {
                     this.setTexture(textures[0])
                 }
+            }
+            if (this.state == "shooting" && index == textures.length - 1) {
+                UI.instance.health -= this.damageDealed
+                if (UI.instance.health <= 0) {
+                    UI.instance.health = 0
+                    UI.instance.deadScreen()
+                }
+                console.log('damage')
             }
         }
         this.updateBuffers()
@@ -98,10 +110,6 @@ export default class Enemy extends Plane {
         // }
         this.textureNumber = textureNumber
 
-        if (this.followingPlayer)
-            console.log('from', Math.floor(textureNumber / 8))
-        // if (this.followingPlayer)
-        //     console.log('from', textureNumber)
         if (this.state == 'walking' || this.state == 'standing') {
             if (this.textureRotation >= 0) {
                 textureNumber += this.textureRotation
@@ -109,8 +117,6 @@ export default class Enemy extends Plane {
                 textureNumber += this.textureRotation + this.texturesInLine
             }
         }
-        // if (this.followingPlayer)
-        //     console.log('to', Math.floor(textureNumber / 8))
 
         let verticesVec2Array = Vec2.arrayToVec2Array(this.initialTexcoords)
         const texturePos = new Vec2(textureNumber % this.texturesInLine, Math.floor(textureNumber / this.texturesInLine)).multiply(this.textureSize)
@@ -152,5 +158,15 @@ export default class Enemy extends Plane {
         const correctedDiff = angleDiff > 0 ? angleDiff + 22.5 : angleDiff - 22.5
         this.textureRotation = parseInt((correctedDiff / 45).toString())
         log('textureRotatation', this.textureRotation)
+    }
+
+    tryToShoot(camera: Camera) {
+        if (this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance) {
+            this.state = "shooting"
+            return true
+        } else {
+            this.state = "walking"
+            return false
+        }
     }
 }
