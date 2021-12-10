@@ -125,6 +125,7 @@ export default class Game {
             }
             enemy.rotateTexture(this.camera.transform.position)
         }
+        UI.instance.update(deltaTime)
     }
 
     private draw(deltaTime: number) {
