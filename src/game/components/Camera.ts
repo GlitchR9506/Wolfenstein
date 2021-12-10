@@ -7,6 +7,7 @@ import Config from './Config'
 import Weapons from './shapes/ui/Weapons'
 import { Program } from './programs/Program'
 import Input from './Input'
+import Raycaster from './Raycaster'
 
 export default class Camera {
     transform = new Transform
@@ -171,97 +172,6 @@ export default class Camera {
         const lookingAtEnemy = 0 < angleLeft && angleLeft < 90 && -90 < angleRight && angleRight < 0
 
         return lookingAtEnemy
-    }
-
-    raycast(shapes: Shape[]) {
-        const nextSquareGenerator = this.nextSquare(this.transform.position, Vec3.fromAngle(this.transform.rotation.y))
-
-        let nextSquare = nextSquareGenerator.next().value
-        const limit = 100
-        for (let i = 0; i < limit * 2; i++) {
-            if (nextSquare) {
-                for (let shape of shapes) {
-                    if (shape.transform.position.yZeroed.equals(nextSquare.yZeroed)) {
-                        return shape
-                    }
-                }
-                nextSquare = nextSquareGenerator.next().value
-            }
-        }
-        return null
-    }
-
-    * nextSquare(start: Vec3, dir: Vec3) {
-        let startClone = start.clone()
-        let dirClone = dir.clone()
-        const gridSize = Config.gridSize
-        const firstTileCenter = startClone.map(v => Math.floor(v / gridSize) * gridSize + gridSize / 2).yZeroed
-        yield firstTileCenter
-        let firstYield = true
-        while (true) {
-            const [nextTileCenter, nextIntersection] = this.nextSquareInner(startClone, dirClone)
-            if (firstYield) {
-                firstYield = false
-            }
-            yield nextTileCenter
-            startClone = nextIntersection
-        }
-    }
-
-    nextSquareInner(start: Vec3, dir: Vec3) {
-        const gridSize = Config.gridSize
-        if (dir.x >= 0) {
-            start.x += gridSize * 0.0001
-        } else {
-            start.x -= gridSize * 0.0001
-        }
-        if (dir.z >= 0) {
-            start.z += gridSize * 0.0001
-        } else {
-            start.z -= gridSize * 0.0001
-        }
-        const firstTileCenter = start.map(v => Math.floor(v / gridSize) * gridSize + gridSize / 2).yZeroed
-        let nextIntersectingAxes = Vec3.zero
-        if (start.x * dir.x > 0) {
-            nextIntersectingAxes.x = Math.ceil(start.x / gridSize) * gridSize
-        } else {
-            nextIntersectingAxes.x = Math.floor(start.x / gridSize) * gridSize
-        }
-        if (start.z * dir.z > 0) {
-            nextIntersectingAxes.z = Math.ceil(start.z / gridSize) * gridSize
-        } else {
-            nextIntersectingAxes.z = Math.floor(start.z / gridSize) * gridSize
-        }
-        const diff = start.substract(nextIntersectingAxes).abs
-        const diffRatio = Math.abs(diff.z / diff.x)
-        const dirRatio = Math.abs(dir.z / dir.x)
-        let nextSquareInDirection, nextIntersection
-        if (diffRatio > dirRatio) {
-            nextSquareInDirection = new Vec3(1, 0, 0)
-            nextIntersection = new Vec3(
-                nextIntersectingAxes.x,
-                0,
-                start.z + (dir.z / dir.x) * (nextIntersectingAxes.x - start.x),
-            )
-        } else {
-            if (diffRatio < dirRatio) {
-                nextSquareInDirection = new Vec3(0, 0, 1)
-            } else {
-                nextSquareInDirection = new Vec3(1, 0, 1)
-            }
-            nextIntersection = new Vec3(
-                start.x + (dir.x / dir.z) * (nextIntersectingAxes.z - start.z),
-                0,
-                nextIntersectingAxes.z,
-            )
-        }
-        const nextSquare = new Vec3(
-            dir.x > 0 ? nextSquareInDirection.x : -nextSquareInDirection.x,
-            0,
-            dir.z > 0 ? nextSquareInDirection.z : -nextSquareInDirection.z,
-        )
-        const nextTileCenter = firstTileCenter.add(nextSquare.multiply(gridSize))
-        return [nextTileCenter, nextIntersection]
     }
 
     get viewProjectionMatrix() {

@@ -111,7 +111,6 @@ export default class Door extends Cuboid implements Interactable {
         if (this.opening) {
             if (this.transform.position.equals(this.positionFinal)) {
                 this.opening = false
-                console.log(this.initialTransform.scale, this.transform.scale)
                 if (this.initialTransform.scale.equals(this.transform.scale)) {
                     this.transform.scale = this.transform.scale.substract(this.hiddenInWallScaleCorrection)
                 }

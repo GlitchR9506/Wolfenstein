@@ -4,11 +4,13 @@ import Camera from '../../Camera'
 import Config from '../../Config'
 import Pathfinder from '../../Pathfinder'
 import { Program } from '../../programs/Program'
+import Raycaster from '../../Raycaster'
 import { degToRad, log, radToDeg, Vec2, Vec3 } from '../../utils'
 import UI from '../ui/UI'
 import Ammo from './pickups/Ammo'
 import Flag from './pickups/Flag'
 import Plane from './Plane'
+import Shape from './Shape'
 
 export default class Enemy extends Plane {
     importedTexture = texture
@@ -74,7 +76,6 @@ export default class Enemy extends Plane {
                     UI.instance.health = 0
                     UI.instance.deadScreen()
                 }
-                console.log('damage')
             }
         }
         this.updateBuffers()
@@ -154,19 +155,21 @@ export default class Enemy extends Plane {
         let angleDiff = radToDeg(walkingAngle - toTargetAngle)
         if (angleDiff > 180) angleDiff -= 360
         if (angleDiff < -180) angleDiff += 360
-        log('diff', angleDiff)
         const correctedDiff = angleDiff > 0 ? angleDiff + 22.5 : angleDiff - 22.5
         this.textureRotation = parseInt((correctedDiff / 45).toString())
-        log('textureRotatation', this.textureRotation)
     }
 
-    tryToShoot(camera: Camera) {
+    tryToShoot(camera: Camera, shapes: Shape[]) {
         if (this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance) {
             this.state = "shooting"
-            return true
-        } else {
-            this.state = "walking"
-            return false
+            const raycaster = Raycaster.fromTo(this.transform.position, camera.transform.position)
+            const nextShape = raycaster.nextShape(shapes)
+            const target = camera.transform.position.yZeroed
+            if (nextShape.transform.position.yZeroed.distanceTo(target) > this.transform.position.yZeroed.distanceTo(target)) {
+                return true
+            }
         }
+        this.state = "walking"
+        return false
     }
 }

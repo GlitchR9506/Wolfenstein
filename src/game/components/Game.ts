@@ -14,6 +14,7 @@ import Shape from './shapes/level/Shape'
 import Config from './Config'
 import UI from './shapes/ui/UI'
 import { GridBoundingBox } from './shapes/level/GridBoundingBox'
+import Raycaster from './Raycaster'
 
 
 export default class Game {
@@ -94,7 +95,8 @@ export default class Game {
             door.update(deltaTime)
         }
 
-        const shapeLookedAt = this.camera.raycast(this.level.collidingCuboids)
+        const raycaster = Raycaster.fromDir(this.camera.transform.position, Vec3.fromAngle(this.camera.transform.rotation.y))
+        const shapeLookedAt = raycaster.nextShape(this.level.collidingCuboids)
         for (let enemy of this.level.enemies) {
             enemy.update(deltaTime)
             if (this.camera.isLookingAt(enemy) && shapeLookedAt) {
@@ -121,7 +123,9 @@ export default class Game {
                 }
             }
             if (enemy.followingPlayer) {
-                if (!enemy.tryToShoot(this.camera)) {
+                const canShot = enemy.tryToShoot(this.camera, this.level.collidingCuboids)
+                console.log(canShot)
+                if (!canShot) {
                     enemy.makeStep(deltaTime)
                 }
 
