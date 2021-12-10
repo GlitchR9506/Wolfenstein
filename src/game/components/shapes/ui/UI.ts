@@ -20,7 +20,7 @@ export default class UI {
     score: number = 0
     lives: number = 3
     // health: number = 100
-    health: number = 72
+    health: number = 10
     // health: number = 72
     // ammo: number = 8
     ammo: number = 999
@@ -86,7 +86,7 @@ export default class UI {
 
     draw(canvas: HTMLCanvasElement) {
         this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
-        this.context.drawImage(canvas, 16 * Config.uiScale, 8 * Config.uiScale)
+        this.context.drawImage(canvas, 16 * Config.uiScale, 8 * Config.uiScale, 608 * Config.uiScale, 304 * Config.uiScale)
         this.context.drawImage(this.texture, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         this.drawNumber(this.floor, 64, 352)
         this.drawNumber(this.score, 192, 352)

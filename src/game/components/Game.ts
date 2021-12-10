@@ -98,7 +98,7 @@ export default class Game {
         const raycaster = Raycaster.fromDir(this.camera.transform.position, Vec3.fromAngle(this.camera.transform.rotation.y))
         const shapeLookedAt = raycaster.nextShape(this.level.collidingCuboids)
         for (let enemy of this.level.enemies) {
-            enemy.update(deltaTime)
+            enemy.update(deltaTime, this.camera)
             if (this.camera.isLookingAt(enemy) && shapeLookedAt) {
                 const enemyDistance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
                 const shapeLookedAtDistance = this.camera.transform.position.horizontalDistanceTo(shapeLookedAt.transform.position)
@@ -124,13 +124,15 @@ export default class Game {
             }
             if (enemy.followingPlayer) {
                 const canShot = enemy.tryToShoot(this.camera, this.level.collidingCuboids)
-                console.log(canShot)
                 if (!canShot) {
                     enemy.makeStep(deltaTime)
                 }
 
             }
             enemy.rotateTexture(this.camera.transform.position)
+        }
+        if (UI.instance.health == 0) {
+            this.camera.lookAtKillerStep(deltaTime)
         }
         UI.instance.update(deltaTime)
     }
@@ -199,7 +201,7 @@ export default class Game {
     }
 
     private setDrawSettings() {
-        // this.resizeCanvasToDisplaySize(this.gl.canvas)
+        this.resizeCanvasToDisplaySize(this.gl.canvas)
 
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height)
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT)
@@ -207,18 +209,20 @@ export default class Game {
         Input.instance.update()
     }
 
-    // private resizeCanvasToDisplaySize(canvas: HTMLCanvasElement) {
-    //     const displayWidth = canvas.clientWidth
-    //     const displayHeight = canvas.clientHeight
+    private resizeCanvasToDisplaySize(canvas: HTMLCanvasElement) {
+        // const displayWidth = canvas.clientWidth
+        // const displayHeight = canvas.clientHeight
+        const displayWidth = 608 * Config.uiScale
+        const displayHeight = 304 * Config.uiScale
 
-    //     const resizeNeeded = canvas.width !== displayWidth || canvas.height !== displayHeight
+        const resizeNeeded = canvas.width !== displayWidth || canvas.height !== displayHeight
 
-    //     if (resizeNeeded) {
-    //         // canvas.width = displayWidth
-    //         // canvas.height = displayHeight
-    //         // this.camera.updateProjectionMatrix()
-    //     }
+        if (resizeNeeded) {
+            canvas.width = displayWidth
+            canvas.height = displayHeight
+            this.camera.updateProjectionMatrix()
+        }
 
-    //     return resizeNeeded
-    // }
+        return resizeNeeded
+    }
 }

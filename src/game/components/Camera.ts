@@ -13,6 +13,7 @@ export default class Camera {
     transform = new Transform
     projectionMatrix: number[]
     collidingShapes: Shape[]
+    killer: Enemy = null
 
     readonly weapons: Weapons
     private readonly fov = 60
@@ -187,4 +188,22 @@ export default class Camera {
         this.projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
     }
 
+    lookAt(target: Vec3) {
+        let toTargetDir = target.substract(this.transform.position).yZeroed.normalize
+        let toTargetAngle = Math.atan2(toTargetDir.z, toTargetDir.x)
+        this.transform.rotation.y = toTargetAngle + degToRad(90)
+    }
+
+    lookAtKillerStep(deltaTime: number) {
+        const angle = this.angleTo(this.killer.transform.position)
+        if (Math.abs(angle) < Math.abs(radToDeg(this.rotationSpeed * deltaTime))) {
+            this.lookAt(this.killer.transform.position)
+        } else {
+            if (angle > 0) {
+                this.rotate(-1 * deltaTime)
+            } else if (angle < 0) {
+                this.rotate(1 * deltaTime)
+            }
+        }
+    }
 }

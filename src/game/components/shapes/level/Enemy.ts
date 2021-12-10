@@ -51,7 +51,7 @@ export default class Enemy extends Plane {
     readonly frameTime = 0.2
 
     timeSinceLastUpdate = 0
-    update(deltaTime: number) {
+    update(deltaTime: number, camera: Camera) {
         this.timeSinceLastUpdate += deltaTime
         const frameTime = this.state == "shooting" ? 0.3 : this.frameTime
         if (this.timeSinceLastUpdate > frameTime) {
@@ -71,10 +71,13 @@ export default class Enemy extends Plane {
                 }
             }
             if (this.state == "shooting" && index == textures.length - 1) {
-                UI.instance.health -= this.damageDealed
-                if (UI.instance.health <= 0) {
-                    UI.instance.health = 0
-                    UI.instance.deadScreen()
+                if (UI.instance.health > 0) {
+                    UI.instance.health -= this.damageDealed
+                    if (UI.instance.health <= 0) {
+                        UI.instance.health = 0
+                        UI.instance.deadScreen()
+                        camera.killer = this
+                    }
                 }
             }
         }
