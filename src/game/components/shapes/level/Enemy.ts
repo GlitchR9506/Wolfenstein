@@ -13,33 +13,18 @@ import Plane from './Plane'
 import Shape from './Shape'
 
 export default class Enemy extends Plane {
-    importedTexture = texture
     loot: Ammo
-    noticeDistance = Config.gridSize * 5
     tempFlag: Flag
     tempFlagLocations: Vec3[] = []
     score = 100
-    dir: Vec3 = Vec3.zero
-    textureRotation = 0
-    shootingDistance = Config.gridSize * 5
-    damageDealed = 8
+    followingPlayer: Camera
+    importedTexture = texture
+    texturedWidth = 28 / 64
 
-    constructor(gl: WebGLRenderingContext, program: Program) {
-        super(gl, program)
-        this.loot = new Ammo(this.gl, program)
-        this.tempFlag = new Flag(this.gl, program)
-        this.tempFlag.setInitialState()
-        this.transform.rotation.x = degToRad(90)
-    }
-
-    get isDead() {
-        return this.hp <= 0
-    }
-
-
+    private textureRotation = 0
+    private texturesInLine = 8
     private textureNumber: number
-    state = 'walking'
-    readonly stateToTextureMap = new Map([
+    private readonly stateToTextureMap = new Map([
         ['shooting', [48, 49, 50]],
         ['standing', [0]],
         ['walking', [8, 16, 24, 32]],
@@ -48,9 +33,48 @@ export default class Enemy extends Plane {
         ['dead', [44]],
     ])
 
-    readonly frameTime = 0.2
+    private noticeDistance = Config.gridSize * 5
+    private dir = Vec3.zero
+    private shootingDistance = Config.gridSize * 5
+    private damageDealed = 8
+    private walkingDirection = Vec3.zero
+    private state = 'standing'
+    private timeSinceLastUpdate = 0
+    private hp = 100
+    private followingSpeed = Config.gridSize * 1.25
+    private nextDir: Vec3 = null
+    private readonly frameTime = 0.2
 
-    timeSinceLastUpdate = 0
+    constructor(gl: WebGLRenderingContext, program: Program, type?: string) {
+        super(gl, program)
+        this.loot = new Ammo(this.gl, program)
+        this.tempFlag = new Flag(this.gl, program)
+        this.tempFlag.setInitialState()
+        this.transform.rotation.x = degToRad(90)
+        if (type == "x") {
+            this.walkingDirection = Vec3.right
+            this.state = "walking"
+            this.dir = this.walkingDirection
+        } else if (type == "z") {
+            this.walkingDirection = Vec3.forward
+            this.state = "walking"
+            this.dir = this.walkingDirection
+        } else if (type == "up") {
+            this.dir = Vec3.forward
+        } else if (type == "down") {
+            this.dir = Vec3.backward
+        } else if (type == "left") {
+            this.dir = Vec3.left
+        } else if (type == "right") {
+            this.dir = Vec3.right
+        }
+        console.log(type, this.dir)
+    }
+
+    get isDead() {
+        return this.hp <= 0
+    }
+
     update(deltaTime: number, camera: Camera) {
         this.timeSinceLastUpdate += deltaTime
         const frameTime = this.state == "shooting" ? 0.3 : this.frameTime
@@ -77,17 +101,17 @@ export default class Enemy extends Plane {
                         UI.instance.health = 0
                         camera.killer = this
                     }
-                } else {
-                    this.followingPlayer = null
-                    this.dir = this.transform.position.to(camera.transform.position)
-                    this.state = "standing"
                 }
+            }
+            if (this.state == "shooting" && UI.instance.health == 0) {
+                this.followingPlayer = null
+                this.dir = this.transform.position.to(camera.transform.position)
+                this.state = "standing"
             }
         }
         this.updateBuffers()
     }
 
-    hp = 100
     damage(value: number) {
         if (['dying', 'dead'].includes(this.state)) return
         this.hp -= value
@@ -102,47 +126,15 @@ export default class Enemy extends Plane {
         this.transform.rotation.y = -cameraY
     }
 
-    texturedWidth = 28 / 64
-
-    texturesInLine = 8
-    get textureSize() {
-        return 1 / this.texturesInLine
-    }
-
-    setTexture(textureNumber: number) {
-        // if (textureNumber == this.textureNumber) {
-        //     console.log('olewam', textureNumber)
-        //     return
-
-        // }
-        this.textureNumber = textureNumber
-
-        if (this.state == 'walking' || this.state == 'standing') {
-            if (this.textureRotation >= 0) {
-                textureNumber += this.textureRotation
-            } else {
-                textureNumber += this.textureRotation + this.texturesInLine
-            }
-        }
-
-        let verticesVec2Array = Vec2.arrayToVec2Array(this.initialTexcoords)
-        const texturePos = new Vec2(textureNumber % this.texturesInLine, Math.floor(textureNumber / this.texturesInLine)).multiply(this.textureSize)
-        verticesVec2Array = verticesVec2Array.map(vertex => vertex.multiply(this.textureSize).add(texturePos))
-        this.TEXCOORDS = new Float32Array(Vec2.vec2ArrayToArray(verticesVec2Array))
-    }
-
     inNoticeDistance(camera: Camera) {
         return this.transform.position.horizontalDistanceTo(camera.transform.position) <= this.noticeDistance
     }
-
-    followingPlayer: Camera
-    followingSpeed = Config.gridSize * 1.25
 
     pathfind(destination: Vec3) {
 
     }
 
-    makeStep(deltaTime: number) {
+    makeStepTowardsPlayer(deltaTime: number) {
         if (this.followingPlayer) {
             this.tempFlagLocations = Pathfinder.instance.getAllPathLocations(this.transform.position, this.followingPlayer.transform.position)
             this.tempFlagLocations = this.tempFlagLocations.map(v => new Vec3(v.x, -30, v.z))
@@ -151,6 +143,26 @@ export default class Enemy extends Plane {
 
             this.transform.position = this.transform.position.add(this.dir.multiply(this.followingSpeed * deltaTime))
             // this.followingPlayer = null
+        }
+    }
+
+    makeStepIfWalking(deltaTime: number, shapes: Shape[]) {
+        if (this.state == "walking") {
+            const raycaster = Raycaster.fromDir(this.transform.position, this.dir)
+            const nextShape = raycaster.nextShape(shapes)
+            const distance = this.transform.position.distanceTo(nextShape.transform.position)
+            if (distance <= Config.gridSize && !this.nextDir) {
+                this.nextDir = this.dir.inverted
+                this.state = "standing"
+                setTimeout(() => {
+                    this.dir = this.nextDir
+                    this.nextDir = null
+                    setTimeout(() => {
+                        this.state = "walking"
+                    }, 500)
+                }, 1000)
+            }
+            this.transform.position = this.transform.position.add(this.dir.multiply(this.followingSpeed * deltaTime))
         }
     }
 
@@ -177,5 +189,31 @@ export default class Enemy extends Plane {
         }
         this.state = "walking"
         return false
+    }
+
+    private get textureSize() {
+        return 1 / this.texturesInLine
+    }
+
+    private setTexture(textureNumber: number) {
+        // if (textureNumber == this.textureNumber) {
+        //     console.log('olewam', textureNumber)
+        //     return
+
+        // }
+        this.textureNumber = textureNumber
+
+        if (this.state == 'walking' || this.state == 'standing') {
+            if (this.textureRotation >= 0) {
+                textureNumber += this.textureRotation
+            } else {
+                textureNumber += this.textureRotation + this.texturesInLine
+            }
+        }
+
+        let verticesVec2Array = Vec2.arrayToVec2Array(this.initialTexcoords)
+        const texturePos = new Vec2(textureNumber % this.texturesInLine, Math.floor(textureNumber / this.texturesInLine)).multiply(this.textureSize)
+        verticesVec2Array = verticesVec2Array.map(vertex => vertex.multiply(this.textureSize).add(texturePos))
+        this.TEXCOORDS = new Float32Array(Vec2.vec2ArrayToArray(verticesVec2Array))
     }
 }

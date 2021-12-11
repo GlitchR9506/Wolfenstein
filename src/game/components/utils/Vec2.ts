@@ -1,3 +1,5 @@
+import { Vec3 } from "."
+
 export class Vec2 {
     x: number
     y: number
@@ -67,4 +69,7 @@ export class Vec2 {
         return this.x == v.x && this.y == v.y
     }
 
+    toVec3() {
+        return new Vec3(this.x, 0, this.y)
+    }
 }

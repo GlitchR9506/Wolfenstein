@@ -236,6 +236,18 @@ export default class Level {
             let shape
             if (value.toLowerCase().includes('wall')) {
                 shape = new Wall(this.gl, this.textureProgram, field.value)
+            } else if (field.value.toLowerCase().includes("walking")) {
+                if (field.value == 'enemyZWalking') {
+                    shape = new Enemy(this.gl, this.textureProgram, 'z')
+                } else if (field.value == 'enemyXWalking') {
+                    shape = new Enemy(this.gl, this.textureProgram, 'x')
+                }
+            } else if (field.value.toLowerCase().includes("enemy")) {
+                for (let dir of ['up', 'down', 'left', 'right']) {
+                    if (field.value.toLowerCase().includes(dir)) {
+                        shape = new Enemy(this.gl, this.textureProgram, dir)
+                    }
+                }
             } else {
                 shape = new SpecificShape(this.gl, this.textureProgram)
             }

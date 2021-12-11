@@ -1,3 +1,5 @@
+import { Vec2 } from "."
+
 export class Vec3 {
     x: number
     y: number
@@ -211,5 +213,9 @@ export class Vec3 {
             if (v < 0) return -1
             return 0
         })
+    }
+
+    toVec2() {
+        return new Vec2(this.x, this.z)
     }
 }

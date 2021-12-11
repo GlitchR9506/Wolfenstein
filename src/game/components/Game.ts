@@ -137,9 +137,10 @@ export default class Game {
             if (enemy.followingPlayer) {
                 const canShot = enemy.tryToShoot(this.camera, this.level.collidingCuboids)
                 if (!canShot) {
-                    enemy.makeStep(deltaTime)
+                    enemy.makeStepTowardsPlayer(deltaTime)
                 }
-
+            } else {
+                enemy.makeStepIfWalking(deltaTime, this.level.collidingCuboids)
             }
             enemy.rotateTexture(this.camera.transform.position)
         }
