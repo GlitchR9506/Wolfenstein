@@ -8,67 +8,76 @@ import { log, Vec2, Vec3 } from "./utils"
 export default class Pathfinder {
     static instance = new this
 
-    allFields: PathField[] = []
-    envFields: FieldData[] = []
+    private allSubFieldsCreated: PathField[] = []
+    private envFields: FieldData[] = []
 
-    open: PathField[] = []
-    closed: PathField[] = []
+    private open: PathField[] = []
+    private closed: PathField[] = []
+
+    private readonly subdivisions = 3
+
+    get subGridSize() {
+        return Config.gridSize / this.subdivisions
+    }
 
     prepareLevel(level: Level) {
         this.envFields = level.gridFields
-
-        this.allFields = []
-        for (let x = 0; x < level.width; x++) {
-            for (let y = 0; y < level.height; y++) {
-                const pos = new Vec2(x, y)
-                const field = new PathField(pos, level.gridFields)
-                this.allFields.push(field)
-            }
-        }
+        this.allSubFieldsCreated = []
     }
 
-    private realVec3ToGridVec2(v: Vec3) {
-        const gridPosVec3 = v.map(v => Math.floor(v / Config.gridSize))
+    private isSubFieldPosWalkable(position: Vec2) {
+        const gridPos = this.subGridPosToGridPos(position)
+        const envField = this.envFields.find(f => new Vec2(f.x, f.y).equals(gridPos))
+        return !envField || NotCollidingFieldValues.includes(envField.value) || envField.value.toLowerCase().includes('door')
+    }
+
+    private subGridPosToGridPos(pos: Vec2) {
+        return pos.map(v => Math.floor(v / this.subdivisions))
+    }
+
+    private realVec3ToSubGridVec2(v: Vec3) {
+        const gridPosVec3 = v.map(v => Math.floor(v / this.subGridSize))
         const gridPosVec2 = new Vec2(gridPosVec3.x, gridPosVec3.z)
         return gridPosVec2
     }
 
     getAllPathLocations(from: Vec3, to: Vec3) {
-        const gridFrom = this.realVec3ToGridVec2(from)
-        const gridTo = this.realVec3ToGridVec2(to)
+        const subGridFrom = this.realVec3ToSubGridVec2(from)
+        const subGridTo = this.realVec3ToSubGridVec2(to)
+        const subGridPath = this._getAllPathfindLocations(subGridFrom, subGridTo)
 
-        const gridPath = this._getAllPathfindLocations(gridFrom, gridTo)
-
-        const realPath = gridPath.map(pathField => this.gridVec2ToRealVec3(pathField.position))
+        const realPath = subGridPath.map(subGridField => this.subGridVec2ToRealVec3(subGridField.position))
         return realPath
     }
 
-    private gridVec2ToRealVec3(v: Vec2) {
-        const realPosVec2 = v.map(v => v * Config.gridSize + Config.gridSize / 2)
+    private subGridVec2ToRealVec3(v: Vec2) {
+        const realPosVec2 = v.map(v => v * this.subGridSize + this.subGridSize / 2)
         const gridPosVec3 = new Vec3(realPosVec2.x, 0, realPosVec2.y)
         return gridPosVec3
     }
 
-    private _getAllPathfindLocations(gridFrom: Vec2, gridTo: Vec2) {
+    private _getAllPathfindLocations(subGridFrom: Vec2, subGridTo: Vec2) {
         this.open = []
         this.closed = []
 
-        const startField = new PathField(gridFrom, this.envFields)
-        // const startField = this.allFields.find(field => field.position.equals(gridFrom))
+        const startField = new PathField(subGridFrom, true)
         this.open.push(startField)
 
-        const endField = this.allFields.find(field => field.position.equals(gridTo))
+        const endField = new PathField(subGridTo, this.isSubFieldPosWalkable(subGridTo))
+        if (!endField.walkable) {
+            return []
+        }
 
         while (true) {
             if (this.open.length == 0) {
                 return []
             }
             const current = this.leastFCostField()
-            if (current == endField) {
+            if (current.position.equals(endField.position)) {
                 if (startField.position.equals(endField.position)) {
                     return []
                 } else {
-                    return this.getPathUsingParents(endField)
+                    return this.getPathUsingParents(current)
                 }
             } else {
                 const validNeighbours = this.getValidNeighbours(current)
@@ -87,12 +96,11 @@ export default class Pathfinder {
     }
 
     private calculateCost(neighbour: PathField, current: PathField, endField: PathField) {
-        const hDiff = endField.position.substract(neighbour.position).abs
-        const newHCost = hDiff.x + hDiff.y
-        if (!this.open.includes(neighbour) || newHCost < neighbour.hCost) {
+        if (!this.open.includes(neighbour) || neighbour.gCostWithParent(current) < neighbour.gCost) {
             neighbour.parent = current
-            neighbour.hCost = newHCost
-            if (!this.open.includes(neighbour)) {
+            const hDiff = endField.position.substract(neighbour.position).abs
+            neighbour.hCost = (hDiff.x + hDiff.y) * 10
+            if (this.open.every(f => !f.position.equals(neighbour.position))) {
                 this.open.push(neighbour)
             }
         }
@@ -100,13 +108,26 @@ export default class Pathfinder {
 
     private getValidNeighbours(field: PathField) {
         const neighbourDiffs = [
+            new Vec2(-1, -1),
+            new Vec2(-1, 0),
+            new Vec2(-1, 1),
             new Vec2(0, -1),
             new Vec2(0, 1),
-            new Vec2(-1, 0),
+            new Vec2(1, -1),
             new Vec2(1, 0),
+            new Vec2(1, 1),
         ]
         const neighbourPositions = neighbourDiffs.map(diff => field.position.add(diff))
-        const neighbours = neighbourPositions.map(neighbourPos => this.allFields.find(field => field.position.equals(neighbourPos)))
+        const neighbours = neighbourPositions.map(neighbourPos => {
+            const subFieldAlreadyCreated = this.allSubFieldsCreated.find(field => field.position.equals(neighbourPos))
+            if (subFieldAlreadyCreated) {
+                return subFieldAlreadyCreated
+            } else {
+                const subField = new PathField(neighbourPos, this.isSubFieldPosWalkable(neighbourPos))
+                this.allSubFieldsCreated.push(subField)
+                return subField
+            }
+        })
         const validNeighbours = neighbours.filter(field => field.walkable && !this.closed.includes(field))
         return validNeighbours
     }
@@ -132,20 +153,28 @@ class PathField {
     hCost: number
 
     get gCost(): number {
-        return this.parent ? this.parent.gCost + 10 : 0
+        if (this.parent) {
+            return this.gCostWithParent(this.parent)
+        } else {
+            return 0
+        }
+    }
+
+    gCostWithParent(parent: PathField) {
+        const diff = parent.position.substract(this.position)
+        if (diff.x && diff.y) {
+            return parent.gCost + 14
+        } else {
+            return parent.gCost + 10
+        }
     }
 
     get fCost() {
         return this.gCost + this.hCost
     }
 
-    constructor(position: Vec2, envFields: FieldData[]) {
+    constructor(position: Vec2, walkable: boolean) {
         this.position = position
-        this.setWalkable(envFields)
-    }
-
-    private setWalkable(envFields: FieldData[]) {
-        const envField = envFields.find(f => new Vec2(f.x, f.y).equals(this.position))
-        this.walkable = !envField || NotCollidingFieldValues.includes(envField.value) || envField.value.toLowerCase().includes('door')
+        this.walkable = walkable
     }
 }

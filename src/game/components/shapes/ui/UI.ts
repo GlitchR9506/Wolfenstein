@@ -20,11 +20,8 @@ export default class UI {
     floor: number = 1
     score: number = 0
     lives: number = 3
-    // health: number = 100
-    health: number = 10
-    // health: number = 72
-    // ammo: number = 8
-    ammo: number = 999
+    health: number = 100000000000
+    ammo: number = 8
     weapon: string = 'pistol'
 
     faceDirection: FaceDirection = "right"

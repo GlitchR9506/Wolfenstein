@@ -68,7 +68,6 @@ export default class Enemy extends Plane {
         } else if (type == "right") {
             this.dir = Vec3.right
         }
-        console.log(type, this.dir)
     }
 
     get isDead() {
