@@ -3,10 +3,12 @@ import texture from '../../../textures/guard.png'
 import Camera from '../../Camera'
 import Config from '../../Config'
 import Pathfinder from '../../Pathfinder'
+import { PathfinderFieldData } from '../../Pathfinder'
 import { Program } from '../../programs/Program'
 import Raycaster from '../../Raycaster'
 import { degToRad, log, radToDeg, Vec2, Vec3 } from '../../utils'
 import UI from '../ui/UI'
+import Door from './Door'
 import Ammo from './pickups/Ammo'
 import Flag from './pickups/Flag'
 import Plane from './Plane'
@@ -15,7 +17,7 @@ import Shape from './Shape'
 export default class Enemy extends Plane {
     loot: Ammo
     tempFlag: Flag
-    tempFlagLocations: Vec3[] = []
+    pathfinderFields: PathfinderFieldData[] = []
     score = 100
     followingPlayer: Camera
     importedTexture = texture
@@ -137,22 +139,40 @@ export default class Enemy extends Plane {
 
     }
 
-    makeStepTowardsPlayer(deltaTime: number) {
+    makeStepTowardsPlayer(deltaTime: number, doors: Door[]) {
         this.timeSinceLastPathfinding += deltaTime
         if (this.followingPlayer) {
             if (this.timeSinceLastPathfinding >= this.pathfindingDelay) {
                 this.timeSinceLastPathfinding = 0
-                if (this.tempFlagLocations.length <= 80) {
-                    this.tempFlagLocations = Pathfinder.instance.getAllPathLocations(this.transform.position, this.followingPlayer.transform.position)
-                    this.tempFlagLocations = this.tempFlagLocations.map(v => new Vec3(v.x, -30, v.z))
+                if (this.pathfinderFields.length <= 80) {
+                    this.pathfinderFields = Pathfinder.instance.getAllPathLocations(this.transform.position, this.followingPlayer.transform.position)
+                    this.pathfinderFields = this.pathfinderFields.map(v => {
+                        return {
+                            subGridPos: new Vec3(v.subGridPos.x, -30, v.subGridPos.z),
+                            shape: v.shape,
+                            realPos: v.realPos,
+                        }
+                    })
                 } else {
                     this.state = "standing"
                     this.followingPlayer = null
-                    this.tempFlagLocations = []
+                    this.pathfinderFields = []
                 }
             }
-            if (this.tempFlagLocations.length < 1) return
-            this.dir = this.tempFlagLocations[1].substract(this.transform.position).yZeroed.normalize
+            if (this.pathfinderFields.length < 1) return
+            this.dir = this.pathfinderFields[1].subGridPos.substract(this.transform.position).yZeroed.normalize
+            for (let i = 1; i < 3; i++) {
+                const futureField = this.pathfinderFields[i]
+                if (futureField && futureField.shape == "door") {
+                    const door = doors.find(d => d.initialTransform.position.yZeroed.equals(futureField.realPos.yZeroed))
+                    if (door) {
+                        if (door.closed) {
+                            door.interact()
+                        }
+                    }
+                    break
+                }
+            }
             this.transform.position = this.transform.position.add(this.dir.multiply(this.followingSpeed * deltaTime))
             // this.followingPlayer = null
         }

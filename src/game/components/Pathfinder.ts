@@ -3,7 +3,14 @@ import FieldData from "../../common/FieldData"
 import NotCollidingFieldValues from "../../common/NotCollidingFieldValues"
 import Config from "./Config"
 import Level from "./Level"
+import Shape from "./shapes/level/Shape"
 import { log, Vec2, Vec3 } from "./utils"
+
+export interface PathfinderFieldData {
+    subGridPos: Vec3
+    shape: string
+    realPos: Vec3
+}
 
 export default class Pathfinder {
     static instance = new this
@@ -25,32 +32,48 @@ export default class Pathfinder {
         this.allSubFieldsCreated = []
     }
 
-    private isSubFieldPosWalkable(position: Vec2) {
+    private subFieldPosData(position: Vec2) {
         const gridPos = this.subGridPosToGridPos(position)
         const envField = this.envFields.find(f => new Vec2(f.x, f.y).equals(gridPos))
-        return !envField || NotCollidingFieldValues.includes(envField.value) || envField.value.toLowerCase().includes('door')
+        return {
+            walkable: !envField || NotCollidingFieldValues.includes(envField.value) || envField.value.toLowerCase().includes('door'),
+            shape: envField?.value
+        }
     }
 
     private subGridPosToGridPos(pos: Vec2) {
         return pos.map(v => Math.floor(v / this.subdivisions))
     }
 
-    private realVec3ToSubGridVec2(v: Vec3) {
+    private gridPosToRealPos(pos: Vec2) {
+        const realPosVec2 = pos.map(v => v * Config.gridSize + Config.gridSize / 2)
+        const gridPosVec3 = new Vec3(realPosVec2.x, 0, realPosVec2.y)
+        return gridPosVec3
+
+    }
+
+    private realPosToSubGridPos(v: Vec3) {
         const gridPosVec3 = v.map(v => Math.floor(v / this.subGridSize))
         const gridPosVec2 = new Vec2(gridPosVec3.x, gridPosVec3.z)
         return gridPosVec2
     }
 
     getAllPathLocations(from: Vec3, to: Vec3) {
-        const subGridFrom = this.realVec3ToSubGridVec2(from)
-        const subGridTo = this.realVec3ToSubGridVec2(to)
+        const subGridFrom = this.realPosToSubGridPos(from)
+        const subGridTo = this.realPosToSubGridPos(to)
         const subGridPath = this._getAllPathfindLocations(subGridFrom, subGridTo)
 
-        const realPath = subGridPath.map(subGridField => this.subGridVec2ToRealVec3(subGridField.position))
+        const realPath: PathfinderFieldData[] = subGridPath.map(subGridField => {
+            return {
+                subGridPos: this.subGridPosToRealPos(subGridField.position),
+                shape: subGridField.shape,
+                realPos: this.gridPosToRealPos(this.subGridPosToGridPos(subGridField.position)),
+            }
+        })
         return realPath
     }
 
-    private subGridVec2ToRealVec3(v: Vec2) {
+    private subGridPosToRealPos(v: Vec2) {
         const realPosVec2 = v.map(v => v * this.subGridSize + this.subGridSize / 2)
         const gridPosVec3 = new Vec3(realPosVec2.x, 0, realPosVec2.y)
         return gridPosVec3
@@ -63,7 +86,8 @@ export default class Pathfinder {
         const startField = new PathField(subGridFrom, true)
         this.open.push(startField)
 
-        const endField = new PathField(subGridTo, this.isSubFieldPosWalkable(subGridTo))
+        const { walkable, shape } = this.subFieldPosData(subGridTo)
+        const endField = new PathField(subGridTo, walkable, shape)
         if (!endField.walkable) {
             return []
         }
@@ -123,7 +147,8 @@ export default class Pathfinder {
             if (subFieldAlreadyCreated) {
                 return subFieldAlreadyCreated
             } else {
-                const subField = new PathField(neighbourPos, this.isSubFieldPosWalkable(neighbourPos))
+                const { walkable, shape } = this.subFieldPosData(neighbourPos)
+                const subField = new PathField(neighbourPos, walkable, shape)
                 this.allSubFieldsCreated.push(subField)
                 return subField
             }
@@ -159,6 +184,7 @@ export default class Pathfinder {
 class PathField {
     position: Vec2
     walkable: boolean
+    shape: string
 
     parent: PathField
     hCost: number
@@ -184,8 +210,9 @@ class PathField {
         return this.gCost + this.hCost
     }
 
-    constructor(position: Vec2, walkable: boolean) {
+    constructor(position: Vec2, walkable: boolean, shape?: string) {
         this.position = position
         this.walkable = walkable
+        this.shape = shape
     }
 }

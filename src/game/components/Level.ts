@@ -62,6 +62,7 @@ export default class Level {
     load(level: number, callback?: () => void) {
         this.loadLevel(level, () => {
             this.createObjects()
+            Pathfinder.instance.prepareLevel(this)
             callback?.()
         })
     }
@@ -91,7 +92,6 @@ export default class Level {
                 this.changeWallsNeighboursTextures()
                 this.applyGridSize()
                 this.gridFields = JSON.parse(JSON.stringify(level.fields))
-                Pathfinder.instance.prepareLevel(this)
                 callback?.()
             });
     }

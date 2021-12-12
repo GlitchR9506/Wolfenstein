@@ -137,7 +137,7 @@ export default class Game {
             if (enemy.followingPlayer) {
                 const canShot = enemy.tryToShoot(this.camera, this.level.collidingCuboids)
                 if (!canShot) {
-                    enemy.makeStepTowardsPlayer(deltaTime)
+                    enemy.makeStepTowardsPlayer(deltaTime, this.level.doors)
                 }
             } else {
                 enemy.makeStepIfWalking(deltaTime, this.level.collidingCuboids)
@@ -197,8 +197,8 @@ export default class Game {
         for (let enemy of this.level.enemies) {
             enemy.lookAtCamera(this.camera.transform.rotation.y)
             enemy.draw(this.camera.viewProjectionMatrix)
-            for (let location of enemy.tempFlagLocations) {
-                enemy.tempFlag.transform.position = location
+            for (let field of enemy.pathfinderFields) {
+                enemy.tempFlag.transform.position = field.subGridPos
                 enemy.tempFlag.lookAtCamera(this.camera.transform.rotation.y)
                 enemy.tempFlag.draw(this.camera.viewProjectionMatrix)
             }
