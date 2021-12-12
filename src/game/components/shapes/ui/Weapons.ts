@@ -15,8 +15,8 @@ import chaingun from "../../../sounds/Gatling Gun.wav"
 export default class Weapons extends Plane {
     importedTexture = texture
 
-    availableTypes: weaponType[] = ['knife', 'pistol']
-    // availableTypes: weaponType[] = ['knife', 'pistol', 'machinegun', 'chaingun']
+    // availableTypes: weaponType[] = ['knife', 'pistol']
+    availableTypes: weaponType[] = ['knife', 'pistol', 'machinegun', 'chaingun']
 
     private weapons: Weapon[] = []
     private texturesCount = new Vec2(8, 4)
@@ -32,11 +32,11 @@ export default class Weapons extends Plane {
         this.transform.position.y = -0.66
         this.setInitialState()
 
-        this.weapons.push(new Weapon("knife", 2.4, 70, [0, 1, 2, 3, 4], [], 3, knife))
+        this.weapons.push(new Weapon("knife", 2.4, 40, [0, 1, 2, 3, 4], [], 3, knife))
         this.weapons[0].range = Config.gridSize * 0.75
-        this.weapons.push(new Weapon("pistol", 2.4, 100, [8, 9, 10, 11, 12], [], 10, pistol))
-        this.weapons.push(new Weapon("machinegun", 6, 100, [16, 17], [18, 19], 19, machinegun))
-        this.weapons.push(new Weapon("chaingun", 12, 100, [24, 25], [26, 27], 26, chaingun))
+        this.weapons.push(new Weapon("pistol", 2.4, 70, [8, 9, 10, 11, 12], [], 10, pistol))
+        this.weapons.push(new Weapon("machinegun", 6, 70, [16, 17], [18, 19], 19, machinegun))
+        this.weapons.push(new Weapon("chaingun", 12, 70, [24, 25], [26, 27], 26, chaingun))
 
         this.setTexture(this.currentWeapon.initTextures[0])
     }

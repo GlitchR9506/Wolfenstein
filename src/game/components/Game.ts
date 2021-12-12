@@ -26,7 +26,7 @@ export default class Game {
     private gl: WebGLRenderingContext
     private canvas: HTMLCanvasElement
     private currentLevel = 1
-    private state = "menu"
+    private state = "startScreen"
     private firstLevelLoaded = false
 
     constructor() {
@@ -82,10 +82,6 @@ export default class Game {
     }
 
     private fixedUpdate(deltaTime: number) {
-        UI.instance.state = this.state
-        if (Input.instance.startGame && this.state == "menu") {
-            this.state = "game"
-        }
         if (Input.instance.interacting) {
             const nearestInteractable = this.camera.nearest(this.level.interactables) as Interactable
             if (this.camera.inInteractionDistance(nearestInteractable)) {
@@ -148,13 +144,13 @@ export default class Game {
             enemy.rotateTexture(this.camera.transform.position)
         }
 
-        if (UI.instance.health == 0 && this.state == "game") {
-            this.state = "dead"
+        if (UI.instance.health == 0 && UI.instance.state == "game") {
+            UI.instance.state = "dead"
             UI.instance.deadScreen()
             setTimeout(() => {
                 UI.instance.takeLife()
                 this.camera.transform = this.camera.initialTransform
-                this.state = "game"
+                UI.instance.state = "game"
                 this.camera.killer = null
                 this.loadLevel(this.currentLevel)
             }, 3000)
@@ -163,7 +159,6 @@ export default class Game {
             this.camera.lookAtKillerStep(deltaTime)
         }
         UI.instance.update(deltaTime)
-        UI.instance.state = this.state
         // console.log(this.state)
         // console.log(UI.instance.health)
     }

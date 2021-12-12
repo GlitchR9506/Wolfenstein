@@ -23,8 +23,6 @@ export default class Input {
 
     lastNumber: number = null
 
-    startGame = false
-
     private pressedKeys: string[] = []
 
     constructor() {
@@ -104,8 +102,6 @@ export default class Input {
             if (this.isPressed('Digit8')) this.lastNumber = 8
             if (this.isPressed('Digit9')) this.lastNumber = 9
         }
-
-        if (this.isPressed('Space')) this.startGame = true
     }
 
     private isPressed(key: string) {
@@ -133,12 +129,21 @@ export default class Input {
             if (e.code == "Minus") {
                 Config.uiScale -= 0.1
             } else if (e.code == "Equal") {
-
                 Config.uiScale += 0.1
             } else if (e.code == "Backspace") {
                 Config.uiScale = 1
             } else if (e.code == "KeyV" && Config.debug) {
                 this.renderWalls = !this.renderWalls
+            } else if (e.code == 'Space') {
+                if (UI.instance.state == "startScreen") {
+                    UI.instance.state = "menu"
+                } else if (UI.instance.state == "menu") {
+                    if (UI.instance.menu.option == 0) {
+                        UI.instance.state = "game"
+                    } else if (UI.instance.menu.option == 8) {
+                        UI.instance.state = "startScreen"
+                    }
+                }
             }
         })
     }

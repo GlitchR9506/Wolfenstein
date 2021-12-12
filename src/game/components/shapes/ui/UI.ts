@@ -2,6 +2,7 @@ import Config from '../../Config';
 import uiTexture from '../../../textures/ui.png'
 import uiElements from '../../../textures/uiElements.png'
 import startScreen from '../../../textures/startScreen.png'
+import Menu from './Menu';
 
 type FaceDirection = "left" | "normal" | "right"
 type FaceState = "normal" | "dead" | "win"
@@ -31,7 +32,13 @@ export default class UI {
 
     showingMenu = true
 
-    state: string
+    state = 'startScreen'
+
+    menu: Menu
+
+    constructor() {
+        this.menu = new Menu()
+    }
 
     init() {
         this.texture = new Image();
@@ -77,6 +84,7 @@ export default class UI {
         if (!currentStep) {
             this.startFaceAnimation()
         }
+        this.menu.update(deltaTime)
     }
 
     startFaceAnimation() {
@@ -108,8 +116,10 @@ export default class UI {
         this.drawNumber(this.ammo, 464, 352)
         this.drawWeapon()
         this.drawFace()
-        if (this.state == "menu") {
+        if (this.state == "startScreen") {
             this.context.drawImage(this.startScreen, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
+        } else if (this.state == "menu") {
+            this.context.drawImage(this.menu.canvas, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         }
     }
 
