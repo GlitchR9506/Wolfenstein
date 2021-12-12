@@ -222,12 +222,16 @@ export default class Enemy extends Plane {
         this.textureRotation = parseInt((correctedDiff / 45).toString())
     }
 
+    canSee(target: Vec3, shapes: Shape[]) {
+        const raycaster = Raycaster.fromTo(this.transform.position, target.yZeroed)
+        const nextShape = raycaster.nextShape(shapes)
+        return nextShape.transform.position.yZeroed.distanceTo(this.transform.position.yZeroed) > this.transform.position.yZeroed.distanceTo(target.yZeroed)
+    }
+
     tryToShoot(camera: Camera, shapes: Shape[]) {
         if (this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance) {
-            const raycaster = Raycaster.fromTo(this.transform.position, camera.transform.position)
-            const nextShape = raycaster.nextShape(shapes)
-            const target = camera.transform.position.yZeroed
-            if (nextShape.transform.position.yZeroed.distanceTo(target) > this.transform.position.yZeroed.distanceTo(target)) {
+            if (this.canSee(camera.transform.position, shapes)) {
+                console.log('cansee')
                 this.state = "shooting"
                 return true
             }

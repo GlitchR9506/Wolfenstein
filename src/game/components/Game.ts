@@ -129,19 +129,23 @@ export default class Game {
             if (enemy.isDead) {
                 enemy.followingPlayer = null
             } else {
+                let startFollowing = false
                 if (enemy.inNoticeDistance(this.camera) && this.camera.weapons.currentWeapon.justShot) {
+                    startFollowing = true
+                }
+                if (enemy.canSee(this.camera.transform.position, this.level.collidingCuboids)) {
+                    startFollowing = true
+                }
+                if (startFollowing) {
                     enemy.followingPlayer = this.camera
                 }
-            }
-            if (enemy.followingPlayer) {
                 const canShot = enemy.tryToShoot(this.camera, this.level.collidingCuboids)
                 if (!canShot) {
                     enemy.makeStepTowardsPlayer(deltaTime, this.level.doors)
                 }
-            } else {
                 enemy.makeStepIfWalking(deltaTime, this.level.collidingCuboids)
+                enemy.rotateTexture(this.camera.transform.position)
             }
-            enemy.rotateTexture(this.camera.transform.position)
         }
 
         if (UI.instance.health == 0 && UI.instance.state == "game") {
