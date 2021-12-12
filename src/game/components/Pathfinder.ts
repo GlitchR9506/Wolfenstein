@@ -128,7 +128,18 @@ export default class Pathfinder {
                 return subField
             }
         })
-        const validNeighbours = neighbours.filter(field => field.walkable && !this.closed.includes(field))
+        const validNeighbours = neighbours
+            .filter(f => f.walkable && !this.closed.includes(f))
+        // .filter(f => {
+        //     const diff = f.position.substract(field.position)
+        //     if (diff.x && diff.y) {
+        //         const possibleCorners = [
+        //             new Vec2(f.position.x, field.position.y),
+        //             new Vec2(field.position.x, f.position.y),
+        //         ]
+        //         return possibleCorners.every(pos => this.isSubFieldPosWalkable(pos))
+        //     }
+        // })
         return validNeighbours
     }
 

@@ -43,6 +43,9 @@ export default class Enemy extends Plane {
     private hp = 100
     private followingSpeed = Config.gridSize * 1.25
     private nextDir: Vec3 = null
+    private timeSinceLastPathfinding = 0
+    private readonly initialState
+    private readonly pathfindingDelay = 0.5
     private readonly frameTime = 0.2
 
     constructor(gl: WebGLRenderingContext, program: Program, type?: string) {
@@ -68,6 +71,7 @@ export default class Enemy extends Plane {
         } else if (type == "right") {
             this.dir = Vec3.right
         }
+        this.initialState = this.state
     }
 
     get isDead() {
@@ -88,7 +92,7 @@ export default class Enemy extends Plane {
                 if (this.state == 'dying') {
                     this.state = 'dead'
                 } else if (this.state == 'hit') {
-                    this.state = 'walking'
+                    this.state = this.initialState
                 } else {
                     this.setTexture(textures[0])
                 }
@@ -134,19 +138,28 @@ export default class Enemy extends Plane {
     }
 
     makeStepTowardsPlayer(deltaTime: number) {
+        this.timeSinceLastPathfinding += deltaTime
         if (this.followingPlayer) {
-            this.tempFlagLocations = Pathfinder.instance.getAllPathLocations(this.transform.position, this.followingPlayer.transform.position)
-            this.tempFlagLocations = this.tempFlagLocations.map(v => new Vec3(v.x, -30, v.z))
-            if (this.tempFlagLocations.length == 0) return
-            this.dir = this.tempFlagLocations[0].substract(this.transform.position).yZeroed.normalize
-
+            if (this.timeSinceLastPathfinding >= this.pathfindingDelay) {
+                this.timeSinceLastPathfinding = 0
+                if (this.tempFlagLocations.length <= 80) {
+                    this.tempFlagLocations = Pathfinder.instance.getAllPathLocations(this.transform.position, this.followingPlayer.transform.position)
+                    this.tempFlagLocations = this.tempFlagLocations.map(v => new Vec3(v.x, -30, v.z))
+                } else {
+                    this.state = "standing"
+                    this.followingPlayer = null
+                    this.tempFlagLocations = []
+                }
+            }
+            if (this.tempFlagLocations.length < 1) return
+            this.dir = this.tempFlagLocations[1].substract(this.transform.position).yZeroed.normalize
             this.transform.position = this.transform.position.add(this.dir.multiply(this.followingSpeed * deltaTime))
             // this.followingPlayer = null
         }
     }
 
     makeStepIfWalking(deltaTime: number, shapes: Shape[]) {
-        if (this.state == "walking") {
+        if (!this.followingPlayer && this.initialState == "walking" && this.state == "walking") {
             const raycaster = Raycaster.fromDir(this.transform.position, this.dir)
             const nextShape = raycaster.nextShape(shapes)
             const distance = this.transform.position.distanceTo(nextShape.transform.position)
@@ -178,15 +191,15 @@ export default class Enemy extends Plane {
 
     tryToShoot(camera: Camera, shapes: Shape[]) {
         if (this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance) {
-            this.state = "shooting"
             const raycaster = Raycaster.fromTo(this.transform.position, camera.transform.position)
             const nextShape = raycaster.nextShape(shapes)
             const target = camera.transform.position.yZeroed
             if (nextShape.transform.position.yZeroed.distanceTo(target) > this.transform.position.yZeroed.distanceTo(target)) {
+                this.state = "shooting"
                 return true
             }
         }
-        this.state = "walking"
+        this.state = 'walking'
         return false
     }
 
