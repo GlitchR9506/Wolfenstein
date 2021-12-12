@@ -4,10 +4,14 @@ import Interactable from './Interactable'
 import texture from '../../../textures/wall.png'
 import Config from '../../Config'
 import { Program } from '../../programs/Program'
-
+import Camera from '../../Camera'
+import Enemy from './Enemy'
+import audio from "../../../sounds/Door.wav"
+import BetterAudio from '../../BetterAudio'
 
 export default class Door extends Cuboid implements Interactable {
     importedTexture = texture
+    audio = new BetterAudio(audio)
 
     lightTexture = 104
     lightSideTexture = 108
@@ -143,15 +147,24 @@ export default class Door extends Cuboid implements Interactable {
     }
 
     interact() {
-        if (this.closed || this.closing) {
+        if (this.closed) {
             this.closing = false
             this.opening = true
-        } else if (this.opened || this.opening) {
+            this.audio.play()
+        } else if (this.opened) {
             if (this.transform.scale.add(this.hiddenInWallScaleCorrection).equals(this.initialTransform.scale)) {
                 this.transform.scale = this.transform.scale.add(this.hiddenInWallScaleCorrection)
             }
             this.opening = false
             this.closing = true
+            this.audio.play()
+        }
+    }
+
+    tryToClose(deltaTime: number, camera: Camera, enemies: Enemy[]) {
+        const nothingCollides = [camera, ...enemies].every(obj => obj.transform.position.yZeroed.distanceTo(this.initialTransform.position.yZeroed) > Config.gridSize * 2)
+        if (nothingCollides && this.opened) {
+            this.interact()
         }
     }
 }

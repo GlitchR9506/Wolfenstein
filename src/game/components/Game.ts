@@ -105,6 +105,9 @@ export default class Game {
         this.camera.weapons.update(deltaTime)
         for (let door of this.level.doors) {
             door.update(deltaTime)
+            if (door.opened) {
+                door.tryToClose(deltaTime, this.camera, this.level.enemies)
+            }
         }
 
         const raycaster = Raycaster.fromDir(this.camera.transform.position, Vec3.fromAngle(this.camera.transform.rotation.y))

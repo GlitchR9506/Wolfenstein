@@ -1,3 +1,6 @@
+import BetterAudio from "../../BetterAudio"
+import AudioPlayer from "../../BetterAudio"
+
 export type weaponType = "knife" | "pistol" | "machinegun" | "chaingun"
 
 export class Weapon {
@@ -7,6 +10,7 @@ export class Weapon {
     initTextures: number[]
     loopTextures: number[]
     shootTexture: number
+    audio: BetterAudio
 
     range: number = 1000000
 
@@ -24,6 +28,7 @@ export class Weapon {
         initTextures: number[],
         loopTextures: number[],
         shootTexture: number,
+        audio: string,
     ) {
         this.type = type
         this.fireRate = fireRate
@@ -31,6 +36,7 @@ export class Weapon {
         this.initTextures = initTextures
         this.loopTextures = loopTextures
         this.shootTexture = shootTexture
+        this.audio = new BetterAudio(audio)
 
         this.currentTextures = initTextures
     }

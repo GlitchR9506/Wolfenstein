@@ -1,5 +1,6 @@
 import FieldData from '../../../../common/FieldData'
 import texture from '../../../textures/guard.png'
+import BetterAudio from '../../BetterAudio'
 import Camera from '../../Camera'
 import Config from '../../Config'
 import Pathfinder from '../../Pathfinder'
@@ -13,6 +14,10 @@ import Ammo from './pickups/Ammo'
 import Flag from './pickups/Flag'
 import Plane from './Plane'
 import Shape from './Shape'
+import audioShot from "../../../sounds/Pistol.wav"
+import audioPain from "../../../sounds/Enemy Pain.wav"
+import audioDeath1 from "../../../sounds/Death 1.wav"
+import audioDeath2 from "../../../sounds/Death 2.wav"
 
 export default class Enemy extends Plane {
     loot: Ammo
@@ -49,6 +54,9 @@ export default class Enemy extends Plane {
     private readonly initialState
     private readonly pathfindingDelay = 0.5
     private readonly frameTime = 0.2
+    private readonly audioPain = new BetterAudio(audioPain)
+    private readonly audiosDeath = [new BetterAudio(audioDeath1), new BetterAudio(audioDeath2)]
+    private readonly audioShot = new BetterAudio(audioShot)
 
     constructor(gl: WebGLRenderingContext, program: Program, type?: string) {
         super(gl, program)
@@ -102,6 +110,8 @@ export default class Enemy extends Plane {
             if (this.state == "shooting" && index == textures.length - 1) {
                 if (UI.instance.health > 0) {
                     UI.instance.health -= this.damageDealed
+                    this.audioShot.play()
+                    camera.audioHit.play()
                     if (UI.instance.health <= 0) {
                         UI.instance.health = 0
                         camera.killer = this
@@ -124,6 +134,9 @@ export default class Enemy extends Plane {
         if (this.hp <= 0) {
             this.hp = 0
             this.state = 'dying'
+            this.audiosDeath[Math.floor(Math.random() * this.audiosDeath.length)].play()
+        } else {
+            this.audioPain.play()
         }
     }
 

@@ -7,7 +7,8 @@ import Config from './Config'
 import Weapons from './shapes/ui/Weapons'
 import { Program } from './programs/Program'
 import Input from './Input'
-import Raycaster from './Raycaster'
+import BetterAudio from './BetterAudio'
+import audioHit from '../sounds/Oof.wav'
 
 export default class Camera {
     transform = new Transform
@@ -15,6 +16,8 @@ export default class Camera {
     projectionMatrix: number[]
     collidingShapes: Shape[]
     killer: Enemy = null
+
+    audioHit = new BetterAudio(audioHit)
 
     readonly weapons: Weapons
     private readonly fov = 60

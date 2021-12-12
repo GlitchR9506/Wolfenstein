@@ -1,12 +1,16 @@
 import texture from '../../../../textures/objects.png'
+import AudioPlayer from '../../../BetterAudio'
 import Camera from '../../../Camera'
 import Config from '../../../Config'
 import { Program } from '../../../programs/Program'
 import { degToRad, Vec2, Vec3 } from '../../../utils'
 import Plane from '../Plane'
+import audio from "../../../../sounds/Pickup.wav"
+import BetterAudio from '../../../BetterAudio'
 
 export default abstract class Pickup extends Plane {
     importedTexture = texture
+    audio = new BetterAudio(audio)
 
     pickupRange = Config.gridSize * 0.3
     pickedUp = false
@@ -37,6 +41,7 @@ export default abstract class Pickup extends Plane {
     pickUp(camera: Camera) {
         if (!this.pickedUp && this.canBePickedUp(camera)) {
             this.onPickedUp(camera)
+            this.audio.play()
             this.pickedUp = true
         }
     }

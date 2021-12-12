@@ -6,6 +6,10 @@ import Config from '../../Config'
 import Input from '../../Input'
 import { Program } from '../../programs/Program'
 import UI from './UI'
+import knife from "../../../sounds/Knife.wav"
+import pistol from "../../../sounds/Pistol.wav"
+import machinegun from "../../../sounds/Machine Gun.wav"
+import chaingun from "../../../sounds/Gatling Gun.wav"
 
 
 export default class Weapons extends Plane {
@@ -28,11 +32,11 @@ export default class Weapons extends Plane {
         this.transform.position.y = -0.66
         this.setInitialState()
 
-        this.weapons.push(new Weapon("knife", 2.4, 70, [0, 1, 2, 3, 4], [], 3))
+        this.weapons.push(new Weapon("knife", 2.4, 70, [0, 1, 2, 3, 4], [], 3, knife))
         this.weapons[0].range = Config.gridSize * 0.75
-        this.weapons.push(new Weapon("pistol", 2.4, 100, [8, 9, 10, 11, 12], [], 10))
-        this.weapons.push(new Weapon("machinegun", 6, 100, [16, 17], [18, 19], 19))
-        this.weapons.push(new Weapon("chaingun", 12, 100, [24, 25], [26, 27], 26))
+        this.weapons.push(new Weapon("pistol", 2.4, 100, [8, 9, 10, 11, 12], [], 10, pistol))
+        this.weapons.push(new Weapon("machinegun", 6, 100, [16, 17], [18, 19], 19, machinegun))
+        this.weapons.push(new Weapon("chaingun", 12, 100, [24, 25], [26, 27], 26, chaingun))
 
         this.setTexture(this.currentWeapon.initTextures[0])
     }
@@ -66,6 +70,7 @@ export default class Weapons extends Plane {
 
         if (this.currentWeapon.justShot) {
             this.decreaseAmmo()
+            this.currentWeapon.audio.play()
         }
 
         const frameTime = 1 / (this.currentWeapon.fireRate * this.currentWeapon.framesCount)
