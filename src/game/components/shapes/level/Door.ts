@@ -14,7 +14,6 @@ export default class Door extends Cuboid implements Interactable {
     audio = new BetterAudio(audio)
 
     get lightTexture() {
-        console.log(this.type)
         switch (this.type) {
             case 'exitDoor': return 119
             default: return 104

@@ -14,7 +14,6 @@ export default class Lever extends Cuboid implements Interactable {
     constructor(gl: WebGLRenderingContext, program: Program, value: string) {
         super(gl, program)
         this.value = value
-        console.log(this.lightTexture)
     }
 
     canInteract = true

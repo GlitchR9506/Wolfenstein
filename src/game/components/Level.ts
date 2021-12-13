@@ -252,7 +252,6 @@ export default class Level {
                 }
             } else if (field.value.toLowerCase().includes("door")) {
                 if (field.value == 'exitDoor') {
-                    console.log(field.value.toLowerCase())
                     shape = new Door(this.gl, this.textureProgram, field.value)
                 } else {
                     shape = new Door(this.gl, this.textureProgram)

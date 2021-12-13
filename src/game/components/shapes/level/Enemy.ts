@@ -45,7 +45,7 @@ export default class Enemy extends Plane {
     private shootingDistance = Config.gridSize * 5
     private damageDealed = 8
     private walkingDirection = Vec3.zero
-    private state = 'standing'
+    state = 'standing'
     private timeSinceLastUpdate = 0
     private hp = 100
     private followingSpeed = Config.gridSize * 1.25
@@ -102,7 +102,7 @@ export default class Enemy extends Plane {
                 if (this.state == 'dying') {
                     this.state = 'dead'
                 } else if (this.state == 'hit') {
-                    this.state = this.initialState
+                    this.state = 'walking'
                 } else {
                     this.setTexture(textures[0])
                 }
@@ -118,13 +118,14 @@ export default class Enemy extends Plane {
                     }
                 }
             }
-            if (this.state == "shooting" && UI.instance.health == 0) {
+            if (this.followingPlayer && UI.instance.health == 0) {
                 this.followingPlayer = null
                 this.dir = this.transform.position.to(camera.transform.position)
                 this.state = "standing"
             }
         }
         this.updateBuffers()
+        if (this.state == 'shooting') console.log('shooting')
     }
 
     damage(value: number) {
@@ -191,19 +192,21 @@ export default class Enemy extends Plane {
         if (!this.followingPlayer && this.initialState == "walking" && this.state == "walking") {
             const raycaster = Raycaster.fromDir(this.transform.position, this.dir)
             const nextShape = raycaster.nextShape(shapes)
-            const distance = this.transform.position.distanceTo(nextShape.transform.position)
-            if (distance <= Config.gridSize && !this.nextDir) {
-                this.nextDir = this.dir.inverted
-                this.state = "standing"
-                setTimeout(() => {
-                    this.dir = this.nextDir
-                    this.nextDir = null
+            if (nextShape) {
+                const distance = this.transform.position.distanceTo(nextShape.transform.position)
+                if (distance <= Config.gridSize && !this.nextDir) {
+                    this.nextDir = this.dir.inverted
+                    this.state = "standing"
                     setTimeout(() => {
-                        this.state = "walking"
-                    }, 500)
-                }, 1000)
+                        this.dir = this.nextDir
+                        setTimeout(() => {
+                            this.state = "walking"
+                            this.nextDir = null
+                        }, 500)
+                    }, 1000)
+                }
+                this.transform.position = this.transform.position.add(this.dir.multiply(this.followingSpeed * deltaTime))
             }
-            this.transform.position = this.transform.position.add(this.dir.multiply(this.followingSpeed * deltaTime))
         }
     }
 
@@ -222,20 +225,25 @@ export default class Enemy extends Plane {
     canSee(target: Vec3, shapes: Shape[]) {
         const raycaster = Raycaster.fromTo(this.transform.position, target.yZeroed)
         const nextShape = raycaster.nextShape(shapes)
+        if (!nextShape) return false
         return nextShape.transform.position.yZeroed.distanceTo(this.transform.position.yZeroed) > this.transform.position.yZeroed.distanceTo(target.yZeroed)
     }
 
     tryToShoot(camera: Camera, shapes: Shape[]) {
-        if (this.followingPlayer) {
-            if (this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance) {
-                if (this.canSee(camera.transform.position, shapes)) {
-                    console.log('cansee')
-                    this.state = "shooting"
-                    return true
+        if (UI.instance.health > 0) {
+            if (this.followingPlayer) {
+                if (this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance) {
+                    if (this.canSee(camera.transform.position, shapes)) {
+                        this.state = "shooting"
+                        return true
+                    }
                 }
             }
+            // this.state = 'walking'
+        } else {
+            this.state = 'standing'
+            this.followingPlayer = null
         }
-        this.state = 'walking'
         return false
     }
 

@@ -148,10 +148,10 @@ export default class Game {
 
                             startFollowing = true
                         }
-                        // 123
                     }
                     if (startFollowing) {
                         enemy.followingPlayer = this.camera
+                        enemy.state = "walking"
                     }
                 }
                 const canShot = enemy.tryToShoot(this.camera, this.level.collidingCuboids)
