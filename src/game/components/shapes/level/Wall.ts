@@ -48,6 +48,10 @@ export default class Wall extends Cuboid {
     }
 
     get lightTexture() {
+        switch (this.value) {
+            case 'exitRailWall': return 100
+            case 'secretExitRailWall': return 122
+        }
         switch (this.textureColor) {
             case 'gray':
                 switch (this.textureName) {
@@ -72,6 +76,10 @@ export default class Wall extends Cuboid {
     }
 
     get darkTexture() {
-        return this.lightTexture + 1
+        switch (this.value) {
+            case 'exitRailWall': return this.lightTexture
+            case 'secretExitRailWall': return this.lightTexture
+            default: return this.lightTexture + 1
+        }
     }
 }

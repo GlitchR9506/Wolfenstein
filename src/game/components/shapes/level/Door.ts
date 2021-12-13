@@ -13,10 +13,31 @@ export default class Door extends Cuboid implements Interactable {
     importedTexture = texture
     audio = new BetterAudio(audio)
 
-    lightTexture = 104
-    lightSideTexture = 108
-    darkTexture = 105
-    darkSideTexture = 109
+    get lightTexture() {
+        console.log(this.type)
+        switch (this.type) {
+            case 'exitDoor': return 119
+            default: return 104
+        }
+    }
+    get lightSideTexture() {
+        switch (this.type) {
+            case 'exitDoor': return 119
+            default: return 108
+        }
+    }
+    get darkTexture() {
+        switch (this.type) {
+            case 'exitDoor': return 119
+            default: return 105
+        }
+    }
+    get darkSideTexture() {
+        switch (this.type) {
+            case 'exitDoor': return 119
+            default: return 109
+        }
+    }
 
     private opening = false
     private closing = false
@@ -81,10 +102,11 @@ export default class Door extends Cuboid implements Interactable {
         1, 0,
         0, 0,
     ])
-
-    constructor(gl: WebGLRenderingContext, program: Program) {
+    type: string
+    constructor(gl: WebGLRenderingContext, program: Program, type?: string) {
         super(gl, program)
         this.transform.scale = new Vec3(Config.gridSize, Config.gridSize, Config.gridSize * 6 / 64)
+        this.type = type
     }
 
     onCreation() {
@@ -146,7 +168,7 @@ export default class Door extends Cuboid implements Interactable {
         return this.transform.position.equals(this.positionFinal)
     }
 
-    interact() {
+    toggle() {
         if (this.closed) {
             this.closing = false
             this.opening = true
@@ -161,10 +183,14 @@ export default class Door extends Cuboid implements Interactable {
         }
     }
 
+    get canInteract() {
+        return this.closed
+    }
+
     tryToClose(deltaTime: number, camera: Camera, enemies: Enemy[]) {
         const nothingCollides = [camera, ...enemies].every(obj => obj.transform.position.yZeroed.distanceTo(this.initialTransform.position.yZeroed) > Config.gridSize * 2)
         if (nothingCollides && this.opened) {
-            this.interact()
+            this.toggle()
         }
     }
 }

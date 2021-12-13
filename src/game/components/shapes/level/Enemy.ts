@@ -179,8 +179,8 @@ export default class Enemy extends Plane {
                 if (futureField && futureField.shape == "door") {
                     const door = doors.find(d => d.initialTransform.position.yZeroed.equals(futureField.realPos.yZeroed))
                     if (door) {
-                        if (door.closed) {
-                            door.interact()
+                        if (door.canInteract) {
+                            door.toggle()
                         }
                     }
                     break

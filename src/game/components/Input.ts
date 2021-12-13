@@ -134,7 +134,7 @@ export default class Input {
                 Config.uiScale = 1
             } else if (e.code == "KeyV" && Config.debug) {
                 this.renderWalls = !this.renderWalls
-            } else if (e.code == 'Space') {
+            } else if (e.code == 'Space' || e.code == "Enter") {
                 if (UI.instance.state == "startScreen") {
                     UI.instance.state = "menu"
                 } else if (UI.instance.state == "menu") {

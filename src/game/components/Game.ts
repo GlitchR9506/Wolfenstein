@@ -83,9 +83,9 @@ export default class Game {
 
     private fixedUpdate(deltaTime: number) {
         if (Input.instance.interacting) {
-            const nearestInteractable = this.camera.nearest(this.level.interactables) as Interactable
+            const nearestInteractable = this.camera.nearest(this.level.interactables.filter(i => i.canInteract)) as Interactable
             if (this.camera.inInteractionDistance(nearestInteractable)) {
-                nearestInteractable.interact()
+                nearestInteractable.toggle()
                 Input.instance.justInteracted = true
             }
         }
@@ -190,6 +190,10 @@ export default class Game {
             for (let wall of this.level.walls) {
                 wall.draw(this.camera.viewProjectionMatrix)
             }
+        }
+
+        for (let exit of this.level.exits) {
+            exit.draw(this.camera.viewProjectionMatrix)
         }
 
         for (let door of this.level.doors) {

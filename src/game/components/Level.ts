@@ -29,6 +29,7 @@ import GoldenBox from './shapes/level/pickups/GoldenBox';
 import GoldenCrown from './shapes/level/pickups/GoldenCrown';
 import PowerUp from './shapes/level/pickups/PowerUp';
 import Pathfinder from './Pathfinder';
+import Lever from './shapes/level/Lever';
 
 
 export default class Level {
@@ -42,6 +43,7 @@ export default class Level {
     shapes: Shape[] = []
     floor: Plane
     ceiling: Plane
+    exits: Lever[]
     collidingCuboids: Cuboid[] = []
     interactables: Interactable[] = []
     textureProgram: TextureProgram
@@ -97,7 +99,7 @@ export default class Level {
     }
 
     private checkWallsDirections() {
-        for (let door of this.fields.filter(f => f.value == 'door')) {
+        for (let door of this.fields.filter(f => f.value == 'door' || f.value == "exitDoor")) {
             const horizontalNeighbours = this.fields
                 .filter(f => f.y == door.y && (f.x == door.x + 1 || f.x == door.x - 1))
                 .filter(f => f.value.toLowerCase().includes('wall'))
@@ -113,7 +115,7 @@ export default class Level {
     }
 
     private changeWallsNeighboursTextures() {
-        for (let door of this.fields.filter(f => f.value == 'door')) {
+        for (let door of this.fields.filter(f => f.value == 'door' || f.value == 'exitDoor')) {
             for (let direction of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
                 const neighbour = this.fields.find(f => {
                     return f.x == door.x + direction[0] && f.y == door.y + direction[1]
@@ -152,10 +154,13 @@ export default class Level {
         const goldenBoxes = this.getLevelObjectsList('goldBox', GoldenBox) as GoldenBox[]
         const goldenCrowns = this.getLevelObjectsList('goldCrown', GoldenCrown) as GoldenCrown[]
 
+        this.exits = []
+        this.exits.push(...this.getLevelObjectsList('exitLever', Lever) as Lever[])
+        this.exits.push(...this.getLevelObjectsList('secretExitLever', Lever) as Lever[])
+
         this.decorations = []
         for (let decorationName of DecorationMap.keys()) {
             this.decorations.push(...this.getLevelObjectsList(decorationName, Decoration) as Decoration[])
-
         }
         this.decorations.filter(d => !NotCollidingFieldValues.includes(d.type)).forEach(d => d.createBB())
 
@@ -167,8 +172,10 @@ export default class Level {
         this.collidingCuboids = []
         this.collidingCuboids.push(...this.walls)
         this.collidingCuboids.push(...this.doors)
+        this.collidingCuboids.push(...this.exits)
         this.interactables = []
         this.interactables.push(...this.doors)
+        this.interactables.push(...this.exits)
         this.pickups = []
         this.pickups.push(...ammos)
         this.pickups.push(...dogFoods)
@@ -225,6 +232,7 @@ export default class Level {
             ...this.doors,
             ...this.pickups,
             ...this.decorations,
+            ...this.exits,
             this.floor,
             this.ceiling,
         ]
@@ -232,7 +240,7 @@ export default class Level {
 
     private getLevelObjectsList<T extends Shape>(value: string, SpecificShape: new (gl: WebGLRenderingContext, program: Program, type?: string) => T) {
         const objects: Shape[] = []
-        for (let field of this.fields.filter(f => f.value.includes(value))) {
+        for (let field of this.fields.filter(f => f.value.toLowerCase().includes(value.toLowerCase()))) {
             let shape
             if (value.toLowerCase().includes('wall')) {
                 shape = new Wall(this.gl, this.textureProgram, field.value)
@@ -241,6 +249,13 @@ export default class Level {
                     shape = new Enemy(this.gl, this.textureProgram, 'z')
                 } else if (field.value == 'enemyXWalking') {
                     shape = new Enemy(this.gl, this.textureProgram, 'x')
+                }
+            } else if (field.value.toLowerCase().includes("door")) {
+                if (field.value == 'exitDoor') {
+                    console.log(field.value.toLowerCase())
+                    shape = new Door(this.gl, this.textureProgram, field.value)
+                } else {
+                    shape = new Door(this.gl, this.textureProgram)
                 }
             } else if (field.value.toLowerCase().includes("enemy")) {
                 for (let dir of ['up', 'down', 'left', 'right']) {
