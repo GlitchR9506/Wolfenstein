@@ -139,8 +139,10 @@ export default class Input {
                     UI.instance.state = "menu"
                 } else if (UI.instance.state == "menu") {
                     if (UI.instance.menu.option == 0) {
+                        UI.instance.menu.audioSelect.play()
                         UI.instance.state = "game"
                     } else if (UI.instance.menu.option == 8) {
+                        UI.instance.menu.audioSelect.play()
                         UI.instance.state = "startScreen"
                     }
                 }

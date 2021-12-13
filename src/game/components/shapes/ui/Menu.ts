@@ -3,7 +3,10 @@ import menuSelected from '../../../textures/menuSelected.png'
 import menuSelectedBlink from '../../../textures/menuSelectedBlink.png'
 import Config from '../../Config'
 import { Vec2 } from '../../utils'
-
+import BetterAudio from '../../BetterAudio'
+import audioSelect from '../../../sounds/Menu Select.wav'
+import audioToggle from '../../../sounds/Menu Toggle.wav'
+import UI from './UI'
 
 export default class Menu {
     canvas: HTMLCanvasElement
@@ -11,7 +14,8 @@ export default class Menu {
     private menuUnselected: HTMLImageElement
     private menuSelected: HTMLImageElement
     private menuSelectedBlink: HTMLImageElement
-
+    audioSelect = new BetterAudio(audioSelect)
+    audioToggle = new BetterAudio(audioToggle)
     option = 0
 
     constructor() {
@@ -20,7 +24,7 @@ export default class Menu {
 
         this.canvas.width = 640
         this.canvas.height = 400
-
+        console.log('created')
 
         this.menuUnselected = new Image();
         this.menuUnselected.src = menuUnselected;
@@ -32,11 +36,14 @@ export default class Menu {
         this.menuSelectedBlink.src = menuSelectedBlink;
 
         addEventListener("keydown", e => {
-            if (e.code == "ArrowDown" || e.code == "ArrowUp") {
-                if (this.option == 0) {
-                    this.option = 8
-                } else {
-                    this.option = 0
+            if (UI.instance.state == "menu") {
+                if (e.code == "ArrowDown" || e.code == "ArrowUp") {
+                    if (this.option == 0) {
+                        this.option = 8
+                    } else {
+                        this.option = 0
+                    }
+                    this.audioToggle.play()
                 }
             }
         })
