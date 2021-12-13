@@ -141,13 +141,26 @@ export default class Pathfinder {
             new Vec2(1, 0),
             new Vec2(1, 1),
         ]
-        const neighbourPositions = neighbourDiffs.map(diff => field.position.add(diff))
-        const neighbours = neighbourPositions.map(neighbourPos => {
+        const neighbours = neighbourDiffs.map(diff => {
+            const neighbourPos = field.position.add(diff)
             const subFieldAlreadyCreated = this.allSubFieldsCreated.find(field => field.position.equals(neighbourPos))
             if (subFieldAlreadyCreated) {
                 return subFieldAlreadyCreated
             } else {
-                const { walkable, shape } = this.subFieldPosData(neighbourPos)
+                let { walkable, shape } = this.subFieldPosData(neighbourPos)
+                if (diff.x && diff.y && walkable) {
+                    const possibleCorners = [
+                        new Vec2(neighbourPos.x, field.position.y),
+                        new Vec2(field.position.x, neighbourPos.y),
+                    ]
+                    const allWalkable = possibleCorners.every(corner => {
+                        const { walkable, shape } = this.subFieldPosData(corner)
+                        return walkable
+                    })
+                    if (!allWalkable) {
+                        walkable = false
+                    }
+                }
                 const subField = new PathField(neighbourPos, walkable, shape)
                 this.allSubFieldsCreated.push(subField)
                 return subField

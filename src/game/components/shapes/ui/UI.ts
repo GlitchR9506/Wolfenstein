@@ -21,7 +21,7 @@ export default class UI {
     floor: number = 1
     score: number = 0
     lives: number = 3
-    health: number = 1
+    health: number = 100
     ammo: number = 8
     weapon: string = 'pistol'
 
