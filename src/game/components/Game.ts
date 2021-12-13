@@ -129,22 +129,36 @@ export default class Game {
             if (enemy.isDead) {
                 enemy.followingPlayer = null
             } else {
-                let startFollowing = false
-                if (enemy.inNoticeDistance(this.camera) && this.camera.weapons.currentWeapon.justShot) {
-                    startFollowing = true
-                }
-                if (enemy.canSee(this.camera.transform.position, this.level.collidingCuboids)) {
-                    startFollowing = true
-                }
-                if (startFollowing) {
-                    enemy.followingPlayer = this.camera
+                const angleDiff = enemy.rotateTexture(this.camera.transform.position)
+                if (!enemy.followingPlayer) {
+                    let startFollowing = false
+
+
+                    // inShotNoticeDistance(camera: Camera) {
+                    //     return this.transform.position.horizontalDistanceTo(camera.transform.position) <= this.shotNoticeDistance
+                    // }
+                    const distance = enemy.transform.position.horizontalDistanceTo(this.camera.transform.position)
+                    if (enemy.canSee(this.camera.transform.position, this.level.collidingCuboids)) {
+                        if (this.camera.weapons.currentWeapon.justShot) {
+                            startFollowing = true
+                        } else if (Math.abs(angleDiff) <= 90) {
+
+                            startFollowing = true
+                        } else if (distance <= Config.gridSize * 2) {
+
+                            startFollowing = true
+                        }
+                        // 123
+                    }
+                    if (startFollowing) {
+                        enemy.followingPlayer = this.camera
+                    }
                 }
                 const canShot = enemy.tryToShoot(this.camera, this.level.collidingCuboids)
                 if (!canShot) {
                     enemy.makeStepTowardsPlayer(deltaTime, this.level.doors)
                 }
                 enemy.makeStepIfWalking(deltaTime, this.level.collidingCuboids)
-                enemy.rotateTexture(this.camera.transform.position)
             }
         }
 

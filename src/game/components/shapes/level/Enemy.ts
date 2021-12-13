@@ -40,7 +40,7 @@ export default class Enemy extends Plane {
         ['dead', [44]],
     ])
 
-    private noticeDistance = Config.gridSize * 5
+    shotNoticeDistance = Config.gridSize * 10
     private dir = Vec3.zero
     private shootingDistance = Config.gridSize * 5
     private damageDealed = 8
@@ -144,10 +144,6 @@ export default class Enemy extends Plane {
         this.transform.rotation.y = -cameraY
     }
 
-    inNoticeDistance(camera: Camera) {
-        return this.transform.position.horizontalDistanceTo(camera.transform.position) <= this.noticeDistance
-    }
-
     pathfind(destination: Vec3) {
 
     }
@@ -220,6 +216,7 @@ export default class Enemy extends Plane {
         if (angleDiff < -180) angleDiff += 360
         const correctedDiff = angleDiff > 0 ? angleDiff + 22.5 : angleDiff - 22.5
         this.textureRotation = parseInt((correctedDiff / 45).toString())
+        return angleDiff
     }
 
     canSee(target: Vec3, shapes: Shape[]) {
@@ -229,11 +226,13 @@ export default class Enemy extends Plane {
     }
 
     tryToShoot(camera: Camera, shapes: Shape[]) {
-        if (this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance) {
-            if (this.canSee(camera.transform.position, shapes)) {
-                console.log('cansee')
-                this.state = "shooting"
-                return true
+        if (this.followingPlayer) {
+            if (this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance) {
+                if (this.canSee(camera.transform.position, shapes)) {
+                    console.log('cansee')
+                    this.state = "shooting"
+                    return true
+                }
             }
         }
         this.state = 'walking'
