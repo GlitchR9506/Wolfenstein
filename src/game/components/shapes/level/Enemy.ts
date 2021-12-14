@@ -230,14 +230,17 @@ export default class Enemy extends Plane {
     }
 
     tryToShoot(camera: Camera, shapes: Shape[]) {
+        if (this.state == 'dead' || this.state == "dying" || this.state == "hit" || !this.followingPlayer) return false
         if (UI.instance.health > 0) {
-            if (this.followingPlayer) {
-                if (this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance) {
-                    if (this.canSee(camera.transform.position, shapes)) {
-                        this.state = "shooting"
-                        return true
-                    }
-                }
+            if (
+                this.transform.position.distanceTo(camera.transform.position) <= this.shootingDistance
+                && this.canSee(camera.transform.position, shapes)
+            ) {
+                this.state = "shooting"
+                return true
+            } else {
+                this.state = "walking"
+                return false
             }
             // this.state = 'walking'
         } else {

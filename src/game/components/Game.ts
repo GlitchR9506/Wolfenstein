@@ -155,6 +155,7 @@ export default class Game {
                     }
                 }
                 const canShot = enemy.tryToShoot(this.camera, this.level.collidingCuboids)
+                // console.log(enemy.state)
                 if (!canShot) {
                     enemy.makeStepTowardsPlayer(deltaTime, this.level.doors)
                 }
