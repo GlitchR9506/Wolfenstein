@@ -8,5 +8,6 @@ export default abstract class PointItem extends Pickup {
 
     onPickedUp(camera: Camera) {
         UI.instance.score += this.givenScore
+        UI.instance.treasuresFound++
     }
 }

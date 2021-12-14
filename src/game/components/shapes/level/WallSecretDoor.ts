@@ -5,6 +5,7 @@ import Interactable from './Interactable'
 import Camera from '../../Camera'
 import audio from "../../../sounds/Secret Entrance.wav"
 import BetterAudio from '../../BetterAudio'
+import UI from '../ui/UI'
 
 
 export default class WallSecretDoor extends Wall implements Interactable {
@@ -17,8 +18,11 @@ export default class WallSecretDoor extends Wall implements Interactable {
     audio = new BetterAudio(audio)
 
     toggle() {
-        this.opening = true
-        this.audio.play()
+        if (!this.opening) {
+            this.opening = true
+            UI.instance.secretsFound++
+            this.audio.play()
+        }
     }
 
     update(deltaTime: number, camera: Camera) {

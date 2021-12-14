@@ -8,6 +8,7 @@ import audioSplash from "../../../sounds/theme_splash.mp3"
 import audioMenu from "../../../sounds/theme_menu.mp3"
 import audioLevel from "../../../sounds/theme_level.mp3"
 import BetterAudio from '../../BetterAudio'
+import LevelEnd from './LevelEnd';
 
 
 type FaceDirection = "left" | "normal" | "right"
@@ -45,6 +46,7 @@ export default class UI {
     state = 'startScreen'
 
     menu: Menu
+    levelEnd: LevelEnd
 
     flashing = false
     flashCompletion = 0
@@ -52,8 +54,20 @@ export default class UI {
     flashColor: string
     flashIntensity: number
 
+    startTime: Date
+    endTime: Date
+
+    enemiesKilled: number = 0
+    secretsFound: number = 0
+    treasuresFound: number = 0
+
+    enemiesCount: number
+    secretsCount: number
+    treasuresCount: number
+
     constructor() {
         this.menu = new Menu()
+        this.levelEnd = new LevelEnd()
         this.audioSplash.loop()
         this.audioMenu.loop()
         this.audioLevel.loop()
@@ -108,6 +122,7 @@ export default class UI {
             this.startFaceAnimation()
         }
         this.menu.update(deltaTime)
+        this.levelEnd.update(deltaTime)
         if (this.flashing) {
             this.flashCompletion += deltaTime / this.flashDuration
             if (this.flashCompletion >= 1) {
@@ -155,6 +170,8 @@ export default class UI {
             this.context.drawImage(this.startScreen, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         } else if (this.state == "menu") {
             this.context.drawImage(this.menu.canvas, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
+        } else if (this.state == "end") {
+            this.context.drawImage(this.levelEnd.canvas, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         }
     }
 

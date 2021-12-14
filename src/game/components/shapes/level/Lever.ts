@@ -4,6 +4,7 @@ import texture from '../../../textures/wall.png'
 import Config from '../../Config'
 import { Program } from '../../programs/Program'
 import Interactable from './Interactable'
+import UI from '../ui/UI'
 
 export default class Lever extends Cuboid implements Interactable {
     importedTexture = texture
@@ -36,6 +37,9 @@ export default class Lever extends Cuboid implements Interactable {
 
     toggle() {
         this.setTexture(this.pressedTexture)
+        UI.instance.state = 'end'
+        UI.instance.levelEnd.getTime()
+        UI.instance.endTime = new Date()
         this.updateBuffers()
     }
 }

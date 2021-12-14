@@ -144,6 +144,7 @@ export default class Input {
                         UI.instance.menu.audioSelect.play()
                         UI.instance.audioMenu.pause()
                         UI.instance.audioLevel.play()
+                        UI.instance.startTime = new Date()
                         UI.instance.state = "game"
                     } else if (UI.instance.menu.option == 8) {
                         UI.instance.menu.audioSelect.play()

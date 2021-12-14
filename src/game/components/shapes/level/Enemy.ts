@@ -89,43 +89,48 @@ export default class Enemy extends Plane {
     }
 
     update(deltaTime: number, camera: Camera) {
-        this.timeSinceLastUpdate += deltaTime
-        const frameTime = this.state == "shooting" ? 0.3 : this.frameTime
-        if (this.timeSinceLastUpdate > frameTime) {
-            this.timeSinceLastUpdate = 0
-            const textures = this.stateToTextureMap.get(this.state)
-            const index = textures.indexOf(this.textureNumber) + 1
-            if (index < textures.length) {
-                this.setTexture(textures[index])
-            } else {
-                this.textureNumber = 0
-                if (this.state == 'dying') {
-                    this.state = 'dead'
-                } else if (this.state == 'hit') {
-                    this.state = 'walking'
+        if (UI.instance.state == 'end') {
+            this.followingPlayer = null
+        } else {
+            this.timeSinceLastUpdate += deltaTime
+            const frameTime = this.state == "shooting" ? 0.3 : this.frameTime
+            if (this.timeSinceLastUpdate > frameTime) {
+                this.timeSinceLastUpdate = 0
+                const textures = this.stateToTextureMap.get(this.state)
+                const index = textures.indexOf(this.textureNumber) + 1
+                if (index < textures.length) {
+                    this.setTexture(textures[index])
                 } else {
-                    this.setTexture(textures[0])
-                }
-            }
-            if (this.state == "shooting" && index == textures.length - 1) {
-                if (UI.instance.health > 0) {
-                    UI.instance.health -= this.damageDealed
-                    UI.instance.flashRed()
-                    this.audioShot.play()
-                    camera.audioHit.play()
-                    if (UI.instance.health <= 0) {
-                        UI.instance.health = 0
-                        camera.killer = this
+                    this.textureNumber = 0
+                    if (this.state == 'dying') {
+                        this.state = 'dead'
+                        UI.instance.enemiesKilled++
+                    } else if (this.state == 'hit') {
+                        this.state = 'walking'
+                    } else {
+                        this.setTexture(textures[0])
                     }
                 }
+                if (this.state == "shooting" && index == textures.length - 1) {
+                    if (UI.instance.health > 0) {
+                        UI.instance.health -= this.damageDealed
+                        UI.instance.flashRed()
+                        this.audioShot.play()
+                        camera.audioHit.play()
+                        if (UI.instance.health <= 0) {
+                            UI.instance.health = 0
+                            camera.killer = this
+                        }
+                    }
+                }
+                if (this.followingPlayer && UI.instance.health == 0) {
+                    this.followingPlayer = null
+                    this.dir = this.transform.position.to(camera.transform.position)
+                    this.state = "standing"
+                }
             }
-            if (this.followingPlayer && UI.instance.health == 0) {
-                this.followingPlayer = null
-                this.dir = this.transform.position.to(camera.transform.position)
-                this.state = "standing"
-            }
+            this.updateBuffers()
         }
-        this.updateBuffers()
     }
 
     damage(value: number) {
@@ -169,7 +174,7 @@ export default class Enemy extends Plane {
                     this.pathfinderFields = []
                 }
             }
-            if (this.pathfinderFields.length < 1) return
+            if (this.pathfinderFields.length <= 1) return
             this.dir = this.pathfinderFields[1].subGridPos.substract(this.transform.position).yZeroed.normalize
             for (let i = 1; i < 3; i++) {
                 const futureField = this.pathfinderFields[i]

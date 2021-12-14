@@ -31,6 +31,8 @@ import PowerUp from './shapes/level/pickups/PowerUp';
 import Pathfinder from './Pathfinder';
 import Lever from './shapes/level/Lever';
 import WallSecretDoor from './shapes/level/WallSecretDoor';
+import UI from './shapes/ui/UI';
+import PointItem from './shapes/level/pickups/PointItem';
 
 
 export default class Level {
@@ -224,6 +226,9 @@ export default class Level {
         //     this.pickups.push(health)
         // }
 
+        UI.instance.enemiesCount = this.enemies.length
+        UI.instance.secretsCount = this.secretWalls.length
+        UI.instance.treasuresCount = this.pickups.filter(p => p instanceof PointItem).length
 
         this.shapes = [
             ...this.walls,
