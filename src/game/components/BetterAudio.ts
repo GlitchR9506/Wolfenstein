@@ -4,9 +4,9 @@ export default class BetterAudio {
     audio: HTMLAudioElement
     canBePaused = false
 
-    constructor(sound: string) {
+    constructor(sound: string, volume?: number) {
         this.audio = new Audio(sound)
-        this.audio.volume = Config.volume
+        this.audio.volume = volume || Config.soundVolume
     }
 
     play() {
@@ -21,5 +21,17 @@ export default class BetterAudio {
         // this.audio.play().then(() => {
         //     this.canBePaused = false
         // })
+    }
+
+    playIfNotPlayed() {
+        this.audio.play()
+    }
+
+    pause() {
+        this.audio.pause()
+    }
+
+    loop() {
+        this.audio.loop = true
     }
 }

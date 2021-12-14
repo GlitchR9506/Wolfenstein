@@ -137,12 +137,18 @@ export default class Input {
             } else if (e.code == 'Space' || e.code == "Enter") {
                 if (UI.instance.state == "startScreen") {
                     UI.instance.state = "menu"
+                    UI.instance.audioSplash.pause()
+                    UI.instance.audioMenu.play()
                 } else if (UI.instance.state == "menu") {
                     if (UI.instance.menu.option == 0) {
                         UI.instance.menu.audioSelect.play()
+                        UI.instance.audioMenu.pause()
+                        UI.instance.audioLevel.play()
                         UI.instance.state = "game"
                     } else if (UI.instance.menu.option == 8) {
                         UI.instance.menu.audioSelect.play()
+                        UI.instance.audioMenu.pause()
+                        UI.instance.audioSplash.play()
                         UI.instance.state = "startScreen"
                     }
                 }

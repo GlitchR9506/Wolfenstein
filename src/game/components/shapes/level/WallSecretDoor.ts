@@ -3,6 +3,9 @@ import Config from '../../Config'
 import Wall from './Wall'
 import Interactable from './Interactable'
 import Camera from '../../Camera'
+import audio from "../../../sounds/Secret Entrance.wav"
+import BetterAudio from '../../BetterAudio'
+
 
 export default class WallSecretDoor extends Wall implements Interactable {
     canInteract = true
@@ -10,10 +13,12 @@ export default class WallSecretDoor extends Wall implements Interactable {
 
     private dir: Vec3
     private opening = false
-    private openingSpeed = Config.gridSize * 0.5
+    private openingSpeed = Config.gridSize * 0.7
+    audio = new BetterAudio(audio)
 
     toggle() {
         this.opening = true
+        this.audio.play()
     }
 
     update(deltaTime: number, camera: Camera) {

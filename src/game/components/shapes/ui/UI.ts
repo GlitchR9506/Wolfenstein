@@ -4,6 +4,12 @@ import uiElements from '../../../textures/uiElements.png'
 import startScreen from '../../../textures/startScreen.png'
 import Menu from './Menu';
 
+import audioSplash from "../../../sounds/theme_splash.mp3"
+import audioMenu from "../../../sounds/theme_menu.mp3"
+import audioLevel from "../../../sounds/theme_level.mp3"
+import BetterAudio from '../../BetterAudio'
+
+
 type FaceDirection = "left" | "normal" | "right"
 type FaceState = "normal" | "dead" | "win"
 type FaceAnimationStep = {
@@ -17,6 +23,10 @@ export default class UI {
     elements: HTMLImageElement
     startScreen: HTMLImageElement
     context: CanvasRenderingContext2D
+
+    audioSplash = new BetterAudio(audioSplash, Config.musicVolume)
+    audioMenu = new BetterAudio(audioMenu, Config.musicVolume)
+    audioLevel = new BetterAudio(audioLevel, Config.musicVolume)
 
     floor: number = 1
     score: number = 0
@@ -44,6 +54,9 @@ export default class UI {
 
     constructor() {
         this.menu = new Menu()
+        this.audioSplash.loop()
+        this.audioMenu.loop()
+        this.audioLevel.loop()
     }
 
     init() {
@@ -62,10 +75,14 @@ export default class UI {
 
         this.context = uiCanvas.getContext('2d') as CanvasRenderingContext2D
         this.context.imageSmoothingEnabled = false;
+
+        uiCanvas.onclick = () => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
+        document.onkeydown = () => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
+        document.onkeyup = () => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
     }
 
     takeLife() {
-        if (this.lives == 9) {
+        if (this.lives == 0) {
             this.floor = 1
         } else {
             this.lives--

@@ -35,7 +35,7 @@ module.exports = {
                 loader: 'ts-shader-loader'
             },
             {
-                test: /\.(png|jp(e*)g|svg|wav)$/,
+                test: /\.(png|jp(e*)g|svg|wav|mp3)$/,
                 type: 'asset/resource'
             },
         ],
