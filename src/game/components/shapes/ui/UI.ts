@@ -97,7 +97,6 @@ export default class UI {
                 this.flashCompletion = 0
                 this.flashing = false
             }
-            console.log(this.flashCompletion)
         }
     }
 

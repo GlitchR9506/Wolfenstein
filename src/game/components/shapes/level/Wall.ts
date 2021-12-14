@@ -47,7 +47,24 @@ export default class Wall extends Cuboid {
         return null
     }
 
-    get lightTexture() {
+
+    get lightTexture(): number {
+        if (this.transform.rotation.y) {
+            return this._darkTexture
+        } else {
+            return this._lightTexture
+        }
+    }
+
+    get darkTexture() {
+        if (this.transform.rotation.y) {
+            return this._lightTexture
+        } else {
+            return this._darkTexture
+        }
+    }
+
+    private get _lightTexture() {
         switch (this.value) {
             case 'exitRailWall': return 100
             case 'secretExitRailWall': return 122
@@ -75,11 +92,11 @@ export default class Wall extends Cuboid {
         }
     }
 
-    get darkTexture() {
+    private get _darkTexture() {
         switch (this.value) {
-            case 'exitRailWall': return this.lightTexture
-            case 'secretExitRailWall': return this.lightTexture
-            default: return this.lightTexture + 1
+            case 'exitRailWall': return this._lightTexture
+            case 'secretExitRailWall': return this._lightTexture
+            default: return this._lightTexture + 1
         }
     }
 }

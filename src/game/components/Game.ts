@@ -83,8 +83,15 @@ export default class Game {
 
     private fixedUpdate(deltaTime: number) {
         if (Input.instance.interacting) {
-            const nearestInteractable = this.camera.nearest(this.level.interactables.filter(i => i.canInteract)) as Interactable
-            if (this.camera.inInteractionDistance(nearestInteractable)) {
+            const nearestInteractable = this.camera.nearest(
+                this.level.interactables
+                    .filter(i => i.canInteract)
+                    .filter(i => {
+                        const angle = this.camera.angleTo(i.transform.position)
+                        return Math.abs(angle) < 60
+                    })
+            ) as Interactable
+            if (nearestInteractable && this.camera.inInteractionDistance(nearestInteractable)) {
                 nearestInteractable.toggle()
                 Input.instance.justInteracted = true
             }
