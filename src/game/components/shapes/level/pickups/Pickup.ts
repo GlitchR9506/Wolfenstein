@@ -7,6 +7,7 @@ import { degToRad, Vec2, Vec3 } from '../../../utils'
 import Plane from '../Plane'
 import audio from "../../../../sounds/Pickup.wav"
 import BetterAudio from '../../../BetterAudio'
+import UI from '../../ui/UI'
 
 export default abstract class Pickup extends Plane {
     importedTexture = texture
@@ -42,6 +43,7 @@ export default abstract class Pickup extends Plane {
         if (!this.pickedUp && this.canBePickedUp(camera)) {
             this.onPickedUp(camera)
             this.audio.play()
+            UI.instance.flashYellow()
             this.pickedUp = true
         }
     }

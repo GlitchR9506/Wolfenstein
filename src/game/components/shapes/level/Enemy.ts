@@ -110,6 +110,7 @@ export default class Enemy extends Plane {
             if (this.state == "shooting" && index == textures.length - 1) {
                 if (UI.instance.health > 0) {
                     UI.instance.health -= this.damageDealed
+                    UI.instance.flashRed()
                     this.audioShot.play()
                     camera.audioHit.play()
                     if (UI.instance.health <= 0) {

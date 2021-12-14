@@ -36,6 +36,12 @@ export default class UI {
 
     menu: Menu
 
+    flashing = false
+    flashCompletion = 0
+    flashDuration = 0.2
+    flashColor: string
+    flashIntensity: number
+
     constructor() {
         this.menu = new Menu()
     }
@@ -85,6 +91,14 @@ export default class UI {
             this.startFaceAnimation()
         }
         this.menu.update(deltaTime)
+        if (this.flashing) {
+            this.flashCompletion += deltaTime / this.flashDuration
+            if (this.flashCompletion >= 1) {
+                this.flashCompletion = 0
+                this.flashing = false
+            }
+            console.log(this.flashCompletion)
+        }
     }
 
     startFaceAnimation() {
@@ -116,6 +130,11 @@ export default class UI {
         this.drawNumber(this.ammo, 464, 352)
         this.drawWeapon()
         this.drawFace()
+        if (this.flashing) {
+            this.context.fillStyle = `rgba(${this.flashColor}, ${(1 - this.flashCompletion) * this.flashIntensity})`
+            // this.context.fillStyle = `rgba(${this.flashColor}, ${(1 - this.flashCompletion) * 0.6})`
+            this.context.fillRect(0, 0, this.context.canvas.width, this.context.canvas.height);
+        }
         if (this.state == "startScreen") {
             this.context.drawImage(this.startScreen, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         } else if (this.state == "menu") {
@@ -211,4 +230,15 @@ export default class UI {
 
     }
 
+    flashRed() {
+        this.flashColor = "255, 0, 0"
+        this.flashIntensity = 0.3
+        this.flashing = true
+    }
+
+    flashYellow() {
+        this.flashColor = "255, 255, 0"
+        this.flashIntensity = 0.2
+        this.flashing = true
+    }
 }
