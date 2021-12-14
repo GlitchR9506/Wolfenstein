@@ -105,6 +105,9 @@ export default class Game {
                 door.tryToClose(deltaTime, this.camera, this.level.enemies)
             }
         }
+        for (let secretWall of this.level.secretWalls) {
+            secretWall.update(deltaTime, this.camera)
+        }
 
         const raycaster = Raycaster.fromDir(this.camera.transform.position, Vec3.fromAngle(this.camera.transform.rotation.y))
         const shapeLookedAt = raycaster.nextShape(this.level.collidingCuboids)
@@ -203,6 +206,9 @@ export default class Game {
 
         if (Input.instance.renderWalls) {
             for (let wall of this.level.walls) {
+                wall.draw(this.camera.viewProjectionMatrix)
+            }
+            for (let wall of this.level.secretWalls) {
                 wall.draw(this.camera.viewProjectionMatrix)
             }
         }

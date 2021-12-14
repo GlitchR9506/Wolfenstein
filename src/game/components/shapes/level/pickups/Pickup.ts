@@ -12,7 +12,7 @@ export default abstract class Pickup extends Plane {
     importedTexture = texture
     audio = new BetterAudio(audio)
 
-    pickupRange = Config.gridSize * 0.3
+    pickupRange = Config.gridSize * 0.5
     pickedUp = false
 
     private firstTextureSet = false

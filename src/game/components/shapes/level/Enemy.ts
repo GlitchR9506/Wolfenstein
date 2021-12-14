@@ -125,7 +125,6 @@ export default class Enemy extends Plane {
             }
         }
         this.updateBuffers()
-        if (this.state == 'shooting') console.log('shooting')
     }
 
     damage(value: number) {

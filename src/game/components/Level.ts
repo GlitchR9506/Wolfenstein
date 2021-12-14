@@ -30,6 +30,7 @@ import GoldenCrown from './shapes/level/pickups/GoldenCrown';
 import PowerUp from './shapes/level/pickups/PowerUp';
 import Pathfinder from './Pathfinder';
 import Lever from './shapes/level/Lever';
+import WallSecretDoor from './shapes/level/WallSecretDoor';
 
 
 export default class Level {
@@ -39,6 +40,7 @@ export default class Level {
     playerPosition: Vec3
     enemies: Enemy[] = []
     walls: Wall[] = []
+    secretWalls: WallSecretDoor[] = []
     doors: Door[] = []
     shapes: Shape[] = []
     floor: Plane
@@ -99,7 +101,7 @@ export default class Level {
     }
 
     private checkWallsDirections() {
-        for (let door of this.fields.filter(f => f.value == 'door' || f.value == "exitDoor")) {
+        for (let door of this.fields.filter(f => f.value == 'door' || f.value == "exitDoor" || (f.value.toLowerCase().includes('secret') && f.value.toLowerCase().includes('wall')))) {
             const horizontalNeighbours = this.fields
                 .filter(f => f.y == door.y && (f.x == door.x + 1 || f.x == door.x - 1))
                 .filter(f => f.value.toLowerCase().includes('wall'))
@@ -138,9 +140,7 @@ export default class Level {
         const playerPositionData = this.fields.find(f => f.value == 'player')
         this.playerPosition = new Vec3(playerPositionData.x, 0, playerPositionData.y)
 
-        const grayWalls = this.getLevelObjectsList('wall', Wall) as Wall[]
-        const blueWalls = this.getLevelObjectsList('blueWall', Wall) as Wall[]
-        const brownWalls = this.getLevelObjectsList('brownWall', Wall) as Wall[]
+        this.walls = this.getLevelObjectsList('wall', Wall) as Wall[]
         this.enemies = this.getLevelObjectsList('enemy', Enemy) as Enemy[]
         this.doors = this.getLevelObjectsList('door', Door) as Door[]
         const ammos = this.getLevelObjectsList('ammo', Ammo) as Ammo[]
@@ -164,17 +164,16 @@ export default class Level {
         }
         this.decorations.filter(d => !NotCollidingFieldValues.includes(d.type)).forEach(d => d.createBB())
 
-        this.walls = []
-        this.walls.push(...grayWalls)
-        this.walls.push(...blueWalls)
-        this.walls.push(...brownWalls)
-
+        this.secretWalls = this.walls.filter(w => w instanceof WallSecretDoor).map(w => w as WallSecretDoor)
+        this.walls = this.walls.filter(w => !(w instanceof WallSecretDoor))
         this.collidingCuboids = []
         this.collidingCuboids.push(...this.walls)
+        this.collidingCuboids.push(...this.secretWalls)
         this.collidingCuboids.push(...this.doors)
         this.collidingCuboids.push(...this.exits)
         this.interactables = []
         this.interactables.push(...this.doors)
+        this.interactables.push(...this.secretWalls)
         this.interactables.push(...this.exits)
         this.pickups = []
         this.pickups.push(...ammos)
@@ -228,6 +227,7 @@ export default class Level {
 
         this.shapes = [
             ...this.walls,
+            ...this.secretWalls,
             ...this.enemies,
             ...this.doors,
             ...this.pickups,
@@ -242,8 +242,12 @@ export default class Level {
         const objects: Shape[] = []
         for (let field of this.fields.filter(f => f.value.toLowerCase().includes(value.toLowerCase()))) {
             let shape
-            if (value.toLowerCase().includes('wall')) {
-                shape = new Wall(this.gl, this.textureProgram, field.value)
+            if (field.value.toLowerCase().includes('wall')) {
+                if (field.value.toLowerCase().includes('wallsecret')) {
+                    shape = new WallSecretDoor(this.gl, this.textureProgram, field.value)
+                } else {
+                    shape = new Wall(this.gl, this.textureProgram, field.value)
+                }
             } else if (field.value.toLowerCase().includes("walking")) {
                 if (field.value == 'enemyZWalking') {
                     shape = new Enemy(this.gl, this.textureProgram, 'z')
@@ -270,9 +274,13 @@ export default class Level {
             if (field.rotation) {
                 shape.transform.rotation.y = degToRad(field.rotation)
             }
+            if (field.value.toLowerCase().includes('wall')) {
+                if (field.value.toLowerCase().includes('wallsecret')) {
+                    (shape as WallSecretDoor).dirToCalculate = true
+                }
+            }
             shape.setInitialState()
             if (field.wallDirection && shape instanceof Wall) {
-                // shape.type == type
                 const dir = new Vec3(field.wallDirection[0], 0, field.wallDirection[1])
                 if (dir.equals(Vec3.backward)) {
                     shape.setTexture(shape.nearDoorDarkTexture, 0)
@@ -289,7 +297,6 @@ export default class Level {
             } else if (shape instanceof Decoration) {
                 shape.type = value
                 shape.setTexture(shape.textureNumber)
-                // console.log(value)
             }
             objects.push(shape)
         }
