@@ -183,7 +183,7 @@ export default class Game {
                 UI.instance.state = "game"
                 this.camera.killer = null
                 this.loadLevel(this.currentLevel)
-            }, 6000)
+            }, 4000)
         }
         if (this.camera.killer) {
             this.camera.lookAtKillerStep(deltaTime)

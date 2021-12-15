@@ -107,12 +107,14 @@ export default class UI {
     takeLife() {
         if (this.lives == 0) {
             this.floor = 1
+            this.lives = 3
         } else {
             this.lives--
         }
         this.health = 100
         this.ammo = 8
         this.weapon = "pistol"
+        this.score = 0
     }
 
     update(deltaTime: number) {
@@ -187,9 +189,9 @@ export default class UI {
         } else if (this.state == "end") {
             this.context.drawImage(this.levelEnd.canvas, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         } else if (this.state == "dead") {
-            setTimeout(() => this.deathScreen.start(), 2000)
-            this.context.drawImage(this.deathScreen.canvas, 16 * Config.uiScale, 8 * Config.uiScale, 608 * Config.uiScale, 304 * Config.uiScale)
+            setTimeout(() => this.deathScreen.start(), 1500)
         }
+        this.context.drawImage(this.deathScreen.canvas, 16 * Config.uiScale, 8 * Config.uiScale, 608 * Config.uiScale, 304 * Config.uiScale)
     }
 
     drawFace() {

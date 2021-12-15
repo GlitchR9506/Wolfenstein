@@ -4,6 +4,8 @@ export default class DeathScreen {
     private pixels: ImageData
     private frame = 0
     private started = false
+    private reversed = false
+    private interval: NodeJS.Timer
 
     constructor() {
         this.canvas = document.createElement('canvas')
@@ -20,15 +22,22 @@ export default class DeathScreen {
     start() {
         if (!this.started) {
             this.started = true
-            setInterval(() => this.update(), 1);
+            this.interval = setInterval(() => this.update(), 1);
         }
     }
 
     /* Write a pixel, just set alpha and RGB channels. */
-    private setPixel(x: number, y: number) {
+    private setPixelRed(x: number, y: number) {
         var offset = x * 4 + y * 4 * this.canvas.width;
         this.pixels.data[offset + 3] = 255;
         this.pixels.data[offset + 0] = 255;
+        this.pixels.data[offset + 1] = 0;
+        this.pixels.data[offset + 2] = 0;
+    }
+    private setPixelTransparent(x: number, y: number) {
+        var offset = x * 4 + y * 4 * this.canvas.width;
+        this.pixels.data[offset + 3] = 0;
+        this.pixels.data[offset + 0] = 0;
         this.pixels.data[offset + 1] = 0;
         this.pixels.data[offset + 2] = 0;
     }
@@ -50,17 +59,29 @@ export default class DeathScreen {
 
     /* Called once every millisecond, sets 100 pixels. */
     private update() {
-        var j;
-
         /* Set 100 pixels per iteration otherwise it's too slow. */
-        for (j = 0; j < 100; j++) {
-            if (this.frame == 65536) break;
-
+        for (let j = 0; j < 200; j++) {
+            if (this.frame == 65536) {
+                setTimeout(() => {
+                    this.reversed = true
+                    setTimeout(() => {
+                        this.frame = 0
+                        this.started = false
+                        this.reversed = false
+                        clearInterval(this.interval)
+                        this.interval = null
+                    }, 10000)
+                }, 2000)
+            }
             var fn = this.feistelNet(this.frame);
             var x = fn % this.canvas.width;
             var y = Math.floor(fn / this.canvas.width);
             if (x < this.canvas.width && y < this.canvas.height) {
-                this.setPixel(x, y);
+                if (this.reversed) {
+                    this.setPixelTransparent(x, y);
+                } else {
+                    this.setPixelRed(x, y);
+                }
             }
             this.frame++;
         }
