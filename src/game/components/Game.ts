@@ -46,7 +46,6 @@ export default class Game {
     private loadLevel(number: number) {
         this.level.load(number, () => {
             let shapes = []
-            shapes.push(this.camera.weapons)
             shapes.push(...this.level.enemies.map(enemy => enemy.loot))
             shapes.push(...this.level.enemies.map(enemy => enemy.tempFlag))
             shapes.push(...this.level.shapes)
@@ -105,7 +104,6 @@ export default class Game {
             }
         }
 
-        this.camera.weapons.update(deltaTime)
         for (let door of this.level.doors) {
             door.update(deltaTime)
             if (door.opened) {
@@ -124,10 +122,10 @@ export default class Game {
                 const enemyDistance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
                 const shapeLookedAtDistance = this.camera.transform.position.horizontalDistanceTo(shapeLookedAt.transform.position)
                 if (enemyDistance < shapeLookedAtDistance) {
-                    if (this.camera.weapons.currentWeapon.justShot) {
+                    if (UI.instance.weapons.currentWeapon.justShot) {
                         const distance = this.camera.transform.position.horizontalDistanceTo(enemy.transform.position)
-                        if (distance <= this.camera.weapons.currentWeapon.range && !enemy.isDead) {
-                            enemy.damage(this.camera.weapons.currentWeapon.damage)
+                        if (distance <= UI.instance.weapons.currentWeapon.range && !enemy.isDead) {
+                            enemy.damage(UI.instance.weapons.currentWeapon.damage)
                             UI.instance.score += enemy.score
                         }
                         if (enemy.isDead) {
@@ -149,7 +147,7 @@ export default class Game {
                     // }
                     const distance = enemy.transform.position.horizontalDistanceTo(this.camera.transform.position)
                     if (enemy.canSee(this.camera.transform.position, this.level.collidingCuboids)) {
-                        if (this.camera.weapons.currentWeapon.justShot) {
+                        if (UI.instance.weapons.currentWeapon.justShot) {
                             startFollowing = true
                         } else if (Math.abs(angleDiff) <= 90) {
 
@@ -210,8 +208,6 @@ export default class Game {
             decoration.lookAtCamera(this.camera.transform.rotation.y)
             decoration.draw(this.camera.viewProjectionMatrix)
         }
-
-        this.camera.weapons.draw(this.camera.projectionMatrix)
 
         if (Input.instance.renderWalls) {
             for (let wall of this.level.walls) {

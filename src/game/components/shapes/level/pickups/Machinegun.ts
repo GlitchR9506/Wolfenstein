@@ -10,7 +10,7 @@ export default class Machinegun extends Pickup {
     audio = new BetterAudio(audio)
 
     onPickedUp(camera: Camera) {
-        camera.weapons.availableTypes.push('machinegun')
+        UI.instance.weapons.availableTypes.push('machinegun')
         UI.instance.weapon = 'machinegun'
     }
 }

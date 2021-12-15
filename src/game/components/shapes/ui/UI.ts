@@ -9,6 +9,7 @@ import audioMenu from "../../../sounds/theme_menu.mp3"
 import audioLevel from "../../../sounds/theme_level.mp3"
 import BetterAudio from '../../BetterAudio'
 import LevelEnd from './LevelEnd';
+import Weapons from './Weapons';
 
 
 type FaceDirection = "left" | "normal" | "right"
@@ -24,6 +25,7 @@ export default class UI {
     elements: HTMLImageElement
     startScreen: HTMLImageElement
     context: CanvasRenderingContext2D
+    weapons: Weapons
 
     audioSplash = new BetterAudio(audioSplash, Config.musicVolume)
     audioMenu = new BetterAudio(audioMenu, Config.musicVolume)
@@ -93,6 +95,7 @@ export default class UI {
         uiCanvas.onclick = () => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
         document.onkeydown = () => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
         document.onkeyup = () => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
+        this.weapons = new Weapons()
     }
 
     takeLife() {
@@ -107,6 +110,7 @@ export default class UI {
     }
 
     update(deltaTime: number) {
+        this.weapons.update(deltaTime)
         const currentStep = this.faceAnimationSteps[0]
         if (currentStep) {
             currentStep.duration -= deltaTime
@@ -159,7 +163,8 @@ export default class UI {
         this.drawNumber(this.lives, 240, 352)
         this.drawNumber(this.health, 384, 352)
         this.drawNumber(this.ammo, 464, 352)
-        this.drawWeapon()
+        this.drawWeaponUI()
+        this.weapons.draw(this.context)
         this.drawFace()
         if (this.flashing) {
             this.context.fillStyle = `rgba(${this.flashColor}, ${(1 - this.flashCompletion) * this.flashIntensity})`
@@ -213,7 +218,7 @@ export default class UI {
         )
     }
 
-    drawWeapon() {
+    drawWeaponUI() {
         let weaponNumber = 0
         if (this.weapon == 'knife') {
             weaponNumber = 0

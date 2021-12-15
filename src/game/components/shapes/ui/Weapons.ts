@@ -1,10 +1,8 @@
 import { degToRad, m4, Vec2, Vec3 } from '../../utils'
-import Plane from '../level/Plane'
 import { Weapon, weaponType } from './Weapon'
 import texture from '../../../textures/weapons.png'
 import Config from '../../Config'
 import Input from '../../Input'
-import { Program } from '../../programs/Program'
 import UI from './UI'
 import knife from "../../../sounds/DSWKNIF.wav"
 import pistol from "../../../sounds/WSND0005.wav"
@@ -12,7 +10,7 @@ import machinegun from "../../../sounds/WSND0004.wav"
 import chaingun from "../../../sounds/WSND0006.wav"
 
 
-export default class Weapons extends Plane {
+export default class Weapons {
     importedTexture = texture
 
     // availableTypes: weaponType[] = ['knife', 'pistol']
@@ -20,17 +18,14 @@ export default class Weapons extends Plane {
 
     private weapons: Weapon[] = []
     private texturesCount = new Vec2(8, 4)
-    private currentTextureNumber: number
+    private textureNumber: number
+    private texture: HTMLImageElement
 
     private timeSinceLastUpdate = 0
 
-    constructor(gl: WebGLRenderingContext, program: Program) {
-        super(gl, program)
-        this.transform.position.z = -2
-        this.transform.rotation.x = degToRad(90)
-        this.transform.scale = Vec3.one.multiply(1)
-        this.transform.position.y = -0.66
-        this.setInitialState()
+    constructor() {
+        this.texture = new Image()
+        this.texture.src = texture
 
         this.weapons.push(new Weapon("knife", 2.4, 40, [0, 1, 2, 3, 4], [], 3, knife))
         this.weapons[0].range = Config.gridSize * 0.75
@@ -38,7 +33,7 @@ export default class Weapons extends Plane {
         this.weapons.push(new Weapon("machinegun", 6, 70, [16, 17], [18, 19], 19, machinegun))
         this.weapons.push(new Weapon("chaingun", 12, 70, [24, 25], [26, 27], 26, chaingun))
 
-        this.setTexture(this.currentWeapon.initTextures[0])
+        this.textureNumber = this.currentWeapon.initTextures[0]
     }
 
     get textureSize() {
@@ -79,10 +74,9 @@ export default class Weapons extends Plane {
 
         if (this.timeSinceLastUpdate >= frameTime) {
             this.timeSinceLastUpdate = 0
-            this.setTexture(this.currentWeapon.getNextTexture())
+            this.textureNumber = this.currentWeapon.getNextTexture()
         }
 
-        this.updateBuffers()
     }
 
     private decreaseAmmo() {
@@ -105,12 +99,24 @@ export default class Weapons extends Plane {
         }
     }
 
-    private setTexture(textureNumber: number) {
-        if (textureNumber == this.currentTextureNumber) return
-        this.currentTextureNumber = textureNumber
-        const currentVerticesVec2Array = Vec2.arrayToVec2Array(this.initialTexcoords)
-        const texturePos = new Vec2(textureNumber % this.texturesCount.x, Math.floor(textureNumber / this.texturesCount.x)).multiplyByVector(this.textureSize)
-        const newVerticesVec2Array = currentVerticesVec2Array.map(vec2 => vec2.multiplyByVector(this.textureSize).add(texturePos))
-        this.TEXCOORDS = new Float32Array(Vec2.vec2ArrayToArray(newVerticesVec2Array))
+    draw(context: CanvasRenderingContext2D) {
+        // x 322 - pół szerokości
+        // y 312 - wysokość
+        const width = 64
+        const height = 64
+        const row = Math.floor(this.textureNumber / this.texturesCount.x)
+        const col = this.textureNumber % this.texturesCount.x
+        // console.log(this.textureNumber)
+        context.drawImage(
+            this.texture,
+            64 * col,
+            64 * row,
+            64,
+            64,
+            (317.5 - (width * 4.8 / 2)) * Config.uiScale,
+            (312 - (height * 4.8)) * Config.uiScale,
+            width * Config.uiScale * 4.8,
+            height * Config.uiScale * 4.8
+        )
     }
 }

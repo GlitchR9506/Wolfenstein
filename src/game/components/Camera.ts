@@ -35,7 +35,6 @@ export default class Camera {
     constructor(gl: WebGLRenderingContext, program: Program) {
         this.gl = gl
         this.updateProjectionMatrix()
-        this.weapons = new Weapons(this.gl, program)
         this.transform.rotation.y = degToRad(90)
     }
 
