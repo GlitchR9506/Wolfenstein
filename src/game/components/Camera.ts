@@ -143,7 +143,7 @@ export default class Camera {
                         collisionSide.x = 0
                     }
                 }
-                log('col side', collisionSide)
+                // log('col side', collisionSide)
 
                 // this.transform.position = this.transform.position.add(collisionSide)
                 return collisionSide

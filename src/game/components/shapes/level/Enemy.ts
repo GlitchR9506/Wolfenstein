@@ -153,6 +153,7 @@ export default class Enemy extends Plane {
         if (['dying', 'dead'].includes(this.state)) return
         this.hp -= value
         this.state = 'hit'
+        this.timeSinceLastUpdate = 0
         if (this.hp <= 0) {
             this.hp = 0
             this.state = 'dying'

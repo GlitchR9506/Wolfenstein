@@ -55,14 +55,14 @@ export default class Input {
 
         // console.log(this.inputsBlocked)
         if (!this.inputsBlocked) {
-            if (this.isPressed('KeyW') && !this.isPressed('KeyS')) this.direction.z = 1
-            if (this.isPressed('KeyS') && !this.isPressed('KeyW')) this.direction.z = -1
-            if (this.isPressed('KeyA') && !this.isPressed('KeyD')) this.direction.x = 1
-            if (this.isPressed('KeyD') && !this.isPressed('KeyA')) this.direction.x = -1
+            if ((this.isPressed('ArrowUp') || this.isPressed('KeyW')) && !this.isPressed('KeyS') && !this.isPressed('ArrowDown')) this.direction.z = 1
+            if ((this.isPressed('ArrowDown') || this.isPressed('KeyS')) && !this.isPressed('KeyW') && !this.isPressed('ArrowUp')) this.direction.z = -1
+            // if (this.isPressed('KeyA') && !this.isPressed('KeyD')) this.direction.x = 1
+            // if (this.isPressed('KeyD') && !this.isPressed('KeyA')) this.direction.x = -1
             this.direction = this.direction.normalize
 
-            if (this.isPressed('ArrowLeft') && !this.isPressed('ArrowRight')) this.rotation = -1
-            if (this.isPressed('ArrowRight') && !this.isPressed('ArrowLeft')) this.rotation = 1
+            if ((this.isPressed('KeyA') || this.isPressed('ArrowLeft')) && !this.isPressed('ArrowRight') && !this.isPressed('KeyD')) this.rotation = -1
+            if ((this.isPressed('KeyD') || this.isPressed('ArrowRight')) && !this.isPressed('ArrowLeft') && !this.isPressed('KeyA')) this.rotation = 1
 
             if (this.isPressed('Space')) this.shooting = true
 
