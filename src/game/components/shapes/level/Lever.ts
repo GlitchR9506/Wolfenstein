@@ -42,7 +42,7 @@ export default class Lever extends Cuboid implements Interactable {
             this.audio.play()
             this.setTexture(this.pressedTexture)
             UI.instance.state = 'end'
-            UI.instance.levelEnd.getTime()
+            UI.instance.levelEnd.calculateValues()
             UI.instance.endTime = new Date()
             this.updateBuffers()
         }

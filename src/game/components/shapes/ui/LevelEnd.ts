@@ -43,7 +43,7 @@ export default class LevelEnd {
         }, 500)
     }
 
-    getTime() {
+    calculateValues() {
         UI.instance.endTime = new Date()
         const timeDiff = new Date(UI.instance.endTime.getTime() - UI.instance.startTime.getTime())
         this.displayTime = timeDiff.toTimeString().substring(3, 8)
