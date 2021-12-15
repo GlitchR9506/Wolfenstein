@@ -57,7 +57,6 @@ export default class LoadingScreen {
             if (this.progress >= this.afterLoadingDelay) {
                 this.progress = 0
                 UI.instance.state = 'game'
-                UI.instance.audioLevel.play()
                 UI.instance.startTime = new Date()
             }
         }

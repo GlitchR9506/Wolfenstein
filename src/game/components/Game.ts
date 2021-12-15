@@ -159,7 +159,9 @@ export default class Game {
                     }
                     if (startFollowing) {
                         enemy.followingPlayer = this.camera
-                        enemy.audioSight.play()
+                        if (UI.instance.health > 0) {
+                            enemy.audioSight.play()
+                        }
                         enemy.state = "walking"
                     }
                 }

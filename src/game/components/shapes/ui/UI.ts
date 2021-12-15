@@ -95,9 +95,9 @@ export default class UI {
         this.context = uiCanvas.getContext('2d') as CanvasRenderingContext2D
         this.context.imageSmoothingEnabled = false;
 
-        uiCanvas.onclick = () => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
-        document.onkeydown = () => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
-        document.onkeyup = () => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
+        document.onclick = e => { if (this.state == "startScreen") this.audioSplash.playIfNotPlayed() }
+        document.onkeydown = e => { if (this.state == "startScreen" && e.code == "Space") this.audioSplash.playIfNotPlayed() }
+        document.onkeyup = e => { if (this.state == "startScreen" && e.code == "Space") this.audioSplash.playIfNotPlayed() }
         this.weapons = new Weapons()
     }
 

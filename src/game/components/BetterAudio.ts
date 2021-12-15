@@ -2,35 +2,43 @@ import Config from "./Config"
 
 export default class BetterAudio {
     audio: HTMLAudioElement
-    canBePaused = false
+    private playLoading = false
+    private playPromise: Promise<void>
+    name
 
     constructor(sound: string, volume?: number) {
         this.audio = new Audio(sound)
+        this.name = sound
         this.audio.volume = volume || Config.soundVolume
     }
 
     play() {
-        // this.audio.pause()
         this.audio.currentTime = 0
-        this.audio.play()
-        // if (this.canBePaused) {
-        //     this.audio.pause()
-        //     this.audio.currentTime = 0
-        // }
-        // this.canBePaused = false
-        // this.audio.play().then(() => {
-        //     this.canBePaused = false
-        // })
+        this.playLoading = true
+        this.playPromise = this.audio.play()
+        this.playPromise.then(() => this.playLoading = false)
     }
 
     playIfNotPlayed() {
+        // const isPlaying = this.audio.currentTime > 0 && !this.audio.paused && !this.audio.ended && this.audio.readyState > this.audio.HAVE_CURRENT_DATA;
+
+        // if (!isPlaying) {
+        //     this.audio.currentTime = 0
+        //     this.audio.play();
+        // }
         if (this.audio.currentTime == 0) {
-            this.audio.play()
+            this.playLoading = true
+            this.playPromise = this.audio.play()
+            this.playPromise.then(() => this.playLoading = false)
         }
     }
 
     pause() {
-        this.audio.pause()
+        if (this.playLoading) {
+            this.playPromise.then(() => this.audio.pause())
+        } else {
+            this.audio.pause();
+        }
     }
 
     loop() {

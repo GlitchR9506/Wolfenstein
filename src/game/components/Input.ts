@@ -142,6 +142,7 @@ export default class Input {
                 } else if (UI.instance.state == "menu") {
                     if (UI.instance.menu.option == 0) {
                         UI.instance.menu.audioSelect.play()
+                        UI.instance.audioLevel.play()
                         UI.instance.audioMenu.pause()
                         UI.instance.state = "loading"
                         // UI.instance.state = "game"
