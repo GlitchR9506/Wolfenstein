@@ -84,6 +84,9 @@ export default class Weapons {
             if (UI.instance.ammo > 0) {
                 UI.instance.ammo--
             }
+            if (UI.instance.ammo == 0) {
+                UI.instance.weapon = 'knife'
+            }
         }
     }
 

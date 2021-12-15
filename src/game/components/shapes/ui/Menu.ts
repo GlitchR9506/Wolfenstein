@@ -26,7 +26,6 @@ export default class Menu {
 
         this.canvas.width = 640
         this.canvas.height = 400
-        console.log('created')
 
         this.menuUnselected = new Image();
         this.menuUnselected.src = menuUnselected;

@@ -12,5 +12,8 @@ export default class Ammo extends Pickup {
 
     onPickedUp(camera: Camera) {
         UI.instance.ammo += this.ammoCount
+        if (UI.instance.weapon == 'knife') {
+            UI.instance.weapon = UI.instance.weapons.availableTypes[UI.instance.weapons.availableTypes.length - 1]
+        }
     }
 }

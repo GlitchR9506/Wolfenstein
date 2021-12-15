@@ -231,10 +231,12 @@ export default class Game {
         for (let enemy of this.level.enemies) {
             enemy.lookAtCamera(this.camera.transform.rotation.y)
             enemy.draw(this.camera.viewProjectionMatrix)
-            for (let field of enemy.pathfinderFields) {
-                enemy.tempFlag.transform.position = field.subGridPos
-                enemy.tempFlag.lookAtCamera(this.camera.transform.rotation.y)
-                enemy.tempFlag.draw(this.camera.viewProjectionMatrix)
+            if (Config.debug) {
+                for (let field of enemy.pathfinderFields) {
+                    enemy.tempFlag.transform.position = field.subGridPos
+                    enemy.tempFlag.lookAtCamera(this.camera.transform.rotation.y)
+                    enemy.tempFlag.draw(this.camera.viewProjectionMatrix)
+                }
             }
         }
         UI.instance.draw(this.canvas)
