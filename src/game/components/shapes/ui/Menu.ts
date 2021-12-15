@@ -4,8 +4,9 @@ import menuSelectedBlink from '../../../textures/menuSelectedBlink.png'
 import Config from '../../Config'
 import { Vec2 } from '../../utils'
 import BetterAudio from '../../BetterAudio'
-import audioSelect from '../../../sounds/Menu Select.wav'
-import audioToggle from '../../../sounds/Menu Toggle.wav'
+import audioMove from '../../../sounds/M_MOVE.wav'
+import audioSelect from '../../../sounds/M_SELECT.wav'
+import audioBack from '../../../sounds/M_BACK.wav'
 import UI from './UI'
 
 export default class Menu {
@@ -15,7 +16,8 @@ export default class Menu {
     private menuSelected: HTMLImageElement
     private menuSelectedBlink: HTMLImageElement
     audioSelect = new BetterAudio(audioSelect)
-    audioToggle = new BetterAudio(audioToggle)
+    audioMove = new BetterAudio(audioMove)
+    audioBack = new BetterAudio(audioBack)
     option = 0
 
     constructor() {
@@ -43,7 +45,7 @@ export default class Menu {
                     } else {
                         this.option = 0
                     }
-                    this.audioToggle.play()
+                    this.audioMove.play()
                 }
             }
         })

@@ -14,10 +14,17 @@ import Ammo from './pickups/Ammo'
 import Flag from './pickups/Flag'
 import Plane from './Plane'
 import Shape from './Shape'
-import audioShot from "../../../sounds/Pistol.wav"
-import audioPain from "../../../sounds/Enemy Pain.wav"
-import audioDeath1 from "../../../sounds/Death 1.wav"
-import audioDeath2 from "../../../sounds/Death 2.wav"
+import audioShot from "../../../sounds/WSND0021.wav"
+
+import audioDie1 from "../../../sounds/WSND0012.wav"
+import audioDie2 from "../../../sounds/WSND0013.wav"
+import audioDie4 from "../../../sounds/WSND0034.wav"
+import audioDie5 from "../../../sounds/WSND0035.wav"
+import audioDie6 from "../../../sounds/WSND0039.wav"
+import audioDie7 from "../../../sounds/WSND0040.wav"
+import audioDie8 from "../../../sounds/WSND0041.wav"
+import audioDie9 from "../../../sounds/WSND0042.wav"
+import audioSight from "../../../sounds/WSND0000.wav"
 
 export default class Enemy extends Plane {
     loot: Ammo
@@ -54,8 +61,17 @@ export default class Enemy extends Plane {
     private readonly initialState
     private readonly pathfindingDelay = 0.5
     private readonly frameTime = 0.2
-    private readonly audioPain = new BetterAudio(audioPain)
-    private readonly audiosDeath = [new BetterAudio(audioDeath1), new BetterAudio(audioDeath2)]
+    readonly audioSight = new BetterAudio(audioSight)
+    private readonly audiosDie = [
+        new BetterAudio(audioDie1),
+        new BetterAudio(audioDie2),
+        new BetterAudio(audioDie4),
+        new BetterAudio(audioDie5),
+        new BetterAudio(audioDie6),
+        new BetterAudio(audioDie7),
+        new BetterAudio(audioDie8),
+        new BetterAudio(audioDie9),
+    ]
     private readonly audioShot = new BetterAudio(audioShot)
 
     constructor(gl: WebGLRenderingContext, program: Program, type?: string) {
@@ -140,9 +156,9 @@ export default class Enemy extends Plane {
         if (this.hp <= 0) {
             this.hp = 0
             this.state = 'dying'
-            this.audiosDeath[Math.floor(Math.random() * this.audiosDeath.length)].play()
+            this.audiosDie[Math.floor(Math.random() * this.audiosDie.length)].play()
         } else {
-            this.audioPain.play()
+            // this.audioPain.play()
         }
     }
 

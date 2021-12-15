@@ -6,12 +6,14 @@ import Config from '../../Config'
 import { Program } from '../../programs/Program'
 import Camera from '../../Camera'
 import Enemy from './Enemy'
-import audio from "../../../sounds/Door.wav"
+import openAudio from "../../../sounds/WSND0003.wav"
+import closeAudio from "../../../sounds/WSND0002.wav"
 import BetterAudio from '../../BetterAudio'
 
 export default class Door extends Cuboid implements Interactable {
     importedTexture = texture
-    audio = new BetterAudio(audio)
+    openAudio = new BetterAudio(openAudio)
+    closeAudio = new BetterAudio(closeAudio)
 
     get lightTexture() {
         switch (this.type) {
@@ -171,14 +173,14 @@ export default class Door extends Cuboid implements Interactable {
         if (this.closed) {
             this.closing = false
             this.opening = true
-            this.audio.play()
+            this.openAudio.play()
         } else if (this.opened) {
             if (this.transform.scale.add(this.hiddenInWallScaleCorrection).equals(this.initialTransform.scale)) {
                 this.transform.scale = this.transform.scale.add(this.hiddenInWallScaleCorrection)
             }
             this.opening = false
             this.closing = true
-            this.audio.play()
+            this.closeAudio.play()
         }
     }
 

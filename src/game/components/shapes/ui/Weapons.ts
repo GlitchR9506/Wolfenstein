@@ -6,10 +6,10 @@ import Config from '../../Config'
 import Input from '../../Input'
 import { Program } from '../../programs/Program'
 import UI from './UI'
-import knife from "../../../sounds/Knife.wav"
-import pistol from "../../../sounds/Pistol.wav"
-import machinegun from "../../../sounds/Machine Gun.wav"
-import chaingun from "../../../sounds/Gatling Gun.wav"
+import knife from "../../../sounds/DSWKNIF.wav"
+import pistol from "../../../sounds/WSND0005.wav"
+import machinegun from "../../../sounds/WSND0004.wav"
+import chaingun from "../../../sounds/WSND0006.wav"
 
 
 export default class Weapons extends Plane {

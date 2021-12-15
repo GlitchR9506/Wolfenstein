@@ -5,13 +5,12 @@ import Config from '../../../Config'
 import { Program } from '../../../programs/Program'
 import { degToRad, Vec2, Vec3 } from '../../../utils'
 import Plane from '../Plane'
-import audio from "../../../../sounds/Pickup.wav"
 import BetterAudio from '../../../BetterAudio'
 import UI from '../../ui/UI'
 
 export default abstract class Pickup extends Plane {
     importedTexture = texture
-    audio = new BetterAudio(audio)
+    abstract audio: BetterAudio
 
     pickupRange = Config.gridSize * 0.5
     pickedUp = false

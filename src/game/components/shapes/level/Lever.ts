@@ -5,11 +5,13 @@ import Config from '../../Config'
 import { Program } from '../../programs/Program'
 import Interactable from './Interactable'
 import UI from '../ui/UI'
+import BetterAudio from '../../BetterAudio'
+import audio from "../../../sounds/WSND0030.wav"
 
 export default class Lever extends Cuboid implements Interactable {
     importedTexture = texture
     texturesInLine = 16
-
+    audio = new BetterAudio(audio)
     value: string
 
     constructor(gl: WebGLRenderingContext, program: Program, value: string) {
@@ -36,10 +38,13 @@ export default class Lever extends Cuboid implements Interactable {
     }
 
     toggle() {
-        this.setTexture(this.pressedTexture)
-        UI.instance.state = 'end'
-        UI.instance.levelEnd.getTime()
-        UI.instance.endTime = new Date()
-        this.updateBuffers()
+        if (UI.instance.state != 'end') {
+            this.audio.play()
+            this.setTexture(this.pressedTexture)
+            UI.instance.state = 'end'
+            UI.instance.levelEnd.getTime()
+            UI.instance.endTime = new Date()
+            this.updateBuffers()
+        }
     }
 }

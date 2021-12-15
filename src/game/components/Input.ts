@@ -153,6 +153,13 @@ export default class Input {
                         UI.instance.state = "startScreen"
                     }
                 }
+            } else if (e.code == "Escape") {
+                if (UI.instance.state == "menu") {
+                    UI.instance.menu.audioBack.play()
+                    UI.instance.audioMenu.pause()
+                    UI.instance.audioSplash.play()
+                    UI.instance.state = "startScreen"
+                }
             }
         })
     }

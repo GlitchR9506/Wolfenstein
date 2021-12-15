@@ -161,6 +161,7 @@ export default class Game {
                     }
                     if (startFollowing) {
                         enemy.followingPlayer = this.camera
+                        enemy.audioSight.play()
                         enemy.state = "walking"
                     }
                 }
@@ -174,6 +175,7 @@ export default class Game {
         }
 
         if (UI.instance.health == 0 && UI.instance.state == "game") {
+            this.camera.audioDeath.play()
             UI.instance.state = "dead"
             UI.instance.deadScreen()
             setTimeout(() => {

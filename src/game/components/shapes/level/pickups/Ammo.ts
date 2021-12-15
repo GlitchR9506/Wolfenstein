@@ -2,7 +2,7 @@ import Camera from '../../../Camera'
 import { degToRad, Vec2, Vec3 } from '../../../utils'
 import UI from '../../ui/UI'
 import Pickup from './Pickup'
-import audio from "../../../../sounds/Ammo.wav"
+import audio from "../../../../sounds/P_AMMO.wav"
 import BetterAudio from '../../../BetterAudio'
 
 export default class Ammo extends Pickup {

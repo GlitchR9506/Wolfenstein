@@ -24,7 +24,9 @@ export default class BetterAudio {
     }
 
     playIfNotPlayed() {
-        this.audio.play()
+        if (this.audio.currentTime == 0) {
+            this.audio.play()
+        }
     }
 
     pause() {

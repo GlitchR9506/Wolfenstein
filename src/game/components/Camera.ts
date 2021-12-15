@@ -8,7 +8,8 @@ import Weapons from './shapes/ui/Weapons'
 import { Program } from './programs/Program'
 import Input from './Input'
 import BetterAudio from './BetterAudio'
-import audioHit from '../sounds/Oof.wav'
+import audioHit from '../sounds/WSND0014.wav'
+import audioDeath from '../sounds/DSDEATH.wav'
 
 export default class Camera {
     transform = new Transform
@@ -18,7 +19,7 @@ export default class Camera {
     killer: Enemy = null
 
     audioHit = new BetterAudio(audioHit)
-
+    audioDeath = new BetterAudio(audioDeath)
     readonly weapons: Weapons
     private readonly fov = 60
     private readonly zNear = Config.gridSize / 64

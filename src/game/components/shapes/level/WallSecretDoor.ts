@@ -3,7 +3,7 @@ import Config from '../../Config'
 import Wall from './Wall'
 import Interactable from './Interactable'
 import Camera from '../../Camera'
-import audio from "../../../sounds/Secret Entrance.wav"
+import audio from "../../../sounds/WSND0015.wav"
 import BetterAudio from '../../BetterAudio'
 import UI from '../ui/UI'
 
