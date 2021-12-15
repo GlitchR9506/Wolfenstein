@@ -35,7 +35,7 @@ module.exports = {
                 loader: 'ts-shader-loader'
             },
             {
-                test: /\.(png|jp(e*)g|svg|wav|mp3)$/,
+                test: /\.(png|jp(e*)g|svg|ico|wav|mp3)$/,
                 type: 'asset/resource'
             },
         ],
@@ -45,6 +45,7 @@ module.exports = {
             filename: 'index.html',
             title: 'game',
             template: './src/game/index.html',
+            favicon: "./src/game/favicon.ico",
             chunks: ['game'],
         }),
         new HtmlWebpackPlugin({
