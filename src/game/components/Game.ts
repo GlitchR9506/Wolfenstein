@@ -195,7 +195,7 @@ export default class Game {
     private draw(deltaTime: number) {
         this.setDrawSettings()
 
-        this.crosshair.draw(this.camera.projectionMatrix)
+        // this.crosshair.draw(this.camera.projectionMatrix)
         this.level.floor.draw(this.camera.viewProjectionMatrix)
         this.level.ceiling.draw(this.camera.viewProjectionMatrix)
 

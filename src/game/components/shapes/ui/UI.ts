@@ -10,6 +10,7 @@ import audioLevel from "../../../sounds/theme_level.mp3"
 import BetterAudio from '../../BetterAudio'
 import LevelEnd from './LevelEnd';
 import Weapons from './Weapons';
+import LoadingScreen from './LoadingScreen';
 
 
 type FaceDirection = "left" | "normal" | "right"
@@ -26,6 +27,7 @@ export default class UI {
     startScreen: HTMLImageElement
     context: CanvasRenderingContext2D
     weapons: Weapons
+    loadingScreen: LoadingScreen
 
     audioSplash = new BetterAudio(audioSplash, Config.musicVolume)
     audioMenu = new BetterAudio(audioMenu, Config.musicVolume)
@@ -69,6 +71,7 @@ export default class UI {
 
     constructor() {
         this.menu = new Menu()
+        this.loadingScreen = new LoadingScreen()
         this.levelEnd = new LevelEnd()
         this.audioSplash.loop()
         this.audioMenu.loop()
@@ -111,6 +114,7 @@ export default class UI {
 
     update(deltaTime: number) {
         this.weapons.update(deltaTime)
+        this.loadingScreen.update(deltaTime)
         const currentStep = this.faceAnimationSteps[0]
         if (currentStep) {
             currentStep.duration -= deltaTime
@@ -175,6 +179,8 @@ export default class UI {
             this.context.drawImage(this.startScreen, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         } else if (this.state == "menu") {
             this.context.drawImage(this.menu.canvas, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
+        } else if (this.state == "loading") {
+            this.context.drawImage(this.loadingScreen.canvas, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         } else if (this.state == "end") {
             this.context.drawImage(this.levelEnd.canvas, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         }
