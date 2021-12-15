@@ -95,8 +95,8 @@ export default abstract class Shape {
     onCreation() { }
 
     updateBuffers() {
-        this.setPositionBuffer()
-        if (this.COLORS) {
+        if (!this.firstBufferReady) {
+            this.setPositionBuffer()
             this.setColorBuffer()
         }
         if (this.TEXCOORDS) {

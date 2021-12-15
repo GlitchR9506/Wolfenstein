@@ -177,14 +177,13 @@ export default class Game {
         if (UI.instance.health == 0 && UI.instance.state == "game") {
             this.camera.audioDeath.play()
             UI.instance.state = "dead"
-            UI.instance.deadScreen()
             setTimeout(() => {
                 UI.instance.takeLife()
                 this.camera.transform = this.camera.initialTransform
                 UI.instance.state = "game"
                 this.camera.killer = null
                 this.loadLevel(this.currentLevel)
-            }, 3000)
+            }, 6000)
         }
         if (this.camera.killer) {
             this.camera.lookAtKillerStep(deltaTime)
@@ -196,6 +195,7 @@ export default class Game {
 
     private draw(deltaTime: number) {
         this.setDrawSettings()
+        // this.level.shapes.forEach(s => s.updateBuffers())
 
         // this.crosshair.draw(this.camera.projectionMatrix)
         this.level.floor.draw(this.camera.viewProjectionMatrix)

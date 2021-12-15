@@ -11,6 +11,7 @@ import BetterAudio from '../../BetterAudio'
 import LevelEnd from './LevelEnd';
 import Weapons from './Weapons';
 import LoadingScreen from './LoadingScreen';
+import DeathScreen from './DeathScreen';
 
 
 type FaceDirection = "left" | "normal" | "right"
@@ -51,6 +52,7 @@ export default class UI {
 
     menu: Menu
     levelEnd: LevelEnd
+    deathScreen: DeathScreen
 
     flashing = false
     flashCompletion = 0
@@ -73,6 +75,7 @@ export default class UI {
         this.menu = new Menu()
         this.loadingScreen = new LoadingScreen()
         this.levelEnd = new LevelEnd()
+        this.deathScreen = new DeathScreen()
         this.audioSplash.loop()
         this.audioMenu.loop()
         this.audioLevel.loop()
@@ -183,6 +186,9 @@ export default class UI {
             this.context.drawImage(this.loadingScreen.canvas, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
         } else if (this.state == "end") {
             this.context.drawImage(this.levelEnd.canvas, 0, 0, 640 * Config.uiScale, 400 * Config.uiScale)
+        } else if (this.state == "dead") {
+            setTimeout(() => this.deathScreen.start(), 2000)
+            this.context.drawImage(this.deathScreen.canvas, 16 * Config.uiScale, 8 * Config.uiScale, 608 * Config.uiScale, 304 * Config.uiScale)
         }
     }
 
@@ -268,10 +274,6 @@ export default class UI {
             16 * Config.uiScale,
             32 * Config.uiScale
         )
-    }
-
-    deadScreen() {
-
     }
 
     flashRed() {

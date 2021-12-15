@@ -8,9 +8,9 @@ export default class LoadingScreen {
     private uiElements: HTMLImageElement
     private progress = 0
     private state = "beforeLoading"
-    private readonly loadingTime = 2
-    private readonly beforeLoadingDelay = 0.5
-    private readonly afterLoadingDelay = 0.5
+    private readonly loadingTime = 1
+    private readonly beforeLoadingDelay = 0.3
+    private readonly afterLoadingDelay = 0.3
 
     constructor() {
         this.canvas = document.createElement('canvas')

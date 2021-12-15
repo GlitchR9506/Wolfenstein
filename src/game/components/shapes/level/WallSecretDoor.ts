@@ -31,7 +31,6 @@ export default class WallSecretDoor extends Wall implements Interactable {
                 this.calculateDir(camera)
             }
             this.transform.position = this.transform.position.add(this.dir.multiply(deltaTime * this.openingSpeed))
-            this.updateBuffers()
             if (this.initialTransform.position.distanceTo(this.transform.position) >= Config.gridSize * 2) {
                 this.opening = false
                 this.canInteract = false

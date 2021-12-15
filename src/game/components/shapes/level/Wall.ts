@@ -25,10 +25,6 @@ export default class Wall extends Cuboid {
         this.setTexture(this.darkTexture, 3)
     }
 
-    updateBuffers() {
-        super.updateBuffers()
-    }
-
     get textureColor() {
         for (let color of ['gray', 'blue', 'brown']) {
             if (this.value.toLowerCase().includes(color)) {
