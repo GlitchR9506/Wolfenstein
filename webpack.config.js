@@ -10,7 +10,7 @@ module.exports = {
     mode: 'development',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        publicPath: '/',
+        publicPath: 'auto',
         filename: '[name].bundle.js',
         chunkFilename: '[id].bundle.js',
         sourceMapFilename: '[file].map',
