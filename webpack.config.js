@@ -12,7 +12,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         publicPath: '/',
         filename: '[name].bundle.js',
-        chunkFilename: '[id].bundle_[chunkhash].js',
+        chunkFilename: '[id].bundle.js',
         sourceMapFilename: '[file].map',
         clean: true,
     },
@@ -35,8 +35,18 @@ module.exports = {
                 loader: 'ts-shader-loader'
             },
             {
-                test: /\.(png|jp(e*)g|svg|ico|wav|mp3)$/,
-                type: 'asset/resource'
+                test: /\.(png|jp(e*)g|svg|ico)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'images/[name][ext]'
+                }
+            },
+            {
+                test: /\.(wav|mp3)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'sounds/[name][ext]'
+                }
             },
         ],
     },
