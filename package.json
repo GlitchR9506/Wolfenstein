@@ -4,7 +4,8 @@
   "description": "",
   "private": "true",
   "scripts": {
-    "serve": "webpack serve"
+    "serve": "webpack serve",
+    "build": "webpack build"
   },
   "keywords": [],
   "author": "",
